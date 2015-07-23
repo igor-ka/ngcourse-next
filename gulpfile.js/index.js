@@ -136,3 +136,12 @@ gulp.task('watch', ['clean', 'build'], function () {
 gulp.task('build', ['ts-lint', 'ts-compile', 'html']);
 
 gulp.task('default', ['build']);
+
+gulp.paths = {
+  client: 'client',
+  src: 'client',
+  ts_src: 'client/app/**/*.ts',
+  dist: 'client/dist'
+};
+
+require('require-dir')('./dev');
