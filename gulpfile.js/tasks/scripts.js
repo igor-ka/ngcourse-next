@@ -10,7 +10,7 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'del']
 });
 
-gulp.task('scripts', function (done) {
+gulp.task('scripts', function () {
 
   return gulp.src(paths.src + '/**/*.ts')
     .pipe($.sourcemaps.init())
@@ -19,12 +19,11 @@ gulp.task('scripts', function (done) {
       typescript: require('typescript'),
       target: 'ES5'
     }))
-    .on('error', function handleError(err) {
+    .on('error', function handleError() {
       this.emit('end');
     })
     .pipe($.sourcemaps.write())
-    .pipe(gulp.dest(paths.tmp + '/serve/'))
-    //.pipe($.size());
+    .pipe(gulp.dest(paths.tmp + '/serve/'));
 });
 
 gulp.task('clean:tmp', function (done) {

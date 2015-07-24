@@ -12,7 +12,7 @@ gulp.paths = {
   ts: 'src/**/*.ts'
 };
 
-require('require-dir')('./gulp');
+require('require-dir')('./tasks');
 
 gulp.task('default', ['clean'], function () {
     gulp.start('build');

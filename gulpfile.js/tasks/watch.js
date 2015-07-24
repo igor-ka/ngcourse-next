@@ -3,7 +3,7 @@
 var gulp = require('gulp');
 var paths = gulp.paths;
 
-gulp.task('watch', ['inject'], function () {
+gulp.task('watch', ['build'], function () {
   gulp.watch([
     paths.src + '/**/*.html',
     'bower.json'
