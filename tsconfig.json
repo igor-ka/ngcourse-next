@@ -2,9 +2,11 @@
     "compilerOptions": {
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
+      "declaration": true,
       "module": "amd",
       "target": "ES5",
       "noImplicitAny": false,
-      "sortOutput": true
+      "sortOutput": true,
+      "sourceRoot": "./src"
     }
 }

@@ -1,0 +1,8 @@
+{
+  "name": "ngcourse-next",
+  "scripts": {},
+  "env": {
+    "NODE_ENV": "TEST"
+  },
+  "addons": []
+}
