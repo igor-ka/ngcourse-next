@@ -8,7 +8,7 @@ import {TaskListComponent} from 'components/task-list/task-list-component';
 import {TaskAddComponent} from 'components/task-add/task-add-component';
 import {TaskEditComponent} from 'components/task-edit/task-edit-component';
 import {TaskComponent} from 'components/task/task-component';
-import {AuthenticatorComponent} from 'components/authenticator/authenticator-component';
+import {MainComponent} from 'components/main/main-component';
 import {LoginFormComponent} from 'components/login-form/login-form-component';
 import {TaskActions} from 'actions/task/task-actions';
 import {UserActions} from 'actions/user/user-actions';
@@ -54,8 +54,8 @@ angular.module('ngcourse', [
   'koast'])
   
   .directive(
-    makeSelector(AuthenticatorComponent), 
-    makeDirective(AuthenticatorComponent))
+    makeSelector(MainComponent), 
+    makeDirective(MainComponent))
   .directive(
     makeSelector(LoginFormComponent), 
     makeDirective(LoginFormComponent))

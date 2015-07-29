@@ -15,9 +15,13 @@ gulp.task('scripts', function () {
   return gulp.src(paths.src + '/**/*.ts')
     .pipe($.sourcemaps.init())
     .pipe($.typescript({
-      module: 'amd',
       typescript: require('typescript'),
-      target: 'ES5'
+      emitDecoratorMetadata: true,
+      experimentalDecorators: true,
+      declaration: true,
+      module: "amd",
+      target: "ES5",
+      noImplicitAny: false,
     }))
     .on('error', function handleError() {
       this.emit('end');

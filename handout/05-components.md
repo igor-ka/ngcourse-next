@@ -30,9 +30,9 @@ We'll also need a very simple TypeScript file - our "app":
 ```javascript
 angular.module('ngcourse', []);
 
-angular.element(document).ready(function() {
-  angular.bootstrap(document, ['ngcourse']);
-});
+angular.element(document).ready(
+  () => angular.bootstrap(document, ['ngcourse'])
+);
 ```
 
 # Angular 1.x Basics
@@ -46,17 +46,16 @@ In Angular 1.x, directives are the building blocks of your application. Directiv
 Let's define a basic directive in our *app.ts* file to see this in action,
 
 ```javascript
-...
-angular.module('ngcourse')
-  .directive('ngcMain', () => {
-    return {
-      restrict: 'E', // vs 'A', 'AE'
-      replace: true,
-      scope: {}, // vs 'true', 'null'
-      template: '<span>Hello World from Directive!</span>'
-    };
-  });
-...
+  ...
+  angular.module('ngcourse', [])
+    .directive('ngcMain', () => ({
+        restrict: 'E', // vs 'A', 'AE'
+        replace: true,
+        scope: {}, // vs 'true', 'null'
+        template: '<span>Hello World from Directive!</span>'
+      })
+    );
+  ...
 ```
 
 Note the way `angular.module()` is invoked in these two files. Let's make sure we understand the difference.
@@ -89,13 +88,12 @@ In some situation we would like the content to be preserved and shown on the DOM
 
 ```javascript
 ...
-  .directive('ngcMain', () => {
-    return {
+  .directive('ngcMain', () => ({
       ...
       transclude: true,
       template: '<span>Hello World from Directive! <div ng-transclude/></span>'
-    };
-  });
+    })
+  );
 ...  
 ```
 
@@ -112,8 +110,7 @@ class MainDirectiveCtrl {
 }
 
 angular.module('ngcourse')
-  .directive('ngcMain', () => {
-    return {
+  .directive('ngcMain', () => ({
       restrict: 'E',
       replace: true,
       scope: {},
@@ -121,8 +118,8 @@ angular.module('ngcourse')
       controller: MainDirectiveCtrl,
       controllerAs: 'ctrl',
       bindToController: true
-    };
-  });
+    })
+  );
 ```
 
 Note Angular's `{{ }}` syntax, refered to as the double mustache, used here
@@ -140,13 +137,13 @@ The controller is just an ES6 class that backs component's view represented by a
 
 Our templates are usualy too complex to include as a string. So, instead we often provide a URL to the template file by using `templateUrl` instead of the `template` option in our Directive Definition Object (DDO).
 
-Let's create a new directory *client/app/components/main/* and extract our template into a html file called *main-component.html*. Our templateUrl option should now point to */dist/components/main/main-component.html*.
+Let's create a new directory *src/components/main/* and extract our template into a html file called *main-component.html*. Our templateUrl option should now point to */components/main/main-component.html*.
 
 ## Using an External Controller Class
 
 In the same fashion we should extract our controller class into a separate file, as we want to avoid clutter when our application grows.
 
-Create a file called *main-component.ts* in the */dist/components/main/main-component.html* and move our controller class definition there.
+Create a file called *main-component.ts* in the */components/main/main-component.html* and move our controller class definition there.
 
 ### Import and Export
 
@@ -171,21 +168,20 @@ import {MainDirectiveCtrl} from 'components/main/main-component';
 angular.module('ngcourse', []);
 
 angular.module('ngcourse')
-  .directive('ngcMain', () => {
-    return {
+  .directive('ngcMain', () => ({
       restrict: 'E',
       replace: true,
       scope: {},
-      templateUrl: '/dist/components/main/main-component.html',
+      templateUrl: 'components/main/main-component.html',
       controller: MainDirectiveCtrl,
       controllerAs: 'ctrl',
       bindToController: true
-    };
-  });
+    })
+  );
 
-angular.element(document).ready(function() {
-  angular.bootstrap(document, ['ngcourse']);
-});
+angular.element(document).ready(
+  () => angular.bootstrap(document, ['ngcourse'])
+);
 ...
 ```
 
@@ -200,13 +196,13 @@ Angular 2's components are conceptually similar to component directives from Ang
 In summary, component is an object that structures and represents a UI element. It consists of two parts, component **controller** in charge of view logic and component **template** representing the view.
 
 With that in mind let's define a basic component in a separate typescript file 
-in *components/main/main-component.ts*:
+in *src/components/main/main-component.ts*:
 
 ```javascript
 export class MainComponent {
 
   private static selector = 'ngc-main';
-  private static templateUrl = '/dist/components/main/main-component.html';
+  private static templateUrl = 'components/main/main-component.html';
   private static options = {};
 
   private username;
@@ -447,7 +443,7 @@ We'll also need to modify our component's controller as follows:
 
 By this point our component is getting unweildy. Let's split it into two separate components. 
 
-The first component will be located in *components/task-list/task-list-component.ts* and will implement our simple task counter.
+The first component will be located in *src/components/task-list/task-list-component.ts* and will implement our simple task counter.
 
 ```javascript
   import {Inject} from 'utils/di';
@@ -455,7 +451,7 @@ The first component will be located in *components/task-list/task-list-component
   export class TaskListComponent {
     private numberOfTasks;
     private static selector = 'ngc-tasks';
-    private static templateUrl = '/dist/components/task-list/task-list-component.html';
+    private static templateUrl = 'components/task-list/task-list-component.html';
     
     constructor( @Inject('$log') private $log ) {
       this.numberOfTasks = 0;
@@ -488,7 +484,7 @@ The second component will be remain at *components/main/main-component.ts* and w
 
   export class MainComponent {
     private static selector = 'ngc-main';
-    private static templateUrl = '/dist/components/main/main-component.html';
+    private static templateUrl = 'components/main/main-component.html';
     private isAuthenticated;
 
     constructor( @Inject('$log') private $log ) { 
@@ -531,16 +527,16 @@ The last thing remaining is to wire up our components within Angular application
       makeSelector(TaskListComponent), 
       makeDirective(TaskListComponent));
 
-  angular.element(document).ready(function() {
-    angular.bootstrap(document, ['ngcourse']);
-  });
+  angular.element(document).ready(
+    () => angular.bootstrap(document, ['ngcourse'])
+  );
 ```
 
 ## Application Structure with Components
 
 A useuful way of conceptualizing Angular application design is to look at it as a tree of nested components each having an isolated scope. 
 
-Let's try adding another `<ngc-tasks></ngc-tasks>` element to the template of a component we defined in *components/main/main-component.ts* and observe what happens in the browser.
+Let's try adding another `<ngc-tasks></ngc-tasks>` element to the template of a component we defined in *src/components/main/main-component.ts* and observe what happens in the browser.
 
 ### Passing Data Between Components
 
@@ -551,7 +547,7 @@ We have introduced a bug during our re-factoring, the username is not displayed 
   export class TaskListComponent {
     
     private static selector = 'ngc-tasks';
-    private static templateUrl = '/dist/components/task-list/task-list-component.html';
+    private static templateUrl = 'components/task-list/task-list-component.html';
     private static options = {
       bindToController: {
         username: '=username'
@@ -573,7 +569,7 @@ Now the `username` property is passed from `MainComponent` to `TaskListComponent
 
 ### Responding to Component Events
 
-Let's restructure our code further and create a new component to handle the login form for us. We will put this component in a new file *components/login-form/login-form-component.ts* and create an html template file for it as well.
+Let's restructure our code further and create a new component to handle the login form for us. We will put this component in a new file *src/components/login-form/login-form-component.ts* and create an html template file for it as well.
 
 ```javascript
   import {Inject} from 'utils/di';
@@ -581,7 +577,7 @@ Let's restructure our code further and create a new component to handle the logi
   export class LoginFormComponent {
 
     private static selector = 'ngc-login-form';
-    private static templateUrl = '/dist/components/login-form/login-form-component.html';
+    private static templateUrl = 'components/login-form/login-form-component.html';
     private static options = {
       bindToController: {
         fireSubmit: '&onSubmit'
@@ -596,7 +592,7 @@ Let's restructure our code further and create a new component to handle the logi
       //
     }
 
-    private submit() {
+    public submit() {
       this.fireSubmit({
         data: this
       });
@@ -655,7 +651,7 @@ Let's change *main-component.ts* and its template to accomodate this change:
 
   export class MainComponent {
     private static selector = 'ngc-main';
-    private static templateUrl = '/dist/components/main/main-component.html';
+    private static templateUrl = 'components/main/main-component.html';
 
     private isAuthenticated;
     private username;
@@ -768,7 +764,7 @@ With the above in mind, let's create the `TaskComponent` class.
   ...
   export class TaskComponent {
     private static selector = 'ngc-task';
-    private static templateUrl = '/dist/components/task/task-component.html';
+    private static templateUrl = 'components/task/task-component.html';
     private static options = {
       bindToController: {
         task: '='

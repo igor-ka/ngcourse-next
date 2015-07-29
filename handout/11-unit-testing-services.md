@@ -1,4 +1,4 @@
-# Part 9: Unit Testing
+# Part 11: Basic Unit Testing
 
 ## The Rationale
 
@@ -34,52 +34,38 @@ of:
 
 While we see this as the best combination of tools, a common alternative is Jasmine, a somewhat older tool that combines features of Mocha, Chai and Sinon.
 
-Mocha provides better support for asynchronous testing by adding support for the `done()` function. If you use it, your test doesn't pass until the `done()` function is called. This is a nice to have when testing asynchronous code. Mocha also allows for use of any assertion library that throws exceptions on failure, such as Chai.
-
-## Setup
-
-We'll be mostly running our tools via Gulp, replying on our `rangle-gulp`
-module. So, Gulp is the only tool we need to setup globally.
-
-```bash
-  npm install -g gulp
-  npm install
-  bower install
-```
-
-However, let's install Mocha as well, so that we can try using it manually:
-
-```bash
-  npm install -g mocha
-```
-
-Now we can proceed to writing tests.
+Mocha provides better support for asynchronous testing by adding support for the `done()` function. If you use it, your test doesn't pass until the `done()`function is called. This is a nice to have when testing asynchronous code. Mocha also allows for use of any assertion library that throws exceptions on failure, such as Chai.
 
 ## A Basic Mocha Test
 
 First, let's write a simple test and run it just using Mocha. Put this code
-into `client/app/simple.test.js`.
+into `src/simple.test.js`.
 
 ```javascript
-  // Define a test suite.
-  describe('tasks', function () {
-    // Define a test.
-    it('should have 2*2 be equal to 4', function () {
-      var x;
-      // Do something.
-      x = 2 * 2;
-      // Check that the results are what we expect and throw an error if something is off.
-      if (x!==4) {
-        throw new Error('Failure of basic arithmetics.');
-      }
+/// <reference path="../typings/tsd.d.ts"/>
+import {expect} from 'chai';
+
+export function main() {
+  describe('Simple Test', () => {
+    it('2*2 should equal 4', () => {
+      let x = 2 * 2;
+      let y = 4;
+      // Assert that x is defined.
+      expect(x).to.not.be.undefined;
+      // Assert that x equals to specific value.
+      expect(x).to.equal(4);
+      // Assert that x equals to y.
+      expect(x).to.equal(y);
+      // See http://chaijs.com/api/bdd/ for more assertion options.
     });
   });
+}
 ```
 
-We can now run this code with:
+We can now run this code from the command line using our gult task (more in subsequent chapters):
 
 ```bash
-  mocha client/app/simple.test.js
+  gulp unit-test
 ```
 
 ## The Importance of Test Documentation
@@ -211,7 +197,7 @@ the promise to resolve.
           .then(function (tasks) {
             // Assertions thrown here will result to a failed promise downstream.
             expect(tasks).to.be.an.array;
-            // Remember to call done(), othewise the test will time out (and
+            // Remember to call done(), otherwise the test will time out (and
             // fail).
             done();
           })
@@ -268,7 +254,7 @@ our dependencies.
           .then(function (tasks) {
             // Assertions thrown here will result to a failed promise downstream.
             expect(tasks.length).to.equal(1);
-            // Remember to call done(), othewise the test will time out (and
+            // Remember to call done(), otherwise the test will time out (and
             // fail).
             done();
           })

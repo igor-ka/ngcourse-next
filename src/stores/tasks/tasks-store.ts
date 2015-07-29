@@ -1,13 +1,13 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import {Inject} from 'utils/di';
+import {makeAuthenticatedMethod} from 'utils/store-utils'
 import {TASK_ACTIONS} from 'constants/action-constants';
 import {List, fromJS} from 'immutable';
-import 'rx';
 
 export class TasksStore {
 
-  private tasksObservable;
-  private tasks;
+  private _tasksSubject: Rx.ReplaySubject<Object>;
+  private _tasks;
   
   /* Authenticated methods */
   private getTasks: Function;
@@ -19,31 +19,21 @@ export class TasksStore {
   constructor(
     @Inject('$log') private $log,
     @Inject('koast') private koast,
-    @Inject('usersStore') private usersStore,
     @Inject('dispatcher') private dispatcher
-    ) {
-    this.addAuthenticatedMethods();
-    this.setInitialState();
+  ) {
     this.registerActionHandlers();
+    this.addAuthenticatedMethods();
+    this.initialize();
   }
 
-  get getTasksObservable() {
-    return this.tasksObservable;
+  private initialize() {
+    this._tasks = List();
+    this._tasksSubject = new Rx.ReplaySubject(1);
+    //this.getTasks();
   }
   
-  get currentTasks() {
-    return this.tasks.toJS();
-  }
-  
-  public getTaskById(id) {
-    return this.tasks.toJS().filter(
-      (task) => task._id === id)[0];
-  }
-  
-  private setInitialState() {
-    this.tasks = List();
-    this.tasksObservable = new Rx.Subject();
-    this.getTasks();
+  get subject() {
+    return this._tasksSubject;  
   }
   
   private registerActionHandlers() {
@@ -56,56 +46,65 @@ export class TasksStore {
       (action) => action.actionType === TASK_ACTIONS.ADD_TASK)
         .subscribe(
           (action) => this.addTask(action.newTask));
-        
+
     this.dispatcher.filter(
       (action) => action.actionType === TASK_ACTIONS.UPDATE_TASK)
         .subscribe(
           (action) => this.updateTask(action.task));
-          
-    this.dispatcher.filter(
-      (action) => action.actionType === TASK_ACTIONS.DELETE_TASK)
-        .subscribe(
-          (action) => this.deleteTask(action.task)); 
   }
-  
+
   private addAuthenticatedMethods() {
-    this.getTasks = this.makeAuthenticatedMethod(
+
+    this.getTasks = makeAuthenticatedMethod(
+      this.koast,
       () => Rx.Observable.fromPromise(
         this.koast.queryForResources('tasks'))
           .subscribe(
             (tasks) => {
-              this.tasks = fromJS(tasks);
-              this.tasksObservable.onNext(this.tasks.toJS());
+              this._tasks = fromJS(tasks);
+              this.emitChange();
             },
-            (error) => this.tasksObservable.onError(error))
-    );
+            (error) => this.emitError(error))
+      );
 
-    this.getTask = this.makeAuthenticatedMethod(
-      (id) => this.koast.getResource('tasks', { _id: id})
-    );
-    
-    this.addTask = this.makeAuthenticatedMethod(
+    this.getTask = makeAuthenticatedMethod(
+      this.koast,
+      (id) => this.koast.getResource('tasks', { _id: id })
+      );
+
+    this.addTask = makeAuthenticatedMethod(
+      this.koast,
       (task) => Rx.Observable.fromPromise(
         this.koast.createResource('tasks', task))
           .subscribe(() => this.getTasks())
-    );
+      );
 
-    this.updateTask = this.makeAuthenticatedMethod(
+    this.updateTask = makeAuthenticatedMethod(
+      this.koast,
       (task) => task.save()
         .then(this.getTasks)
-    );
-    
-    this.deleteTask = this.makeAuthenticatedMethod(
-      (task) => task.delete()
-        .then(this.getTasks)
-    );
+      );
   }
-  
-  private makeAuthenticatedMethod(method) {
-    return function () {
-      let methodArgs = arguments;
-      return this.koast.user.whenAuthenticated()
-        .then(() => method.apply(this, methodArgs));
-    };
+
+  public addChangeListener(observer) {
+    this._tasksSubject.subscribe(observer);
   }
+
+  private emitChange() {
+    this._tasksSubject.onNext(this.tasks);
+  }
+
+  private emitError(error) {
+    this._tasksSubject.onError(error);
+  }
+
+  get tasks() {
+    return this._tasks.toJS();
+  }
+
+  public getTaskById(id) {
+    return this.tasks.filter(
+      (task) => task._id === id)[0];
+  }
+
 }

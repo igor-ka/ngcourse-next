@@ -7,7 +7,7 @@ gulp.task('watch', ['build'], function () {
   gulp.watch([
     paths.src + '/**/*.html',
     'bower.json'
-  ], ['inject', 'html', 'partials']);
+  ], ['inject', 'partials']);
 
   gulp.watch(paths.src + '/**/*.scss', ['styles']);
 

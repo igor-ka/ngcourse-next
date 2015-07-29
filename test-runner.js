@@ -15,7 +15,8 @@ __karma__.loaded = function () { }; //hack karma, and tell it to start when we a
 System.baseURL = '/base/.tmp/serve/'; //where we keep our test files
 System.paths = {
   '*': './*.js',
-  'chai': '/base/node_modules/chai/chai.js'
+  'chai': '/base/node_modules/chai/chai.js',
+  'immutable': '/base/bower_components/immutable/dist/immutable.js'
 };
 
 function onlySpecFiles(path) {

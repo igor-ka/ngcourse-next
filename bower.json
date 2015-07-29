@@ -24,7 +24,8 @@
     "font-awesome": "~4.3.0",
     "rxjs": "~2.5.2",
     "immutable": "~3.7.4",
-    "basscss": "~7.0.0"
+    "basscss": "~7.0.0",
+    "q": "~1.0.1"
   },
   "resolutions": {
     "angular": "~1.4"

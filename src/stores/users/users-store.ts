@@ -1,13 +1,13 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import {Inject, getServices} from 'utils/di';
+import {makeAuthenticatedMethod} from 'utils/store-utils'
 import {USER_ACTIONS} from 'constants/action-constants';
 import {List, Map, fromJS} from 'immutable';
-import 'rx';
 
 export class UsersStore {
   
-  private usersByUsername;
-  private usersObservable;
+  private _users;
+  private _usersSubject;
   
   /* Authenticated methods */
   private getUsers: Function;
@@ -17,26 +17,14 @@ export class UsersStore {
     @Inject('koast') private koast,
     @Inject('dispatcher') private dispatcher
   ) {
-    this.addAuthenticatedMethods();
-    this.setInitialState();
     this.registerActionHandlers();
+    this.addAuthenticatedMethods();
+    this.initialize();
   }
   
-  get getUsersObservable() {
-    return this.usersObservable;
-  }
-  
-  get currentUsers() {
-    return this.usersByUsername.toJS();
-  }
-  
-  public getUserByUsername(username) {
-    return this.usersByUsername.get(username);
-  }
-  
-  private setInitialState() {
-    this.usersByUsername = Map();
-    this.usersObservable = new Rx.Subject();
+  private initialize() {
+    this._users = List();
+    this._usersSubject = new Rx.ReplaySubject(1);
     this.getUsers();
   }
   
@@ -47,28 +35,42 @@ export class UsersStore {
   }
   
   private addAuthenticatedMethods() {
-    this.getUsers = this.makeAuthenticatedMethod(
+    this.getUsers = makeAuthenticatedMethod(
+      this.koast,
       () => Rx.Observable.fromPromise(
         this.koast.queryForResources('users'))
           .subscribe(
-            (users: Array<{username: string}>) => {
-              this.usersByUsername = Map().withMutations(
-                (map) => {
-                  users.forEach(
-                    (user) => map.set(user.username, user));
-                });
-                this.usersObservable.onNext(this.usersByUsername.toJS());
+            (users) => {
+              this._users = fromJS(users);
+              this.emitChange();
             },
-            (error) => this.usersObservable.onError(error)
+            (error) => this.emitError(error)
           )
       );
   }
   
-  private makeAuthenticatedMethod(method) {
-    return function () {
-      let methodArgs = arguments;
-      return this.koast.user.whenAuthenticated()
-        .then(() => method.apply(this, methodArgs));
-    };
+  public addChangeListener(observer) {
+    this._usersSubject.subscribe(observer);
+  }
+
+  private emitChange() {
+    this._usersSubject.onNext(this.users);
+  }
+
+  private emitError(error) {
+    this._usersSubject.onError(error);
+  }
+  
+  get users() {
+    return this._users.toJS();
+  }
+  
+  public getUserByUsername(username) {
+    return this.users.filter(
+      (user) => user.username === username)[0];
+  }
+  
+  public getUserDisplayName(username) {
+    return this.getUserByUsername(username).displayName;
   }
 }
