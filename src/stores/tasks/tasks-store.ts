@@ -29,7 +29,7 @@ export class TasksStore {
   private initialize() {
     this._tasks = List();
     this._tasksSubject = new Rx.ReplaySubject(1);
-    //this.getTasks();
+    this.getTasks();
   }
   
   get subject() {
