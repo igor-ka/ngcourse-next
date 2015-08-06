@@ -5,8 +5,8 @@ import {TasksStore} from 'stores/tasks/tasks-store';
 
 export class TaskComponent {
 
-  private static selector = 'ngc-task';
-  private static templateUrl = 'components/task/task-component.html';
+  public static selector = 'ngc-task';
+  public static templateUrl = 'components/task/task-component.html';
   private static options = {
     bindToController: {
       task: '=',
@@ -19,13 +19,7 @@ export class TaskComponent {
   private errorMessage;
 
   constructor(
-    @Inject('$log') private $log,
-    @Inject('router') private router,
-    @Inject('tasksActions') private tasksActions
+    @Inject('$log') private $log
     ) {
-  }
-  
-  private deleteTask() {
-    this.tasksActions.deleteTask(this.task);
   }
 };

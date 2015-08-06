@@ -16,8 +16,18 @@ System.baseURL = '/base/.tmp/serve/'; //where we keep our test files
 System.paths = {
   '*': './*.js',
   'chai': '/base/node_modules/chai/chai.js',
-  'immutable': '/base/bower_components/immutable/dist/immutable.js'
+  'mocha': '/base/node_modules/mocha/mocha.js',
+  'immutable': '/base/bower_components/immutable/dist/immutable.js',
+  'angular': '/base/bower_components/angular/angular.js',
+  'angular-mocks': '/base/bower_components/angular-mocks/angular-mocks.js',
+  // 'lodash': '/base/bower_components/lodash/dist/lodash.js',
+  'koast': '/base/bower_components/koast-angular/dist/koast.js',
+  'angular-ui-router': '/base/bower_components/angular-ui-router/release/angular-ui-router.js',
+  'rx': '/base/bower_components/rxjs/dist/*.js',
+  'templateCacheHtml': '/base/.tmp/partials/templateCacheHtml.js'
 };
+
+//console.log('Karma Files:', window.__karma__.files);
 
 function onlySpecFiles(path) {
   return /.test\.js$/.test(path);
@@ -29,6 +39,8 @@ function karmaFileToModule(fileName) {
     .replace('.js', '');
 }
 
+System.import('app');
+  
 var promisedTests = 
   Object.keys(window.__karma__.files) // All files served by Karma.
     .filter(onlySpecFiles)

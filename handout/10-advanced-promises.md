@@ -11,12 +11,13 @@ some of the more interesting things we can do with promises.
 
   export class TasksService {
 
+    private taskPromise;
     constructor(@Inject('serverService') private serverService) { }
 
     public getTasks () {
-      let taskPromise;
-      taskPromise = taskPromise || this.serverService.get('/api/v1/tasks');
 
+      this.taskPromise = this.taskPromise || 
+        this.serverService.get('/api/v1/tasks');
       return taskPromise;
     };
   }

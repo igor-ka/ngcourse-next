@@ -29,7 +29,7 @@ own machine.
 
 The students should start by checking out the "base" branch for their session, which has all the necessary configurations but no actual client side code. The "master" branch contains the final state of the project.
 
-You will then need to have `bower` and `tsd` to install dependencies and typings:
+You will then need to have `bower` and `tsd`, to install dependencies and typings:
 
 ```bash
   sudo npm install -g bower # skip "sudo" on windows

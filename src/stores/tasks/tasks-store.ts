@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import {Inject} from 'utils/di';
-import {makeAuthenticatedMethod} from 'utils/store-utils'
+import {makeAuthenticatedMethod} from 'utils/store-utils';
 import {TASK_ACTIONS} from 'constants/action-constants';
 import {List, fromJS} from 'immutable';
 

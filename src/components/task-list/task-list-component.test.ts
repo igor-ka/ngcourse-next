@@ -22,10 +22,25 @@ export function main() {
       description: 'Fix the door handle.',
       done: true
     }];
-    
+  
+  let _usersMock = [{
+      username: 'alice',
+      displayName: 'Alice'
+    },
+    {
+      username: 'bob',
+      displayName: 'Robert'
+    }];
+  
+  let _userMock = {
+    data: {
+      username: 'alice'
+    }
+  };
+  
   var _tasksStoreMock = { };  
-  var _authStoreMock = { addChangeListener: () => {} };  
-  var _userStoreMock = { addChangeListener: () => {} };  
+  var _authStoreMock = { };  
+  var _userStoreMock = { };  
   var _routerMock = { }; 
     
   describe('TaskListComponent', () => {
@@ -42,11 +57,33 @@ export function main() {
       let scheduler = new Rx.TestScheduler();
         
       let tasksObservable = scheduler.createHotObservable(
-        Rx.ReactiveTest.onNext(200, _tasksMock));  
+        Rx.ReactiveTest.onNext(200, _tasksMock));
+      
+       let userObservable = scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _userMock));  
+        
+      let usersObservable = scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _usersMock));    
       
       _tasksStoreMock = {
         addChangeListener: (observer) => {
           tasksObservable.subscribe(observer);
+        }
+      };
+      
+      _authStoreMock = {
+        addChangeListener: (observer) => {
+          userObservable.subscribe(observer);
+        }
+      };
+      
+      _userStoreMock = {
+        addChangeListener: (observer) => {
+          usersObservable.subscribe(observer);
+        },
+        getUserDisplayName: (username) => {
+          _usersMock.filter(
+            (user) => user.username === username)[0];
         }
       };
       
@@ -56,7 +93,7 @@ export function main() {
       
       scheduler.advanceTo(220);
       expect(taskListComponent.tasks).to.equal(_tasksMock);
-      
+      //expect(taskListComponent.displayName).to.equal('Alice');
     });
 
   });

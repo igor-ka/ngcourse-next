@@ -24,7 +24,11 @@ export class TaskListComponent {
 
       this.authenticationStore.addChangeListener(
         Rx.Observer.create(
-          (user) => this._user = user,
+          (user) => {
+            this._user = user;
+            //console.log(this.user);
+            //console.log(this.user.data.username); 
+          },
           (error) => this._errorMessage = error
         ));
 
@@ -39,7 +43,8 @@ export class TaskListComponent {
           (users) => {
             this._users = users;
             this._displayName = this.usersStore
-              .getUserDisplayName(this.user.data.username)
+              .getUserDisplayName(this.user.data.username);
+             
           },
           (error) => this._errorMessage = error
         ));

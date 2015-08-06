@@ -58,7 +58,10 @@ Let's define a basic directive in our *app.ts* file to see this in action,
   ...
 ```
 
-Note the way `angular.module()` is invoked in these two files. Let's make sure we understand the difference.
+Note the way `angular.module()` is invoked in these two files. The `module` function can be used in two ways.
+
+1. `angular.module('ngcourse', ['ngcourse.directives'])` defines a new module with a name of 'ngcourse' that has dependencies on other modules specified in the dependency array pointing to other modules by name. *(More on AngularJS' dependency injection will be covered later)*.
+2. `angular.module('ngcourse')` which accesses a module that has already been defined.
 
 We already saw code that is similar, so we recognize JavaScript's "fluent" chaining style and the use of a function expression in the second argument to `directive()`.
 
@@ -137,7 +140,7 @@ The controller is just an ES6 class that backs component's view represented by a
 
 Our templates are usualy too complex to include as a string. So, instead we often provide a URL to the template file by using `templateUrl` instead of the `template` option in our Directive Definition Object (DDO).
 
-Let's create a new directory *src/components/main/* and extract our template into a html file called *main-component.html*. Our templateUrl option should now point to */components/main/main-component.html*.
+Let's create a new directory *src/components/main/* and extract our template into a html file called *main-component.html*. Our templateUrl option should now point to *components/main/main-component.html*.
 
 ## Using an External Controller Class
 

@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import {Inject, getServices} from 'utils/di';
-import {makeAuthenticatedMethod} from 'utils/store-utils'
+import {makeAuthenticatedMethod} from 'utils/store-utils';
 import {USER_ACTIONS} from 'constants/action-constants';
 import {List, Map, fromJS} from 'immutable';
 
