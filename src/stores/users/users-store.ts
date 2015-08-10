@@ -28,6 +28,10 @@ export class UsersStore {
     this.getUsers();
   }
   
+  get usersSubject() {
+    return this._usersSubject;
+  }
+  
   private registerActionHandlers() {
     this.dispatcher.filter(
       (action) => action.actionType === USER_ACTIONS.GET_USERS)
@@ -47,10 +51,6 @@ export class UsersStore {
             (error) => this.emitError(error)
           )
       );
-  }
-  
-  public addChangeListener(observer) {
-    this._usersSubject.subscribe(observer);
   }
 
   private emitChange() {

@@ -19,13 +19,13 @@ export class MainComponent {
     @Inject('authenticationActions') private authenticationActions,
     @Inject('usersStore') private usersStore) {
     
-    this.authenticationStore.addChangeListener(
+    this.authenticationStore.userSubject.subscribe(
       Rx.Observer.create(
         (user) => this._user = user,
         (error) => this._errorMessage = error
       ));    
 
-    this.usersStore.addChangeListener(
+    this.usersStore.usersSubject.subscribe(
       Rx.Observer.create(
         () => this._displayName = this.usersStore
           .getUserDisplayName(this.user.data.username),

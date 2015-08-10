@@ -193,8 +193,8 @@ So far we have implemented `getTasks()` to get the data we need from the server 
       this.getTasks();
   }
   
-  public addChangeListener(observer) {
-    this._tasksSubject.subscribe(observer);
+  get tasksSubject() {
+    return this._tasksSubject;  
   }
   
   private emitChange() {
@@ -213,7 +213,7 @@ So far we have implemented `getTasks()` to get the data we need from the server 
 Let go through this code step by step:
 
 1. We created a `Rx.ReplaySubject(1)` as a private instance variable to be our change notification subject. This is a special subject that will replay a value from its buffer when a new subsriber is added.
-2. We have added a new method `addChangeListener(observer)`, that will accept an observer to be notified whenever a change occurs to our domain model.
+2. We have added a new getter property `get tasksSubject()`, that can be used by an observer to subsribe to and be notified whenever a change occurs to our domain model.
 3. We implemented 2 utility method that we will use within our store to notify our on change observer of change to the model within the store, or an error that occured within the store with `emitChange()` and `emitError(error)` respectivly.
 
 Now that we have all the parts in place in order to notify our observer of changes within the store, let's modify our `getTasks()` method as follows.
@@ -264,9 +264,9 @@ export class TaskListComponent {
     @Inject('tasksStore') private tasksStore
     ) {
 
-    this.tasksStore.addChangeListener(
+    this.tasksStore.tasksSubject.subscribe(
       Rx.Observer.create(
-        () => this._tasks = this.tasksStore.tasks,
+        (tasks) => this._tasks = tasks,
         (error) => this._errorMessage = error
       ));
   }
@@ -326,18 +326,98 @@ So far we have responded to changes within our Stores. Let's make a view that em
 Create a new file in *src/components/task-add/task-add-component.ts*
 
 ```javascript
+import {Inject} from 'utils/di';
 
+export class TaskAddComponent {
+
+  private static selector = 'ngc-task-add';
+  private static templateUrl = 'components/task-add/task-add-component.html';
+  private static options = {};
+
+  constructor(
+    @Inject('$log') private $log,
+    @Inject('tasksActions') private tasksActions
+   ) {
+     //
+  }
+
+  save(task) {
+    this.tasksActions.addTask(task);
+  }
+}
 ```
 
+and a corresponding *task-add-component.html*
 
+```html
+<div>
+  <div>
+    <h4>Add Task</h4>
+  </div>
+  <form>
+    <label>Owner</label>
+    <input
+      type="text"
+      ng-model="newTask.owner">
+    <label>Description</label>
+    <input
+      type="text"
+      ng-model="newTask.description">
+    <button
+      ng-click="ctrl.save(newTask)">
+      Save
+    </button>
+  </form>
+</div>
+```
 
+Let's modify our *src/constants/actions-constants.ts* file to add our new action.
 
+```javascript
+  export const TASK_ACTIONS = {
+    GET_TASKS: 'GET_TASKS',
+    ADD_TASK: 'ADD_TASK',
+  };
+```
 
+define a new action in *src/actions/task-actions.ts*
 
+```javascript
+  ...
+  addTask(newTask) {
+    this.dispatcher.onNext({
+      actionType: TASK_ACTIONS.ADD_TASK,
+      newTask: newTask
+    });
+  }
+  ...
+```
 
+and finally modify our *TaskStore* to listen on a new action and call the corresponding `addTask` method.
 
+```javascript
+  ...
+  private registerActionHandlers() {
+    this.dispatcher.filter(
+      (action) => action.actionType === TASK_ACTIONS.GET_TASKS)
+        .subscribe(
+          () => this.getTasks());
 
+    this.dispatcher.filter(
+      (action) => action.actionType === TASK_ACTIONS.ADD_TASK)
+        .subscribe(
+          (action) => this.addTask(action.newTask));
+  }
 
+  private addTask(newTask) {
+    Rx.Observable.fromPromise(
+      this.server.post('/api/v1/tasks', newTask))
+        .subscribe(
+          () => this.getTasks(),
+          (error) => this.emitError(error));
+  }
+  ...
+```
 
-
+Note that we are calling `getTasks()` method from within `addTask()`, which will fetch the new tasks data from the server and emit a change on successful retrieval.
 

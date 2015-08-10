@@ -22,23 +22,19 @@ export class TaskListComponent {
     @Inject('tasksActions') private tasksActions
     ) {
 
-      this.authenticationStore.addChangeListener(
+      this.authenticationStore.userSubject.subscribe(
         Rx.Observer.create(
-          (user) => {
-            this._user = user;
-            //console.log(this.user);
-            //console.log(this.user.data.username); 
-          },
+          (user) => this._user = user,
           (error) => this._errorMessage = error
         ));
 
-      this.tasksStore.addChangeListener(
+      this.tasksStore.tasksSubject.subscribe(
         Rx.Observer.create(
           (tasks) => this._tasks = tasks,
           (error) => this._errorMessage = error
         ));
         
-      this.usersStore.addChangeListener(
+      this.usersStore.usersSubject.subscribe(
         Rx.Observer.create(
           (users) => {
             this._users = users;

@@ -7,7 +7,10 @@ export function main() {
 
   let _$log;
   
-  let taskListComponent;
+  let _tasksStoreMock;  
+  let _authStoreMock;  
+  let _userStoreMock;  
+  let _routerMock;
   
   let _tasksMock = [{
       owner: 'alice',
@@ -37,11 +40,6 @@ export function main() {
       username: 'alice'
     }
   };
-  
-  var _tasksStoreMock = { };  
-  var _authStoreMock = { };  
-  var _userStoreMock = { };  
-  var _routerMock = { }; 
     
   describe('TaskListComponent', () => {
 
@@ -59,41 +57,71 @@ export function main() {
       let tasksObservable = scheduler.createHotObservable(
         Rx.ReactiveTest.onNext(200, _tasksMock));
       
-       let userObservable = scheduler.createHotObservable(
+      let userObservable = scheduler.createHotObservable(
         Rx.ReactiveTest.onNext(200, _userMock));  
         
       let usersObservable = scheduler.createHotObservable(
         Rx.ReactiveTest.onNext(200, _usersMock));    
       
       _tasksStoreMock = {
-        addChangeListener: (observer) => {
-          tasksObservable.subscribe(observer);
-        }
+        tasksSubject: tasksObservable
       };
       
       _authStoreMock = {
-        addChangeListener: (observer) => {
-          userObservable.subscribe(observer);
-        }
+        userSubject: userObservable
       };
       
       _userStoreMock = {
-        addChangeListener: (observer) => {
-          usersObservable.subscribe(observer);
-        },
+        usersSubject: usersObservable,
         getUserDisplayName: (username) => {
           _usersMock.filter(
             (user) => user.username === username)[0];
         }
       };
       
-      taskListComponent = new TaskListComponent(
+      let taskListComponent = new TaskListComponent(
         _$log, _routerMock, _authStoreMock, 
         _tasksStoreMock, _userStoreMock, TaskActions);
       
       scheduler.advanceTo(220);
       expect(taskListComponent.tasks).to.equal(_tasksMock);
-      //expect(taskListComponent.displayName).to.equal('Alice');
+    });
+    
+    it('should get error from stores', () => {
+      
+      let scheduler = new Rx.TestScheduler();
+        
+      let tasksObservable = scheduler.createHotObservable(
+        Rx.ReactiveTest.onError(200, 'error'));
+      
+      let userObservable = scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _userMock));  
+        
+      let usersObservable = scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _usersMock));    
+      
+      _tasksStoreMock = {
+        tasksSubject: tasksObservable
+      };
+      
+      _authStoreMock = {
+        userSubject: userObservable
+      };
+      
+      _userStoreMock = {
+        usersSubject: usersObservable,
+        getUserDisplayName: (username) => {
+          _usersMock.filter(
+            (user) => user.username === username)[0];
+        }
+      };
+      
+      let taskListComponent = new TaskListComponent(
+        _$log, _routerMock, _authStoreMock, 
+        _tasksStoreMock, _userStoreMock, TaskActions);
+      
+      scheduler.advanceTo(220);
+      expect(taskListComponent.errorMessage).to.equal('error');
     });
 
   });

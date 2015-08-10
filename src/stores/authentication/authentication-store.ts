@@ -28,6 +28,10 @@ export class AuthenticationStore {
           (error) => this.emitError(error));
   }
   
+  get userSubject() {
+    return this._userSubject;  
+  }
+  
   private registerActionHandlers() {
     this.dispatcher.filter(
       (action) => action.actionType === AUTHENTICATION_ACTIONS.LOGIN)
@@ -36,10 +40,6 @@ export class AuthenticationStore {
     this.dispatcher.filter(
       (action) => action.actionType === AUTHENTICATION_ACTIONS.LOGOUT)
         .subscribe(() => this.logout());
-  }
-  
-  public addChangeListener(observer) {
-    this._userSubject.subscribe(observer);
   }
 
   private emitChange() {

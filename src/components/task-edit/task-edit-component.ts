@@ -20,7 +20,7 @@ export class TaskEditComponent {
 
     let taskId = this.$stateParams._id;
       
-    this.tasksStore.addChangeListener(
+    this.tasksStore.tasksSubject.subscribe(
       Rx.Observer.create(
         (tasks) => this._task = this.tasksStore.getTaskById(taskId),
         (error) => this._errorMessage = error
