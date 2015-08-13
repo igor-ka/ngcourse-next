@@ -154,20 +154,24 @@ export function main() {
 
     it('should add a new task', (done) => {
 
-      _mockDispatcher = _scheduler.createHotObservable(
+      _mockDispatcher = _scheduler.createColdObservable(
         Rx.ReactiveTest.onNext(10, {
           actionType: TASK_ACTIONS.ADD_TASK,
           newTask: _mockNewTask
         }));
       
       let tasksStore = new TasksStore(_$log, _mockServerService, _mockDispatcher);
-      
-      tasksStore.tasksSubject.observeOn(Rx.Scheduler.timeout)
-        .subscribe((tasks) => {
+
+      tasksStore.tasksSubject
+        .observeOn(Rx.Scheduler.timeout)
+        .subscribe(
+          (tasks) => {
+
           expect(tasks).to.not.be.undefined;
-          expect(tasks).to.not.contain(_mockNewTask);
+          expect(tasks).to.contain(_mockNewTask);
           
           done();
+
         }
       );
       
@@ -178,3 +182,5 @@ export function main() {
 }
 
 ```
+
+Most of the code above should be familiar by this point. The main goal of the unit test is to instantiate a store while creating a mock dispatcher using RxJS to schedule an action to be piped into a store. 

@@ -10,16 +10,16 @@ export class TasksStore {
   private _tasks;
   
   /* Authenticated methods */
-  //private getTasks: Function;
-  //private addTask: Function;
+  private getTasks: Function;
+  private addTask: Function;
   private updateTask: Function;
   private deleteTask: Function;
   private getTask: Function;
 
   constructor(
     @Inject('$log') private $log,
-    //@Inject('koast') private koast,
-    @Inject('server') private server,
+    @Inject('koast') private koast,
+    //@Inject('server') private server,
     @Inject('dispatcher') private dispatcher
   ) {
     this.registerActionHandlers();
@@ -54,55 +54,55 @@ export class TasksStore {
           (action) => this.updateTask(action.task));
   }
 
-  private getTasks() {
-    Rx.Observable.fromPromise(
-      this.server.get('/api/v1/tasks'))
-        .subscribe(
-          (tasks) => {
-            this._tasks = fromJS(tasks);
-            this.emitChange();
-          },
-          (error) => this.emitError(error));
-  }
+  // private getTasks() {
+  //   Rx.Observable.fromPromise(
+  //     this.server.get('/api/v1/tasks'))
+  //       .subscribe(
+  //         (tasks) => {
+  //           this._tasks = fromJS(tasks);
+  //           this.emitChange();
+  //         },
+  //         (error) => this.emitError(error));
+  // }
     
-  private addTask(newTask) {
-    Rx.Observable.fromPromise(
-      this.server.post('/api/v1/tasks', newTask))
-        .subscribe(
-          () => this.getTasks(),
-          (error) => this.emitError(error));
-  }
+  // private addTask(newTask) {
+  //   Rx.Observable.fromPromise(
+  //     this.server.post('/api/v1/tasks', newTask))
+  //       .subscribe(
+  //         () => this.getTasks(),
+  //         (error) => this.emitError(error));
+  // }
     
   private addAuthenticatedMethods() {
 
-    // this.getTasks = makeAuthenticatedMethod(
-    //   this.koast,
-    //   () => Rx.Observable.fromPromise(
-    //     this.koast.queryForResources('tasks'))
-    //       .subscribe(
-    //         (tasks) => {
-    //           this._tasks = fromJS(tasks);
-    //           this.emitChange();
-    //         },
-    //         (error) => this.emitError(error))
-    //   );
+    this.getTasks = makeAuthenticatedMethod(
+      this.koast,
+      () => Rx.Observable.fromPromise(
+        this.koast.queryForResources('tasks'))
+          .subscribe(
+            (tasks) => {
+              this._tasks = fromJS(tasks);
+              this.emitChange();
+            },
+            (error) => this.emitError(error))
+      );
 
-    // this.getTask = makeAuthenticatedMethod(
-    //   this.koast,
-    //   (id) => this.koast.getResource('tasks', { _id: id })
-    //   );
-    // this.addTask = makeAuthenticatedMethod(
-    //   this.koast,
-    //   (task) => Rx.Observable.fromPromise(
-    //     this.koast.createResource('tasks', task))
-    //       .subscribe(() => this.getTasks())
-    //   );
+    this.getTask = makeAuthenticatedMethod(
+      this.koast,
+      (id) => this.koast.getResource('tasks', { _id: id })
+      );
+    this.addTask = makeAuthenticatedMethod(
+      this.koast,
+      (task) => Rx.Observable.fromPromise(
+        this.koast.createResource('tasks', task))
+          .subscribe(() => this.getTasks())
+      );
 
-    // this.updateTask = makeAuthenticatedMethod(
-    //   this.koast,
-    //   (task) => task.save()
-    //     .then(this.getTasks)
-    //   );
+    this.updateTask = makeAuthenticatedMethod(
+      this.koast,
+      (task) => task.save()
+        .then(this.getTasks)
+      );
   }
 
   private emitChange() {

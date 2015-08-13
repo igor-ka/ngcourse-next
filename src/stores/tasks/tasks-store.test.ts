@@ -2,9 +2,8 @@
 import {TasksStore} from 'stores/tasks/tasks-store';
 import {TASK_ACTIONS} from 'constants/action-constants';
 import {TaskActions} from 'actions/task/task-actions';
-import {getService} from 'utils/test-utils';
 import {expect} from 'chai';
-//import {Rx} from 'rx';
+
 
 export function main() {
   
@@ -20,15 +19,6 @@ export function main() {
     let _mockNewTask;
     
     beforeEach(() => {
-      // _mockKoast = {
-      //   user: {
-      //     whenAuthenticated: () => Q.when(),
-      //     data: {
-      //       username: 'alice'
-      //     }
-      //   },
-      //   queryForResources: sinon.spy(() => Q.when(_mockTasks))
-      // };
       
       _mockTasks = [{
         owner: 'alice',
@@ -50,12 +40,18 @@ export function main() {
         done: false
       };
       
-      _mockServerService = {
-        get: () => Q.when(_mockTasks),
-        post: (newTask) => Q.when(_mockTasks.push(_mockNewTask))
-      };
-      
       inject(($log) => _$log = $log);
+      
+      _mockKoast = {
+        user: {
+          whenAuthenticated: () => Q.when(),
+          data: {
+            username: 'alice'
+          }
+        },
+        queryForResources: sinon.spy(() => Q.when(_mockTasks)),
+        createResource: sinon.spy(() => Q.when(_mockTasks.push(_mockNewTask)))
+      };
       
       _scheduler = new Rx.TestScheduler();
     });
@@ -68,14 +64,13 @@ export function main() {
           newTask: _mockNewTask
         }));
       
-      let tasksStore = new TasksStore(_$log, _mockServerService, _mockDispatcher);
+      let tasksStore = new TasksStore(_$log, _mockKoast, _mockDispatcher);
 
       tasksStore.tasksSubject
         .observeOn(Rx.Scheduler.timeout)
         .subscribe(
           (tasks) => {
-          
-          console.log('tasks: ', tasks);
+
           expect(tasks).to.not.be.undefined;
           expect(tasks).to.contain(_mockNewTask);
           
