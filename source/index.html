@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link href="/node_modules/basscss/css/basscss.css" rel="stylesheet" type="text/css"/>
+    <link href="/node_modules/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <div>
+      <ngc-main>
+        <main class="container mt4" ui-view></main>
+      </ngc-main>
+    </div>
+    <script src="/node_modules/systemjs/dist/system.js"></script>
+    <script src="/system.config.js"></script>
+    <script>
+      System.import('app')
+        .then(function() {
+          console.log('Loaded!');
+        })
+        .then(null, function(error) {
+          console.error('Failed to load:', error);
+        });
+    </script>
+  </body>
+
+</html>

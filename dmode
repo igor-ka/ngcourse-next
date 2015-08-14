@@ -1,4 +1,0 @@
-export DMODE=false
-gulp scripts
-export DMODE=true
-gulp serve

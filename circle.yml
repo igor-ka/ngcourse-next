@@ -1,7 +1,0 @@
-dependencies:
-  override:
-    - npm install
-    - bower install
-test:
-  override:
-    - node_modules/gulp/bin/gulp.js scripts; node_modules/gulp/bin/gulp.js test
