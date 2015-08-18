@@ -1,17 +1,13 @@
-import {Inject, getServices} from 'utils/di';
+/// <reference path="../../../typings/tsd.d.ts" />
+import {Inject} from 'utils/di';
+import {TaskListComponent} from 'components/task-list/task-list-component';
 
 export class RouterConfig {
 
-  $stateProvider: any;
-  $urlRouterProvider: any;
-  $locationProvider: any;
-
-  // static $inject = [''];
-
   constructor(
-    @Inject('$stateProvider') $stateProvider,
-    @Inject('$urlRouterProvider') $urlRouterProvider,
-    @Inject('$locationProvider') $locationProvider
+    @Inject('$stateProvider') private $stateProvider,
+    @Inject('$urlRouterProvider') private $urlRouterProvider,
+    @Inject('$locationProvider') private $locationProvider
   ) {
 
     $urlRouterProvider.otherwise('/tasks');
@@ -22,7 +18,10 @@ export class RouterConfig {
         url: '/tasks',
         views: {
           '': {
-            template: '<ngc-tasks></ngc-tasks>'
+            controller: TaskListComponent,
+            controllerAs: 'ctrl',
+            templateUrl: TaskListComponent.templateUrl
+            // template: '<ngc-tasks></ngc-tasks>'
           }
         }
       })
@@ -58,11 +57,7 @@ export class RouterConfig {
 
 export class RouterService {
 
-  $state: any;
-
-  constructor(@Inject('$state') $state) {
-    this.$state = $state;
-  }
+  constructor(@Inject('$state') private $state) { }
 
   goToAddTask() {
     this.$state.go('tasks.add');

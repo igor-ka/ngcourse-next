@@ -1,4 +1,4 @@
-# Part 8: More Promises
+# Part 10: More Promises
 
 Now that we've got our code better organized using services, we can look at
 some of the more interesting things we can do with promises.
@@ -6,31 +6,43 @@ some of the more interesting things we can do with promises.
 ## Reusing Promises
 
 ```javascript
-  var taskPromise;
-  service.getTasks = function () {
-    taskPromise = taskPromise || server.get('/api/v1/tasks');
-    return taskPromise;
-  };
+  ...
+  import {Inject} from 'utils/di';
+
+  export class TasksService {
+
+    private taskPromise;
+    constructor(@Inject('serverService') private serverService) { }
+
+    public getTasks () {
+
+      this.taskPromise = this.taskPromise || 
+        this.serverService.get('/api/v1/tasks');
+      return taskPromise;
+    };
+  }
 ```
 
 ## Postponing the Requests
 
 ```javascript
-  .factory('server', function($http, user, API_BASE_URL) {
-    var service = {};
+  ...
+  import {Inject} from 'utils/di';
 
-    service.get = function (path) {
-      return user.whenAuthenticated()
-        .then(function() {
-          return $http.get(API_BASE_URL + path);
-        })
-        .then(function(response) {
-          return response.data;
-        });
-    };
+  export class ServerService {
 
-    return service;
-  });
+    private baseUrl = 'http://ngcourse.herokuapp.com';
+
+    constructor(
+      @Inject('$http') private $http,
+      @Inject('user') private user) { }
+      
+    public get(path) {
+      return this.user.whenAuthenticated()
+        .then(() => this.$http.get(API_BASE_URL + path))
+        .then((response) => response.data);
+    }
+  }
 ```
 
 ## A Brand New Promise
@@ -41,9 +53,9 @@ turning it into a function that returns a promise.
 The first approach is to use `$q.defer()`:
 
 ```javascript
-  function getFooPromise(param) {
-    var deferred = $q.defer();
-    getFooWithCallbacks(param, function(error, result) {
+  public getFooPromise(param) {
+    let deferred = $q.defer();
+    getFooWithCallbacks(param, (error, result) => {
       if (error) {
         deferred.reject(error);
       } else {
@@ -56,10 +68,10 @@ The first approach is to use `$q.defer()`:
 
 An alternative is to use the ES6-style constructor:
 
-```js
-  function getFooPromise(name) {
-    return $q(function(resolve, reject) {
-      getFooWithCallbacks(param, function(error, result) {
+```javascript
+  public getFooPromise(name) {
+    return $q((resolve, reject) => {
+      getFooWithCallbacks(param, (error, result) => {
         if (error) {
           reject(error);
         } else {
@@ -70,8 +82,6 @@ An alternative is to use the ES6-style constructor:
   }
 ```
 
-This latter approach is less common today but is worth adopting since it is
-closer to the native promise creation in ES6.
 
 However, beware of a very common JavaScript anti-pattern that involves
 unnecessary creation of new promises. This is often called the "Deferred
@@ -88,8 +98,8 @@ example, if you have a function that relies on Node-style callbacks as in the
 example above above, you can convert it using
 [angular-promisify](https://github.com/rangle/angular-promisify) like so:
 
-```js
-  var getFooPromise = denodeify(getFooWithCallbacks);
+```javascript
+  let getFooPromise = denodeify(getFooWithCallbacks);
 ```
 
 While manually resolving promises is rarely a good idea, `$q` offers two
@@ -100,17 +110,13 @@ methods when you want to avoid calling a function that would have given you
 a promise.
 
 ```javascript
-  service.get = function (path) {
+  public get(path) {
     if (!networkInformation.isOnline) {
       return $q.reject('offline');
     } else {
       return user.whenAuthenticated()
-        .then(function() {
-          return $http.get(API_BASE_URL + path);
-        })
-        .then(function(response) {
-          return response.data;
-        });
+        .then(() => $http.get(API_BASE_URL + path))
+        .then((response) => response.data);
     }
   };
 ```
@@ -119,7 +125,7 @@ Or, better yet:
 
 ```javascript
 
-  function waitForPreconditions() {
+  public waitForPreconditions() {
     if (!networkInformation.isOnline) {
       return $q.reject('offline');
     } else {
@@ -127,14 +133,10 @@ Or, better yet:
     }
   }
 
-  service.get = function (path) {
+  public get(path) {
     return waitForPreconditions()
-      .then(function() {
-        return $http.get(API_BASE_URL + path);
-      })
-      .then(function(response) {
-        return response.data;
-      });
+      .then(() => $http.get(API_BASE_URL + path))
+      .then((response) => response.data);
     }
   };
 ```
@@ -163,5 +165,4 @@ handling actions initiated by the user (except with modals).
 
 ## Next Steps
 
-We now know most of what we need to know about services. Before we write more
-service code, however, we need to get setup for unit testing.
+We now know most of what we need to know about services. Before we write more code, however, we need to get setup for unit testing.

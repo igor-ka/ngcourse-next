@@ -1,4 +1,4 @@
-# Part 11: UI Router
+# Part 15: UI Router
 
 Routing allows us to express some aspects of the app's state in the URL.
 Unlike with server-side front-end solutions, this is optional - we can build
@@ -15,9 +15,7 @@ by [ui-router](https://github.com/angular-ui/ui-router/blob/master/README.md). W
   bower install --save angular-ui-router
 ```
 
-Then add `client/bower_components/angular-ui-router/release/angular-ui-router.js` to your `index.html` if it's not there already.
-
-You'll also need to update your `client/app/app.js` to inject the new module into your main module:
+You'll also need to update your `src/app.ts` to inject the new module into your main module:
 
 ```javascript
   angular.module('ngcourse', [
@@ -27,30 +25,46 @@ You'll also need to update your `client/app/app.js` to inject the new module int
   ])
 ```
 
-## Adding a "router" Module.
+## Creating a Router Service.
 
 Let's start by adding our own "router" module which will serve as a wrapper
 around ui-router. Our module will have a `.config()` section.
 
-This goes in `client/app/core/router/router-service.js`
+This goes in `src/services/router/router-service.js`
 
 ```javascript
-  angular.module('ngcourse.router', [
-    'ui.router'
-  ])
+/// <reference path="../../../typings/tsd.d.ts" />
+import {Inject} from 'utils/di';
 
-  .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+export class RouterConfig {
+
+  constructor(
+    @Inject('$stateProvider') private $stateProvider,
+    @Inject('$urlRouterProvider') private $urlRouterProvider,
+    @Inject('$locationProvider') private $locationProvider
+  ) {
 
     $urlRouterProvider.otherwise('/tasks');
-
     $locationProvider.html5Mode(false);
 
     $stateProvider
       .state('tasks', {
         url: '/tasks',
-        template: 'my tasks'
+        views: {
+          '': {
+            template: 'my tasks'
+          }
+        }
       });
-  });
+  }
+}
+```
+
+Let's configure the router within our *app.ts* file as follows:
+
+```javascript
+angular.module('ngcourse.router', ['ui.router'])
+  .config(RouterConfig);
 ```
 
 We'll also need to add a directive for ui-router in index.html:
@@ -63,20 +77,15 @@ Your index.html main section should now look like this:
 
 ```html
   ...
-
-  <body ng-app="ngcourse">
-    <div>
-     <div ui-view></div>
-    </div>
-
-    <script src="/bower_components/lodash/dist/lodash.js"></script>
-
+  <ngc-main>
+    <div ui-view></main>
+  </ngc-main>
   ...
 ```
 
-`ui-view` is a directive that `ui-router` users to manage its views. It will be replaced by the template or templateURL that is configured for each ui-router state.
+`ui-view` is a directive that `ui-router` uses to manage its views. It will be replaced by the template or templateURL that is configured for each ui-router state.
 
-All the content we just removed will be added to templates, and `ui-router` will insert them into `ui-view` based on the current application state.
+`ui-router` will insert the content in the `ui-view` element based on the current application state defined in `$stateProvider` above.
 
 Let's talk about why this need to happen in the "config" section.
 
@@ -165,34 +174,48 @@ This can include regular expressions:
 
 Now we are going to rebuild our view around ui-router. First, let's do tasks.
 
-## Controllers and Template URLs
+## Components and Routing
+
+The rule of thumb when using routing is that routes should be defined for top-level components. Generally, micro components should not be used in routing but instead used within the templates of macro component who pass data into them from above.
+
+So in our case, `TaskListComponent` is a good candidate while `TaskComponent` is not.
+
+There are 2 ways we can add a component as a routing state:
+
+The inline template way
 
 ```javascript
-  $stateProvider
-    .state('tasks', {
-      url: '/tasks',
-      controller: 'TaskListCtrl as taskList',
-      templateUrl: '/app/sections/task-list/task-list.html'
-    })
-    .state('tasksDetail', {
-      url: '/tasks/{_id}',
-      template: 'task details'
-    })
-    .state('account', {
-      url: '/my-account',
-      template: 'my account'
-    });
-```
-
-If you look at `task-list.html`, you'll see a new controller function in the html, `getUserDisplayName`. Let's add that to `client/app/sections/task-list/task-list-controller.js`.
-
-```
-    vm.getUserDisplayName= function(name){
-      return name;
+  .state('tasks', {
+    url: '/tasks',
+    views: {
+      '': {
+        template: '<ngc-tasks></ngc-tasks>'
+      }
     }
+  })
+  ...
 ```
 
-Now refresh the page and visit /tasks to see your tasks table displayed via ui-router.
+or the "controller" way
+
+```javascript
+  import {TaskListComponent} from 'components/task-list/task-list-component';
+  ...
+
+  .state('tasks', {
+    url: '/tasks',
+    views: {
+      '': {
+        controller: TaskListComponent,
+        controllerAs: 'ctrl',
+        templateUrl: TaskListComponent.templateUrl
+      }
+    }
+  })
+  ...
+```
+
+Both are equivalent, but with the former approach there is no need to define this component on a module using `.directive()`
 
 Let's take a moment to review a few other aspects of ui-router.
 
@@ -238,8 +261,7 @@ usually produces a more natural experience for the user.
 
 ## Nesting Views
 
-One of the most powerful features of ui-router versus the out-of-the-box AngularJS router is nested views. To allow `ui-router` to know what view it's updating, we can add a
-name to the view as seen in `ui-view="child@parent"` below.
+One of the most powerful features of ui-router versus the out-of-the-box AngularJS router is nested views. To allow `ui-router` to know what view it's updating, we can add a name to the view as seen in `ui-view="child@parent"` below.
 
 ```javascript
   .state('parent', {
@@ -316,21 +338,32 @@ We can also transition using `$state.go()`:
   $state.go('tasks.details', {_id: taskId});
 ```
 
-However, let's wrap this in a service:
+However, let's wrap this in a service, we can use the same *router-service.ts* file for convinience:
 
 ```javascript
-  .factory('router', function($log, $state, $stateParams) {
-    var service = {};
+  ...
+  export class RouterService {
 
-    service.goToTask = function(taskId) {
-      $state.go('tasks.details', {_id: taskId});
-    };
+    constructor(@Inject('$state') private $state) { }
 
-    return service;
-  });
+    goToTask(taskId) {
+      this.$state.go('tasks.details', {
+        _id: taskId
+      });
+    }
+
+    goToTaskList() {
+      this.$state.go('tasks', {}, {
+        reload: true
+      });
+    }
+  };
+
 ```
 
 ## Accessing Parameters Using `$stateParams`
+
+`$stateParams` can be injected into your components using the `@Inject` and used as follows:
 
 ```javascript
   $stateParams._id
@@ -339,8 +372,9 @@ However, let's wrap this in a service:
 But again, let's wrap it:
 
 ```javascript
-  service.getTaskId = function() {
-    return $stateParams._id;
+  ...
+  getTaskId() {
+    return this.$stateParams._id;
   };
 ```
 

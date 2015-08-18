@@ -1,4 +1,4 @@
-# Part 5. Making HTTP Requests.
+# Part 7. Making HTTP Requests.
 
 Most AngularJS apps will need to interact with a backend system to achieve
 their objectives. By far the most common protocol for this is HTTP (or,
@@ -188,18 +188,31 @@ hard to track. Instead, we will be using a more basic Angular server, `$http`.
 Let's start by just getting a list of tasks:
 
 ```javascript
-  .controller('TaskListCtrl', function($http, $log) {
-    var vm = this;
-    vm.tasks = [];
+export class TaskListComponent {
 
-    $http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
-      .success(function(data, status) {
-        $log.info(data);
-        vm.tasks = data;
+  private static selector = 'ngc-tasks';
+  private static templateUrl = 'components/task-list/task-list-component.html';
+  private static options = {};
+
+  private tasks;
+
+  constructor(
+    @Inject('$log') private $log,
+    @Inject('$http') private $http
+    ) {
+
+    this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
+      .success((data, status) => {
+        this.$log.info(data);
+        this.tasks = data;
       })
-      .error(function(data, status) {
-        $log.error(status, data);
-      });
+      .error((data, status) => this.$log.error(status, data));
+  }
+
+  public addTask(task) {
+
+  }
+};
 ```
 
 Here we are making an HTTP GET request and providing two callbacks: one to
@@ -213,18 +226,15 @@ full JavaScript object or array and the specific status code.
 We'll focus on a somewhat different different approach, though:
 
 ```javascript
-  .controller('TaskListCtrl', function($http, $log) {
-    var vm = this;
-    vm.tasks = [];
-
-    $http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
-      .then(function(response) {
-        $log.info(response);
-        vm.tasks = response.data;
+  ...
+    this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
+      .then((response) => {
+        this.$log.info(response.data);
+        this.tasks = response.data;
       })
-      .then(null, function(error) {
-        $log.error(error);
-      });
+      .then(null, 
+        (error) => this.$log.error(status, error));
+  ...      
 ```
 
 This takes advantage of the fact that `$http.get()` returns an object that can

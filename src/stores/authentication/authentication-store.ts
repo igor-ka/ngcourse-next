@@ -1,42 +1,35 @@
 /// <reference path="../../../typings/tsd.d.ts" />
 import {Inject} from 'utils/di';
 import {AUTHENTICATION_ACTIONS} from 'constants/action-constants';
-import {List} from 'immutable';
-import 'rx';
 
 export class AuthenticationStore {
 
-  private userObservable;
-  private user;
+  private _userSubject;
+  private _user;
   
   constructor(
     @Inject('$log') private $log,
     @Inject('koast') private koast,
-    @Inject('usersStore') private usersStore,
     @Inject('dispatcher') private dispatcher
     ) {
-    this.setInitialState();
+    this.initialize();
     this.registerActionHandlers();
   }
   
-  get getUserObservable() {
-    return this.userObservable;
-  }
-  
-  get currentUser() {
-    return this.user;  
-  }
-  
-  private setInitialState() {
-    this.userObservable = new Rx.Subject();
+  private initialize() {
+    this._userSubject = new Rx.ReplaySubject(1);
     Rx.Observable.fromPromise(
       this.koast.user.whenAuthenticated())
         .subscribe(
           (data) => {
-            this.user = this.koast.user;
-            this.userObservable.onNext(this.user);
+            this._user = this.koast.user;
+            this.emitChange();
           },
-          (error) => this.userObservable.onError(error));
+          (error) => this.emitError(error));
+  }
+  
+  get userSubject() {
+    return this._userSubject;  
   }
   
   private registerActionHandlers() {
@@ -48,23 +41,38 @@ export class AuthenticationStore {
       (action) => action.actionType === AUTHENTICATION_ACTIONS.LOGOUT)
         .subscribe(() => this.logout());
   }
+
+  private emitChange() {
+    this._userSubject.onNext(this.user);
+  }
+
+  private emitError(error) {
+    this._userSubject.onError(error);
+  }
   
   private login(credentials) {
     Rx.Observable.fromPromise(
       this.koast.user.loginLocal(credentials))
         .subscribe(
           (data) => {
-            this.user = this.koast.user;
-            this.userObservable.onNext(this.user);
+            this._user = this.koast.user;
+            this.emitChange();
           },
-          (error) => this.userObservable.onError(error)); 
+          (error) => this.emitError(error)); 
   }
 
   private logout() {
     Rx.Observable.fromPromise(
       this.koast.user.logout())
         .subscribe(
-          data => this.userObservable.onNext(this.koast.user),
-          error => this.userObservable.onError(error));
+          (data) => {
+            this._user = this.koast.user;
+            this.emitChange();
+          },
+          (error) => this.emitError(error));
+  }
+  
+  get user() {
+    return this._user;
   }
 }

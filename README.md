@@ -29,31 +29,25 @@ own machine.
 
 The students should start by checking out the "base" branch for their session, which has all the necessary configurations but no actual client side code. The "master" branch contains the final state of the project.
 
-You will then need to use `bower` to install the dependencies:
+You will then need to have `bower` and `tsd`, to install dependencies and typings:
 
 ```bash
   sudo npm install -g bower # skip "sudo" on windows
-  bower install
+  sudo npm install -g tsd # skip "sudo" on windows
 ```
 
 You will then need to build the front end using:
 
 ```bash
   npm install
-  gulp build
 ```
 
-You will also need to install TypeScript definition files specified in tsd.json at the root of the project
+The above install npm modules, bower dependencies, and typings for the course
 
-```
-tsd reinstall -s
-```
-
-Once you've done that, you can access the front-end of the project, by running a simple server such as `http-server` with client as the root directory. You will need to install bower and run
+Once you've done that, you can access the front-end of the project, by running a simple gulp task `gulp serve` within the root directory.
 
 ```bash
-  sudo npm install -g http-server # skip "sudo" on windows
-  http-server client -p 3000
+  gulp serve
 ```
 
 (Any other static web server should do, though.)

@@ -26,14 +26,13 @@ function runTests(singleRun) {
   });
 
   var testFiles = bowerDeps.js.concat([
-    //'bower_components/traceur/traceur.js',
     'bower_components/es6-module-loader/dist/es6-module-loader.js',
     'bower_components/system.js/dist/system.js',
-    './test-runner.js',
+    'test-runner.js',
     //WARNING: do not include es6 transpiled modules, only serve them
     {pattern: '.tmp/serve/**/*.js', included: false},
-    {pattern: '.tmp/**/*.js', included: false},
-    {pattern: '.tmp/**/*.test.js', included: false},
+    {pattern: '.tmp/serve/**/*.test.js', included: false},
+    {pattern: '.tmp/partials/**/*.js', included: false}
   ]);
 
   return function (done) {

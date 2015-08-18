@@ -1,3 +1,4 @@
+/// <reference path="../../../typings/tsd.d.ts" />
 import {Inject} from 'utils/di';
 
 export class TaskEditComponent {
@@ -6,8 +7,8 @@ export class TaskEditComponent {
   private static templateUrl = 'components/task-edit/task-edit-component.html';
   private static options = {};
 
-  private task;
-  private errorMessage;
+  private _task;
+  private _errorMessage;
 
   constructor(
     @Inject('$log') private $log,
@@ -18,14 +19,12 @@ export class TaskEditComponent {
   ) {
 
     let taskId = this.$stateParams._id;
-     
-    this.task = this.tasksStore.getTaskById(taskId);
       
-    this.tasksStore.getTasksObservable
-      .subscribe(
-        (tasks) => this.task = this.tasksStore.getTaskById(taskId),
-        (error) => this.errorMessage = error
-      );
+    this.tasksStore.tasksSubject.subscribe(
+      Rx.Observer.create(
+        (tasks) => this._task = this.tasksStore.getTaskById(taskId),
+        (error) => this._errorMessage = error
+      ));
   }
 
   updateTask(task) {
@@ -35,5 +34,13 @@ export class TaskEditComponent {
 
   cancel() {
     this.router.goToTaskList();
+  }
+  
+  get task() {
+    return this._task;
+  }
+  
+  get errorMessage() {
+    return this._errorMessage;
   }
 }

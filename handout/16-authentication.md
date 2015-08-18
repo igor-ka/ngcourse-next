@@ -1,4 +1,4 @@
-# Part 15: Authentication and Authorization
+# Part 16: Authentication and Authorization
 
 Our app has a login form, but up until now we've glossed over the details of
 what that means in the context of an AngularJS application.  Let's talk more
@@ -10,8 +10,7 @@ First let's recap what the two words mean.
 
 ### Authentication
 
-Authentication is the act of confirming a user's identity.  We just want to know
-who we're talking to.
+Authentication is the act of confirming a user's identity.  We just want to know who we're talking to.
 
 This is where login comes into play - by logging in, a user confirms his or her
 identity with the application.
@@ -223,13 +222,10 @@ angular.module('ngcourse.main-ctrl', [
 });
 ```
 
-Here, we're depending on `koast`, which refers to the 'koast-angular' client-side
-helper module.
+Here, we're depending on `koast`, which refers to the 'koast-angular' client-side helper module.
 
-`vm.login` tells 'koast-angular' to initiate a login.  It also registers a promise
-rejection handler for any errors.  However, note that this function is
-asynchronous.  The `koast.user` module holds on to a promise internally which we
-can access calling `koast.user.whenAuthenticated()` and attaching our own
+`vm.login` tells 'koast-angular' to initiate a login.  It also registers a promise rejection handler for any errors.  However, note that this function is
+asynchronous.  The `koast.user` module holds on to a promise internally which we can access calling `koast.user.whenAuthenticated()` and attaching our own
 success handler.
 
 The advantage of this method is that we only need to log in once.  The result
@@ -238,6 +234,7 @@ code to update the view model can be completely decoupled from the login
 invocation itself.
 
 ### Main Form
+
 Change login call to pass a single form argument:
 ```html
     <button
@@ -247,6 +244,7 @@ Change login call to pass a single form argument:
 ```
 
 ### Index.html
+
 We can add header type information to index.html to have it show on all pages.
 ```html
   ...
@@ -265,54 +263,92 @@ We can add header type information to index.html to have it show on all pages.
     ...
 ```
 
-### Users Service
-We've also created a users service in `app/core/users/users-service.js` for managing some of the user logic.
+### Users Store
+
+We've also created a users store in `src/stores/users/users-store.ts` for managing some of the user logic.
 
 ```javascript
-'use strict';
+/// <reference path="../../../typings/tsd.d.ts" />
+import {Inject, getServices} from 'utils/di';
+import {makeAuthenticatedMethod} from 'utils/store-utils'
+import {USER_ACTIONS} from 'constants/action-constants';
+import {List, Map, fromJS} from 'immutable';
 
-angular.module('ngcourse.users', [
-  'koast'
-])
+export class UsersStore {
+  
+  private _users;
+  private _usersSubject;
+  
+  /* Authenticated methods */
+  private getUsers: Function;
+  
+  constructor(
+    @Inject('$log') private $log,
+    @Inject('koast') private koast,
+    @Inject('dispatcher') private dispatcher
+  ) {
+    this.registerActionHandlers();
+    this.addAuthenticatedMethods();
+    this.initialize();
+  }
+  
+  private initialize() {
+    this._users = List();
+    this._usersSubject = new Rx.ReplaySubject(1);
+    this.getUsers();
+  }
+  
+  private registerActionHandlers() {
+    this.dispatcher.filter(
+      (action) => action.actionType === USER_ACTIONS.GET_USERS)
+        .subscribe(() => this.getUsers());  
+  }
+  
+  private addAuthenticatedMethods() {
+    this.getUsers = makeAuthenticatedMethod(
+      this.koast,
+      () => Rx.Observable.fromPromise(
+        this.koast.queryForResources('users'))
+          .subscribe(
+            (users) => {
+              this._users = fromJS(users);
+              this.emitChange();
+            },
+            (error) => this.emitError(error)
+          )
+      );
+  }
+  
+  public addChangeListener(observer) {
+    this._usersSubject.subscribe(observer);
+  }
 
-.factory('users', function (koast) {
-  var service = {};
-  var byUserName = {};
-  var usersPromise = koast.user.whenAuthenticated()
-    .then(function () {
-      return koast.queryForResources('users')
-        .then(function (userArray) {
-          service.all = userArray;
-          userArray.forEach(function(user) {
-            if (user.username) {
-              byUserName[user.username] = user;
-            }
-          });
-        });
-    });
+  private emitChange() {
+    this._usersSubject.onNext(this.users);
+  }
 
-  service.whenReady = function () {
-    return usersPromise;
-  };
-
-  service.getUserByUsername = function(username) {
-    return byUserName[username];
-  };
-
-  service.getUserDisplayName = function(username) {
-    var user = service.getUserByUsername(username);
-    return user.displayName;
-  };
-
-  return service;
-});
+  private emitError(error) {
+    this._usersSubject.onError(error);
+  }
+  
+  get users() {
+    return this._users.toJS();
+  }
+  
+  public getUserByUsername(username) {
+    return this.users.filter(
+      (user) => user.username === username)[0];
+  }
+  
+  public getUserDisplayName(username) {
+    return this.getUserByUsername(username).displayName;
+  }
+}
 ```
 
 ### Logout
 
-Logout is implemented in a similar way, but with a couple of additional details:
-when you click the logout button in the UI, you'll notice that the application re-loads
-itself.
+Logout is implemented in a similar way, but with a couple of additional details: when you click the logout button in the UI, you'll notice that the application re-loads itself.
 
 During the course of the user's session with the application, he or she will
 have accumulated a decent amount of state in the JavaScript application and in
@@ -320,18 +356,14 @@ the DOM.  This state needs to be cleared when we logout.  It turns out that a
 simple way to do this is to simply reload the page, resetting the application
 to its initial state.
 
-If you were storing anything in local storage, you should also be sure to delete
-it at this time.  These two steps are an easy way to reset the application to
-its initial state so that we don't get user data leaking out if another user
-signs in subsequently using the same machine.
+If you were storing anything in local storage, you should also be sure to delete it at this time.  These two steps are an easy way to reset the application to its initial state so that we don't get user data leaking out if another user signs in subsequently using the same machine.
 
 `koast.user.logout()` uses `$window.location.replace('/')` internally for this
 purpose.
 
 ### Authorization
 
-The v2 API provides some extra data that can help us do 'good-cop' authorization
-in the application.
+The v2 API provides some extra data that can help us do 'good-cop' authorization in the application.
 
 To recap: we want to be able to hide controls for operations the current user
 isn't authorized to perform.
@@ -343,55 +375,121 @@ the server tell us what she can edit.
 First let's look at getting the tasks from the authenticated v2 endpoint:
 
 ```javascript
-'use strict';
+  /// <reference path="../../../typings/tsd.d.ts" />
+  import {Inject} from 'utils/di';
+  import {makeAuthenticatedMethod} from 'utils/store-utils'
+  import {TASK_ACTIONS} from 'constants/action-constants';
+  import {List, fromJS} from 'immutable';
 
-angular.module('ngcourse.tasks', [ 'koast' ])
-.factory('tasks', function (koast) {
-  var service = {};
+  export class TasksStore {
 
-  function makeAuthenticatedMethod(functionToDelay) {
-    return function () {
-      var myArgs = arguments;
-      return koast.user.whenAuthenticated()
-        .then(function () {
-          return functionToDelay.apply(service, myArgs);
-        });
-    };
+    private _tasksSubject;
+    private _tasks;
+    
+    /* Authenticated methods */
+    private getTasks: Function;
+    private addTask: Function;
+    private updateTask: Function;
+    private deleteTask: Function;
+    private getTask: Function;
+
+    constructor(
+      @Inject('$log') private $log,
+      @Inject('koast') private koast,
+      @Inject('dispatcher') private dispatcher
+    ) {
+      this.registerActionHandlers();
+      this.addAuthenticatedMethods();
+      this.initialize();
+    }
+
+    private initialize() {
+      this._tasks = List();
+      this._tasksSubject = new Rx.ReplaySubject(1);
+      this.getTasks();
+    }
+    
+    private registerActionHandlers() {
+      this.dispatcher.filter(
+        (action) => action.actionType === TASK_ACTIONS.GET_TASKS)
+        .subscribe(
+          () => this.getTasks());
+
+      this.dispatcher.filter(
+        (action) => action.actionType === TASK_ACTIONS.ADD_TASK)
+        .subscribe(
+          (action) => this.addTask(action.newTask));
+
+      this.dispatcher.filter(
+        (action) => action.actionType === TASK_ACTIONS.UPDATE_TASK)
+        .subscribe(
+          (action) => this.updateTask(action.task));
+    }
+
+    private addAuthenticatedMethods() {
+
+      this.getTasks = makeAuthenticatedMethod(
+        this.koast,
+        () => Rx.Observable.fromPromise(
+          this.koast.queryForResources('tasks'))
+          .subscribe(
+            (tasks) => {
+              this._tasks = fromJS(tasks);
+              this.emitChange();
+            },
+            (error) => this.emitError(error))
+        );
+
+      this.getTask = makeAuthenticatedMethod(
+        this.koast,
+        (id) => this.koast.getResource('tasks', { _id: id })
+        );
+
+      this.addTask = makeAuthenticatedMethod(
+        this.koast,
+        (task) => Rx.Observable.fromPromise(
+          this.koast.createResource('tasks', task))
+          .subscribe(() => this.getTasks())
+        );
+
+      this.updateTask = makeAuthenticatedMethod(
+        this.koast,
+        (task) => task.save()
+          .then(this.getTasks)
+        );
+    }
+
+    public addChangeListener(observer) {
+      this._tasksSubject.subscribe(observer);
+    }
+
+    private emitChange() {
+      this._tasksSubject.onNext(this.tasks);
+    }
+
+    private emitError(error) {
+      this._tasksSubject.onError(error);
+    }
+
+    get tasks() {
+      return this._tasks.toJS();
+    }
+
+    public getTaskById(id) {
+      return this.tasks.filter(
+        (task) => task._id === id)[0];
+    }
+
   }
-
-  service.getTasks = makeAuthenticatedMethod(function () {
-    return koast.queryForResources('tasks');
-  });
-
-  service.addTask = makeAuthenticatedMethod(function (task) {
-    return koast.createResource('tasks', task)
-  });
-
-  service.updateTask = makeAuthenticatedMethod(function (task) {
-    return task.save();
-  });
-
-  service.getTask = makeAuthenticatedMethod(function (id) {
-    return koast.getResource('tasks', {
-      _id: id
-    });
-  });
-
-  return service;
-});
 ```
 
-Make these changes to your `app/core/tasks/tasks-service.js`.
+Make these changes to your `src/stores/tasks/tasks-store.ts`.
 
-Also, update your `app/sections/task-add/task-add-controller.js` and `app/sections/task-edit/task-edit-controller.js` to use 'addTask' and updateTask' in case your prior service signatures were different.
+Also, update your `src/components/task-add/task-add-component.ts` and `src/components/task-edit/task-edit-component.ts` to use 'addTask' and updateTask' in case your prior service signatures were different.
 
 This is also an example of 'good-cop' _authentication_ on the client-side:
 
-`makeAuthenticatedMethod(fn)` wraps a server call in a check to make sure
-the user is authenticated before actually making a secure server call.
-We use our old friend `koast.user.whenAuthenticated()` to do this
-asynchronously, but with a cached promise so that we only need to
-authenticate the first time.
+`makeAuthenticatedMethod(fn)` from `src/utils/store-utils.ts` wraps a server call in a check to make sure the user is authenticated before actually making a secure server call. We use our old friend `koast.user.whenAuthenticated()` to do this asynchronously.
 
 Now let's look at the 'good-cop' _authorization_ logic:
 
@@ -435,10 +533,21 @@ task:
 This is how the UI decides whether to show the 'edit' link for each task:
 
 ```html
-<tr ng-repeat="task in taskList.tasks">
-    <td>{{taskList.getUserDisplayName(task.owner)}}</td>
-    <td>{{task.description}}</td>
-    <td><a ng-show="task.can.edit" ui-sref="tasks.details({_id: task._id})">edit</a>
-    </td>
-</tr>
+  ...
+  <div>
+    <p>{{ ctrl.user.displayName || 'Owner not specified' }}</p>
+    <p>{{ctrl.task.description}}</p>
+  </div>
+
+  <div>
+    <a ng-show="ctrl.task.can.edit"
+      ui-sref="tasks.details({_id: ctrl.task._id})">
+    </a>
+    
+    <a ng-show="ctrl.task.can.edit"
+      ng-click="ctrl.deleteTask()"
+      ui-sref="tasks.details({_id: ctrl.task._id})">
+    </a>
+  <div>
+  ...
 ```
