@@ -86,8 +86,8 @@
     "node/node.d.ts": {
       "commit": "e95958ac847d9a343bdc8d7cbc796a5f6da29f71"
     },
-    "q/Q.d.ts": {
-      "commit": "832c51db815c766fa42a2e995a7b3136ec6d15c2"
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "8f081073e6cb416f901b272810d8b04d6e01c9e0"
     }
   }
 }

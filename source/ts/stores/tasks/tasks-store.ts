@@ -3,6 +3,7 @@ import {makeAuthenticatedMethod} from 'utils/store-utils';
 import {TASK_ACTIONS} from 'constants/action-constants';
 
 import {List, fromJS} from 'immutable';
+import * as Rx from 'rx.all';
 
 export class TasksStore {
   private _tasksSubject: Rx.ReplaySubject<Object>;

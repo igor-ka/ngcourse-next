@@ -1,11 +1,8 @@
 import {TasksStore} from 'stores/tasks/tasks-store';
 import {TASK_ACTIONS} from 'constants/action-constants';
 
-// import 'chai';
-// import 'mocha';
-// import 'sinon';
-
-import * as Q from 'q';
+import 'rx.testing';
+import 'rx.virtualtime';
 
 describe('TasksStore', () => {
   
@@ -39,18 +36,18 @@ describe('TasksStore', () => {
       description: 'Kill Bill.',
       done: false
     };
-    
+
     angular.mock.inject(($log) => _$log = $log);
     
     _mockKoast = {
       user: {
-        whenAuthenticated: () => Q.when(),
+        whenAuthenticated: () => Promise.resolve(),
         data: {
           username: 'alice'
         }
       },
-      queryForResources: sinon.spy(() => Q.when(_mockTasks)),
-      createResource: sinon.spy(() => Q.when(_mockTasks.push(_mockNewTask)))
+      queryForResources: sinon.spy(() => Promise.resolve(_mockTasks)),
+      createResource: sinon.spy(() => Promise.resolve(_mockTasks.push(_mockNewTask)))
     };
     
     _scheduler = new Rx.TestScheduler();

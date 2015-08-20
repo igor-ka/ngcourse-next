@@ -3,13 +3,9 @@ import {TaskActions} from 'actions/task/task-actions';
 
 import 'angular';
 import 'angular-mocks';
-import 'rx';
+import 'rx.all';
 import 'rx.testing';
 import 'rx.virtualtime';
-
-// import 'chai';
-// import 'mocha';
-// import 'sinon';
 
 let _$log;
 

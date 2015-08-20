@@ -3,7 +3,7 @@ import 'angular-ui-router';
 import 'immutable';
 import 'koast-angular';
 import 'lodash';
-import 'rx';
+import 'rx.all';
 import 'template-cache';
 
 import {TasksStore} from 'stores/tasks/tasks-store';

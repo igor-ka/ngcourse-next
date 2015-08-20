@@ -1,10 +1,5 @@
 import {TasksService} from 'services/tasks/tasks-service';
 
-// import 'chai';
-// import 'mocha';
-// import 'sinon';
-import * as Q from 'q';
-
 describe('TasksService', () => {
   
   let _mockServerService;
@@ -25,7 +20,7 @@ describe('TasksService', () => {
 
   beforeEach(() => { 
     _mockServerService = {
-      get: sinon.spy(() => Q.when(_mockTasks))
+      get: sinon.spy(() => Promise.resolve(_mockTasks))
     };
     _mockServerService.get.reset();
   });

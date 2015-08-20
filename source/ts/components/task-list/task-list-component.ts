@@ -35,8 +35,11 @@ export class TaskListComponent {
         
       this.usersStore.usersSubject.subscribe(
         Rx.Observer.create(
-          (users) => {
-            this._users = users;
+          (users: Array<Object>) => {
+            this._users = users.reduce((prevValue, currValue: {username: string}) => {
+              prevValue[currValue.username] = currValue;
+              return prevValue;
+            }, {});
             this._displayName = this.usersStore
               .getUserDisplayName(this.user.data.username);
              
@@ -70,6 +73,11 @@ export class TaskListComponent {
   get user() {
     return this._user;
   }
+
+  get users() {
+    return this._users;
+  }
+
   get errorMessage() {
     return this._errorMessage;
   }

@@ -1,7 +1,5 @@
 bower_components
 node_modules
 output
-source/typings/**
-!source/typings/tsd.d.ts
 
 

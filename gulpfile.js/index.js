@@ -1,43 +1,51 @@
 'use strict';
 
 var gulp = require('gulp');
-var run = require('gulp-run');
 var templateCache = require('gulp-angular-templatecache');
 var Builder = require('systemjs-builder');
+var del = require('del');
+var ts = require('gulp-typescript');
+var rename = require('gulp-rename');
+var sourcemaps = require('gulp-sourcemaps');
 
 var browserSync = require('browser-sync').create();
 
-gulp.task('serve', function () {
+gulp.task('serve', ['build'], function () {
 
   browserSync.init({
     server: {
       baseDir: ['output'],
       routes: {
-        "/node_modules": "node_modules",
-        "/bower_components": "bower_components"
+        "/node_modules": "node_modules"
       }
     },
+    files: ['output/**/*'],
     port: 8080,
     open: false
   });
 
+  gulp.watch('source/css/*.css',['css']);
+  gulp.watch('source/index.html', ['html']);
+  gulp.watch('source/*.config.js', ['config']);
+  gulp.watch('source/ts/**/*.html', ['template-cache']);
+  gulp.watch('source/ts/**/*.ts', ['compile']);
 });
 
 gulp.task('build', ['html', 'template-cache', 'css', 'config', 'compile']);
 
 gulp.task('bundle', function () {
-  
+
   var builder = new Builder();
   builder.reset();
 
   builder.loadConfig("output/system.config.js")
     .then(function () {
-      // builder.config({ 
+      // builder.config({
       //   map: {
       //     'app': './output/js/app'
       //   }
       // });
-      
+
       return builder.buildSFX('app', 'output/bundle/app.js');
     })
     .then(function () {
@@ -76,26 +84,28 @@ gulp.task('css', function () {
 });
 
 gulp.task('config', function () {
-  return gulp.src(['source/system.config.js', 'source/system.config.test.js'])
+  return gulp.src(['source/system.config.js'])
     .pipe(gulp.dest('output'));
 });
 
 gulp.task('compile', function () {
-  run('tsc').exec();
+  var tsProject = ts.createProject('tsconfig.json');
+  var tsResult = tsProject.src()
+    .pipe(ts(tsProject));
+
+  return tsResult.js
+    .pipe(rename(function (path) {
+      path.dirname = path.dirname.replace('source/ts', 'js');
+    }))
+    .pipe(sourcemaps.init())
+    .pipe(sourcemaps.write('../js', {addComment: false}))
+    .pipe(gulp.dest('output'));
 });
 
-// gulp.paths = {
-//   src: 'app/src',
-//   dist: 'dist',
-//   tmp: 'www',
-//   e2e: 'e2e',
-//   js: 'src/**/*.js',
-//   sass: 'src/**/*.scss',
-//   ts: 'app/src/**/*.ts'
-// };
+gulp.task('clean', ['clean:output']);
 
-//require('require-dir')('./tasks');
-
-// gulp.task('default', ['clean'], function () {
-//     gulp.start('build');
-// });
+gulp.task('clean:output', function () {
+  del([
+    'output/**/*'
+  ]);
+});
