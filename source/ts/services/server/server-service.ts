@@ -29,5 +29,4 @@ export class ServerService {
         return response.data;
       });
   }
-  
 }

@@ -12,17 +12,5 @@ export class UserActions {
       actionType: USER_ACTIONS.GET_USERS
     });
   }
-  
-  // addTask(newTask) {
-  //   this.dispatcher.onNext({
-  //     actionType: USER_ACTIONS.ADD_TASK,
-  //     newTask: newTask
-  //   });
-  // }
-  
-  // getCurrentUser() {
-  //   this.dispatcher.onNext({
-  //     actionType: USER_ACTIONS.GET_CURRENT_USER
-  //   });
-  // }
+
 }

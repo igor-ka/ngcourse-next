@@ -19,15 +19,7 @@
     </div>
     <script src="/node_modules/systemjs/dist/system.js"></script>
     <script src="/system.config.js"></script>
-    <script>
-      System.import('app')
-        .then(function() {
-          console.log('Loaded!');
-        })
-        .then(null, function(error) {
-          console.error('Failed to load:', error);
-        });
-    </script>
+    <script>System.import('app');</script>
   </body>
 
 </html>

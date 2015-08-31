@@ -1,7 +1,7 @@
 export function makeDirective(component) {
   return () => {
 
-    var ddo = {
+    let ddo = {
       restrict: 'E',
       scope: {},
       controllerAs: 'ctrl',
@@ -20,11 +20,11 @@ export function makeDirective(component) {
         templateUrl: component.templateUrl
       });
     }
-    
+
     if (component.options) {
       angular.extend(ddo, component.options);
     }
-    
+
     return ddo;
   };
 }

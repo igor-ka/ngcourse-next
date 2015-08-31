@@ -3,7 +3,9 @@ import {Inject} from 'utils/di';
 export class LoginFormComponent {
 
   private static selector = 'ngc-login-form';
-  private static templateUrl = 'components/login-form/login-form-component.html';
+  private static templateUrl = 
+    'components/login-form/login-form-component.html';
+    
   private static options = {
     bindToController: {
       errorMessage: '=',

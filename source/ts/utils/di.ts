@@ -1,5 +1,5 @@
 export function getServices(annottee, args) {
-  var services = {};
+  let services = {};
   annottee.$inject.forEach(function(key, index) {
     services[key] = args[index];
   });

@@ -47,7 +47,8 @@ describe('TasksStore', () => {
         }
       },
       queryForResources: sinon.spy(() => Promise.resolve(_mockTasks)),
-      createResource: sinon.spy(() => Promise.resolve(_mockTasks.push(_mockNewTask)))
+      createResource: sinon.spy(() => Promise.resolve(
+        _mockTasks.push(_mockNewTask)))
     };
     
     _scheduler = new Rx.TestScheduler();

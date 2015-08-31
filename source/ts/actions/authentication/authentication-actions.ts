@@ -13,7 +13,7 @@ export class AuthenticationActions {
       credentials: credentials
     });
   }
-  
+
   logout() {
     this.dispatcher.onNext({
       actionType: AUTHENTICATION_ACTIONS.LOGOUT

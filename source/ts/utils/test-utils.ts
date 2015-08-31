@@ -1,5 +1,5 @@
 export function getService(serviceName) {
-  var injectedService;
+  let injectedService;
   inject([serviceName, function(serviceInstance) {
     injectedService = serviceInstance;
   }]);

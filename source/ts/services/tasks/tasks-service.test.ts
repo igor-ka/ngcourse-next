@@ -45,7 +45,8 @@ describe('TasksService', () => {
         return tasksService.getTasks(); // Call it again.
       })
       .then(() => {
-        chai.expect(_mockServerService.get.calledOnce).to.be.true; // Check the number of calls.
+        // Check the number of calls.
+        chai.expect(_mockServerService.get.calledOnce).to.be.true;
       });
   });
 

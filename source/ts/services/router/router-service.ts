@@ -45,9 +45,9 @@ export class RouterConfig {
         template: 'My account',
         resolve: {
           timeout: function($timeout) {
-            return $timeout(function() {
-              //delay
-            }, 3000);
+            return $timeout(function() { 
+              // delay
+              }, 3000);
           }
         }
       });

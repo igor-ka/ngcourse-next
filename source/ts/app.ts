@@ -19,7 +19,8 @@ import {MainComponent} from 'components/main/main-component';
 import {LoginFormComponent} from 'components/login-form/login-form-component';
 import {TaskActions} from 'actions/task/task-actions';
 import {UserActions} from 'actions/user/user-actions';
-import {AuthenticationActions} from 'actions/authentication/authentication-actions';
+import {AuthenticationActions} from
+  'actions/authentication/authentication-actions';
 import {makeDirective, makeSelector} from 'utils/component-utils';
 
 angular.module('ngcourse.router', ['ui.router'])
@@ -29,18 +30,18 @@ angular.module('ngcourse.router', ['ui.router'])
 angular.module('ngcourse.authentication', [])
   .service('authenticationStore', AuthenticationStore)
   .service('authenticationActions', AuthenticationActions);
-  
+
 angular.module('ngcourse.tasks', [])
   .service('tasksStore', TasksStore)
   .service('tasksActions', TaskActions);
-  
+
 angular.module('ngcourse.users', [])
   .service('usersStore', UsersStore)
   .service('usersActions', UserActions);
 
 angular.module('ngcourse.server', [])
   .service('server', ServerService);
-  
+
 angular.module('ngcourse.dispatcher', [])
   .service('dispatcher', Rx.Subject);
 
@@ -53,30 +54,30 @@ angular.module('ngcourse', [
   'ngcourse.router',
   'ngcourse.dispatcher',
   'koast'])
-  
+
   .directive(
-    makeSelector(MainComponent), 
+    makeSelector(MainComponent),
     makeDirective(MainComponent))
   .directive(
-    makeSelector(LoginFormComponent), 
+    makeSelector(LoginFormComponent),
     makeDirective(LoginFormComponent))
   .directive(
-    makeSelector(TaskListComponent), 
+    makeSelector(TaskListComponent),
     makeDirective(TaskListComponent))
   .directive(
-    makeSelector(TaskComponent), 
+    makeSelector(TaskComponent),
     makeDirective(TaskComponent))
   .directive(
-    makeSelector(TaskAddComponent), 
+    makeSelector(TaskAddComponent),
     makeDirective(TaskAddComponent))
   .directive(
-    makeSelector(TaskEditComponent), 
+    makeSelector(TaskEditComponent),
     makeDirective(TaskEditComponent))
-  
+
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
-  .run(function ($log: angular.ILogService, koast, API_BASE_URL) {
+  .run(function($log: angular.ILogService, koast, API_BASE_URL) {
     $log.info('All ready!');
-  
+
     koast.init({
       baseUrl: API_BASE_URL
     });

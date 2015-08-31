@@ -21,4 +21,4 @@ export class TaskComponent {
     @Inject('$log') private $log
     ) {
   }
-};
+}

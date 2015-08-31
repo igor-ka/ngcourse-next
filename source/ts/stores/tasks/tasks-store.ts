@@ -19,7 +19,6 @@ export class TasksStore {
   constructor(
     @Inject('$log') private $log,
     @Inject('koast') private koast,
-    //@Inject('server') private server,
     @Inject('dispatcher') private dispatcher
   ) {
     this.registerActionHandlers();

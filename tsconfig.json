@@ -5,10 +5,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
-    "outDir": "output/js/",
-    "sourceMap": true,
-    "inlineSources": true,
-    "sourceRoot": "source/ts/"
+    "removeComments": true,
+    "outDir": "output/js/"
   },
   "files": [
     

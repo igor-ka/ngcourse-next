@@ -3,20 +3,20 @@ module.exports = function (config) {
   config.set({
 
     files : [
-      { pattern:'node_modules/angular/angular.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/angular-ui-router/release/angular-ui-router.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/immutable/dist/immutable.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/koast-angular/dist/koast.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/lodash/index.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/rx/dist/rx.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/rx/dist/rx.all.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/angular-mocks/angular-mocks.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/rx/dist/rx.testing.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/rx/dist/rx.virtualtime.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/traceur/bin/traceur-runtime.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/systemjs/dist/system.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/systemjs/dist/system-polyfills.js', served: true, included: false, watched: false },
-      { pattern:'node_modules/es6-module-loader/dist/es6-module-loader.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/angular/angular.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/angular-ui-router/release/angular-ui-router.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/immutable/dist/immutable.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/koast-angular/dist/koast.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/lodash/index.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/rx/dist/rx.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/rx/dist/rx.all.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/angular-mocks/angular-mocks.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/rx/dist/rx.testing.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/rx/dist/rx.virtualtime.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/traceur/bin/traceur-runtime.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/systemjs/dist/system.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/systemjs/dist/system-polyfills.js', served: true, included: false, watched: false },
+      { pattern: 'node_modules/es6-module-loader/dist/es6-module-loader.js', served: true, included: false, watched: false },
       { pattern: 'output/js/**/*.js', served: true, included: false, watched: true }
     ],
 
@@ -47,7 +47,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai', 'sinon', 'systemjs'],
 
     preprocessors: {
-      'output/js/**/*.js': ['coverage']
+      'output/js/**/!(*.test).js': ['coverage']
     },
 
     reporters: ['mocha', 'coverage'],
