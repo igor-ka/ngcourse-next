@@ -47,7 +47,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai', 'sinon', 'systemjs'],
 
     preprocessors: {
-      'output/js/**/*.js': ['coverage']
+      'output/js/**/!(*.test).js': ['coverage']
     },
 
     reporters: ['mocha', 'coverage'],
