@@ -6,7 +6,7 @@ In chapters 8 and 10, we have seen on how to deal with asynchronicity within you
 
 Reactive programming is programming with asynchronous data streams represented by Observables. The concept here is a mix of Observer and Iterable design patterns. Specifically, observable can be conceptualized as an immutable collection of data ordered in time, and iterated over similarly to collections such as arrays or lists.
 
-## Anatomy of a Basic Observable
+## Creating an Observable from Scratch
 
 First let's jump into a basic example to illustrate the concepts behinds RxJS observables.
 
@@ -62,15 +62,15 @@ So far we created a basic observable example and attached the `onError` callback
   );
 ```
 
-Running the above example without the `try...catch` and throwing an error will produce an uncaught error. Adding the try catch and handling the error by using the `onError` method allows us to emit the error via an observable and propogate it properly to the observer end.
+Running the above example without the `try...catch` and throwing an error will produce an uncaught error. Adding the try catch and handling the error by using the `onError` method allows us to emit the error via an observable and propagate it properly to the observer end.
 
 ### Disposing Subscriptions
 
-One of the great features of observables is that it is possible to cancel them. To understand how to dispose of an observable sequence let's have a look at the API documentation on `Rx.Observable.create` [a here](https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/operators/create.md). Specifically, the part describing it's only argument:
+In some cases we might want to unsubscribe early from our observable. To achieve that we need to dispose of our subscription. Luckily, our call to `subscribe` on our observable actually returns an instance of a `Disposable`. This allows us to call `dispose` on our subscription should we decide to stop listening.
 
->Implementation of the resulting observable sequence's subscribe method, optionally returning a function that will be wrapped in a disposable object
+When we call `dispose` method on our subscription, our observer will stop listening to observable for data. In addition, we can return a function within our observable's implementation (i.e. `create` method above) that will be invoked when we call the `dispose` method on our subscription. This is useful for any kind of clean-up that might be required. 
 
-So we can return a function within our observable implementation that will be invoked when we call the `dispose` method on our subscription. Let's modify our example and see how it works out.
+Let's modify our example and see how it works out.
 
 ```javascript
   let source = Rx.Observable.create(observer => {
@@ -89,7 +89,7 @@ So we can return a function within our observable implementation that will be in
     
     console.log('Starting Observable Sequence!');
     
-    return () => console.log('Tearing Down an Observable Sequence');
+    return () => console.log('Stoping to Listen to this Observable Sequence');
     
   });
 
@@ -104,7 +104,11 @@ So we can return a function within our observable implementation that will be in
 
 The last line of the code above, calls `dispose` method on our subscription after 1000ms (our observable is supposed to emit after 2000ms). If you run this example you will notice that this observable did not emit any values since we have called `dispose` method.
 
-Note, however that our log statement within `setTimeout` was still called. This is an important fact, that implies that even though our subscription was disposed of the code within the `setTimeout` was still executed, it just did not emit any values onto the observable sequence.
+In most of the cases we will not need to explicitly call the `dispose` method on our subscription unless we want to cancel early or our observable has a longer life span than our subscription. The default behaviour of an observable operators is to dispose of the subscription as soon as `onCompleted` or `onError` messages are published. Keep in mind that RxJS was designed to be used in a "fire and forget" fashion most of the time. 
+
+### Releasing Resources
+
+Note, however that our log statement within `setTimeout` was still called. This implies that even though our subscription was disposed of, the code within the `setTimeout` was still executed. All that we achieved is that no values were emitted onto for the observer to see, but our code block was still put on the even queue to be executed. In other words we did not release our resources properly which is the main use of the function we are returning in our `create` block. We are half way there.
 
 The correct implementation in this case would be to cancel the timeout instead, like so.
 
@@ -126,7 +130,7 @@ The correct implementation in this case would be to cancel the timeout instead, 
     console.log('Starting Observable Sequence!');
     
     return () => {
-      console.log('Disposing Observable Sequence');
+      console.log('Releasing Resources of this Observable Sequence');
       clearTimeout(timeoutId);
     };
     
@@ -146,21 +150,15 @@ The correct implementation in this case would be to cancel the timeout instead, 
 Both promises and observables provide us with abstractions that help us deal with the asynchronous nature of our applications. However, there are important differences between the two. 
 
 1. As can be seen in the example above, observables can define both the setup and teardown aspects of asynchronous behaviour. Observables are cancellable.
-2. Moreover, observables can be retried using one of the retry operators provided by the API, such as `retryWhen`. On the other hand in the case of promises, the caller must have access to the original function that returned the promise in order to have retry capability.
+2. Moreover, observables can be retried using one of the retry operators provided by the API, such as `retry` and `retryWhen`. On the other hand in the case of promises, the caller must have access to the original function that returned the promise in order to have a retry capability.
 
 ## Creating Observable Sequences
 
+In the example above we have been creating observables from scratch which is especially useful in understanding the anatomy of an observable. 
+
+However, a lot of the times we will create observables from callbacks, promises, events, collections or using many of the LINQ methods available on the API.
+
 Now that we got the anatomy and structure of observables understood, let's look at some of the many other ways to create observables.
-
-### `fromArray`
-
-```javascript
-  Rx.Observable.fromArray([1, 2, 3]).subscribe(
-    element => console.info(element),
-    error => console.info(error),
-    () => console.info('I am done!')
-  );
-```
 
 ### `interval` and `take`
 
@@ -172,7 +170,17 @@ Now that we got the anatomy and structure of observables understood, let's look 
   );
 ```
 
-The observable above will produce a value every 1000ms, only the first 5 values will be emitted due to the use of `take`, otherwise the sequence will emit values indefinitely.
+The observable above will produce a value every 1000ms, only the first 5 values will be emitted due to the use of `take`, otherwise the sequence will emit values indefinitely. There are many more operators available within the API, such as `range`, `timer` etc.
+
+### `fromArray`
+
+```javascript
+  Rx.Observable.fromArray([1, 2, 3]).subscribe(
+    element => console.info(element),
+    error => console.info(error),
+    () => console.info('I am done!')
+  );
+```
 
 ### `fromPromise`
 
@@ -193,7 +201,7 @@ The observable above will produce a value every 1000ms, only the first 5 values 
   );
 ```
 
-The first line in the example above creates an observable of mouse click events on our document, ordered in time. Another way to refer to an observable is to call it an asynchronouse collection.
+The first line in the example above creates an observable of mouse click events on our document, ordered in time. Another way to refer to an observable is to call it an asynchronous collection.
 
 **The point to take home from this, is that EVERYTHING can be made into a stream using observables.**
 
@@ -261,7 +269,7 @@ In the code snippet above we are creating a custom response data stream, and not
   );
 ```
 
-## Combining Stream with `flatMap`
+## Combining Streams with `flatMap`
 
 We want to make something a bit more useful and attach our server request to a button click. How can that be done with streams? Let's observe the example below.
 
@@ -291,7 +299,7 @@ Alternatively, if we were to use `map` instead, we would create a meta stream, i
     .map(() => Rx.Observable.fromPromise(
       $http.get('http://ngcourse.herokuapp.com/api/v1/tasks')));
 
-  // We would have to subsribe to each stream received below
+  // We would have to subscribe to each stream received below
   // to achieve the behaviour we want
   metaStream.subscribe(
     (stream) => $log.info('Async Data: ', stream),
@@ -301,6 +309,57 @@ Alternatively, if we were to use `map` instead, we would create a meta stream, i
 
 This is not very useful in our current example as we would have to subscribe to an observable received from an observable stream. 
 
+## Cold vs. Hot Observables
+
+Observables in RxJS can be classified into 2 main groups, Hot and Cold Observables. Let's illustrate start with a cold observables
+
+```javascript
+  let source = Rx.Observable.interval(1000).take(7);
+
+  setTimeout(() => {
+    source.subscribe(
+      value => console.log('subscription A: ' + value));
+  }, 0);
+
+  setTimeout(() => {
+    source.subscribe(
+      value => console.log('   subscription B: ' + value));
+  }, 2000);
+```
+
+In the above case subscriber B subscribes 2000ms after subscriber A. Yet subscriber B is starting to get the value from 0 to 6 just like subscriber A only time shifted. This behaviour is referred to as a **Cold Observable**. A useful analogy is watching a pre-recorded video, let's stay on Netflix. You press play and the movie starts playing from the beginning. Someone else, can start playing the same movie in their own home 25 minutes later.
+
+On the other hand there is also a **Hot Observable**, which is more like a live performance. You attend a live band performance from the beginning, but someone else might be 25 minutes late to the show. The band will not start playing from the beginning and you have to start watching the performance from where it is. 
+
+We have already encountered both kind of observables, the example above is a cold observable, while an example that uses `fromEvent` on our mouse clicks is a hot observable.
+
+### Converting from Cold to Hot Observables
+
+A useful method within RxJS API, is the `publish` method. This method takes in a cold observable as it's source and returns an instance of a `ConnectableObservable`. In this case we will have to explicitly call `connect` on our hot observable to start broadcasting values to its subscribers.
+
+```javascript
+  let source = 
+      Rx.Observable.interval(1000).take(7).publish();
+
+  setTimeout(() => {
+    source.connect();
+  }, 1000);
+
+  setTimeout(() => {
+    source.subscribe(
+      value => console.log('subscription A: ' + value));
+  }, 0);
+
+  setTimeout(() => {
+    source.subscribe(
+      value => console.log('   subscription B: ' + value));
+  }, 5000);
+```
+
+In the case above, the live performance starts at 1000ms, subscriber A arrived to the concert hall 1000ms early to get a good seat, and our subscriber B arrived to the performance 4000ms late and missed a bunch of songs.
+
+Another useful method to work with hot observables instead of `connect` is `refCount`. This is auto connect method, that will start broadcasting as soon as there are more than one subscriber. Analogously, it will stop if the number of subscribers goes to 0, in other words no performance will happen if there is no one in the audience.
+
 ## Summary
 
-RxJS is a flexible set of APIs for composing and transforming asynchronous streams, i.e Observables. It provides multitude of function to create stream from absolutely anything and more to manipulate them. It attempts to simplify the asynchronous aspects of our application, by presenting the streams as iterable collections, similar in syntax to Array Extras from ES5.
+RxJS is a flexible set of APIs for composing and transforming asynchronous streams. It provides multitude of function to create stream from absolutely anything and more to manipulate and transform them..

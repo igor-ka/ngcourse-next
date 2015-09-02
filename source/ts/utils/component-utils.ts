@@ -1,7 +1,14 @@
+export function Inject(injectable) {
+  return (prototype, method, argumentPosition) => {
+    prototype.$inject = prototype.$inject || [];
+    prototype.$inject[argumentPosition] = injectable;
+  };
+}
+
 export function makeDirective(component) {
   return () => {
 
-    var ddo = {
+    let ddo = {
       restrict: 'E',
       scope: {},
       controllerAs: 'ctrl',
@@ -30,8 +37,8 @@ export function makeDirective(component) {
 }
 
 export function makeSelector(component) {
-  return component.selector.replace(/-([a-z])/g,
-    function(g) {
-      return g[1].toUpperCase();
-    });
+  return component.selector.replace(
+    /-([a-z])/g,
+    (g) => g[1].toUpperCase()
+  );
 }
