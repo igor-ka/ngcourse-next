@@ -1,12 +1,50 @@
 {
-    "compilerOptions": {
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "declaration": true,
-      "module": "amd",
-      "target": "ES5",
-      "noImplicitAny": false,
-      "sortOutput": true,
-      "sourceRoot": "./src"
-    }
+  "compilerOptions": {
+    "module": "amd",
+    "target": "es5",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "outDir": "output/js/"
+  },
+  "files": [
+    
+    "source/typings/tsd.d.ts",
+    
+    "source/ts/app.ts",
+    
+    "source/ts/actions/authentication/authentication-actions.ts",
+    "source/ts/actions/task/task-actions.ts",
+    "source/ts/actions/user/user-actions.ts",
+    
+    "source/ts/components/login-form/login-form-component.ts",
+    "source/ts/components/main/main-component.ts",
+    "source/ts/components/task/task-component.ts",
+    "source/ts/components/task-add/task-add-component.ts",
+    "source/ts/components/task-edit/task-edit-component.ts",
+    "source/ts/components/task-list/task-list-component.ts",
+    
+    "source/ts/constants/action-constants.ts",
+    
+    "source/ts/services/router/router-service.ts",
+    "source/ts/services/server/server-service.ts",
+    "source/ts/services/tasks/tasks-service.ts",
+
+    "source/ts/stores/authentication/authentication-store.ts",
+    "source/ts/stores/users/users-store.ts",
+    "source/ts/stores/tasks/tasks-store.ts",
+    
+    "source/ts/utils/component-utils.ts",
+    "source/ts/utils/di.ts",
+    "source/ts/utils/store-utils.ts",
+    
+    "source/ts/entry.test.ts",
+    "source/ts/simple.test.ts",
+    "source/ts/components/task-list/task-list-component.test.ts",
+    "source/ts/components/task/task-component.test.ts",
+    "source/ts/services/tasks/tasks-service.test.ts",
+    "source/ts/stores/tasks/tasks-store.test.ts"
+    
+  ]
 }
