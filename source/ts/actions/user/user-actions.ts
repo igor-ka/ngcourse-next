@@ -1,11 +1,11 @@
-import {Inject} from 'utils/di';
-import {USER_ACTIONS, } from 'constants/action-constants';
+import {Inject} from '../../utils/di';
+import {USER_ACTIONS, } from '../action-constants';
 
 export class UserActions {
 
-  constructor(@Inject private dispatcher) {
-    this.dispatcher = dispatcher;
-  }
+  constructor(
+    @Inject('dispatcher') 
+      private dispatcher: Rx.Subject<any>) {}
 
   getUsers() {
     this.dispatcher.onNext({

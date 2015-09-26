@@ -7,7 +7,6 @@ System.config({
     'immutable': 'node_modules/immutable/dist/immutable.js',
     'koast-angular': 'node_modules/koast-angular/dist/koast.js',
     'lodash': 'node_modules/lodash/index.js',
-    'rx.all': 'node_modules/rx/dist/rx.all.js',
-    '*': '/js/*'
+    'rx.all': 'node_modules/rx/dist/rx.all.js'
   }
 });

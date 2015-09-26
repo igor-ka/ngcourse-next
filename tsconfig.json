@@ -14,6 +14,7 @@
     
     "source/ts/app.ts",
     
+    "source/ts/actions/action-constants.ts",
     "source/ts/actions/authentication/authentication-actions.ts",
     "source/ts/actions/task/task-actions.ts",
     "source/ts/actions/user/user-actions.ts",
@@ -24,8 +25,6 @@
     "source/ts/components/task-add/task-add-component.ts",
     "source/ts/components/task-edit/task-edit-component.ts",
     "source/ts/components/task-list/task-list-component.ts",
-    
-    "source/ts/constants/action-constants.ts",
     
     "source/ts/services/router/router-service.ts",
     "source/ts/services/server/server-service.ts",
@@ -38,6 +37,7 @@
     "source/ts/utils/component-utils.ts",
     "source/ts/utils/di.ts",
     "source/ts/utils/store-utils.ts",
+    "source/ts/utils/test-utils.ts",
     
     "source/ts/entry.test.ts",
     "source/ts/simple.test.ts",

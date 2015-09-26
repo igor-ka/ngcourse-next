@@ -1,5 +1,5 @@
-import {TasksStore} from 'stores/tasks/tasks-store';
-import {TASK_ACTIONS} from 'constants/action-constants';
+import {TasksStore} from '../../stores/tasks/tasks-store';
+import {TASK_ACTIONS} from '../../actions/action-constants';
 
 import 'rx.testing';
 import 'rx.virtualtime';
@@ -62,10 +62,9 @@ describe('TasksStore', () => {
         newTask: _mockNewTask
       }));
     
-    let tasksStore = new TasksStore(_$log, _mockKoast, _mockDispatcher);
+    let tasksStore = new TasksStore(_mockKoast, _mockDispatcher);
 
     tasksStore.tasksSubject
-      .observeOn(Rx.Scheduler.timeout)
       .subscribe(
         (tasks) => {
 

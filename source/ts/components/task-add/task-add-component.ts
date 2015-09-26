@@ -1,4 +1,6 @@
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
+import {TaskActions} from '../../actions/task/task-actions';
+import {RouterService} from '../../services/router/router-service';
 
 export class TaskAddComponent {
 
@@ -7,12 +9,11 @@ export class TaskAddComponent {
   private static options = {};
 
   constructor(
-    @Inject('$log') private $log,
-    @Inject('router') private router,
-    @Inject('tasksActions') private tasksActions
-   ) {
-     //
-  }
+    @Inject('router') 
+      private router: RouterService,
+    @Inject('tasksActions') 
+      private tasksActions: TaskActions
+   ) {}
 
   save(task) {
     this.tasksActions.addTask(task);

@@ -1,11 +1,11 @@
-import {Inject} from 'utils/di';
-import {TASK_ACTIONS} from 'constants/action-constants';
+import {Inject} from '../../utils/di';
+import {TASK_ACTIONS} from '../action-constants';
 
 export class TaskActions {
 
-  constructor(@Inject private dispatcher) {
-    this.dispatcher = dispatcher;
-  }
+  constructor(
+    @Inject('dispatcher') 
+      private dispatcher: Rx.Subject<any>) {}
 
   getTasks() {
     this.dispatcher.onNext({

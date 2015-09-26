@@ -1,10 +1,13 @@
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
+import {ServerService} from '../../services/server/server-service';
 
 export class TasksService {
 
-  private tasksPromise;
+  private tasksPromise: Promise<any>;
   
-  constructor(@Inject('serverService') private serverService) { }
+  constructor(
+    @Inject('serverService') 
+      private serverService: ServerService) {}
 
   public getTasks () {
     this.tasksPromise = this.tasksPromise || 

@@ -1,18 +1,22 @@
-import {Inject} from 'utils/di';
-import {TaskListComponent} from 'components/task-list/task-list-component';
+import {Inject} from '../../utils/di';
+import {TaskListComponent} 
+  from '../../components/task-list/task-list-component';
 
 export class RouterConfig {
 
   constructor(
-    @Inject('$stateProvider') private $stateProvider,
-    @Inject('$urlRouterProvider') private $urlRouterProvider,
-    @Inject('$locationProvider') private $locationProvider
+    @Inject('$stateProvider') 
+      private $stateProvider: angular.ui.IStateProvider,
+    @Inject('$urlRouterProvider') 
+      private $urlRouterProvider: angular.ui.IUrlRouterProvider,
+    @Inject('$locationProvider') 
+      private $locationProvider: angular.ILocationProvider
   ) {
 
-    $urlRouterProvider.otherwise('/tasks');
-    $locationProvider.html5Mode(false);
+    this.$urlRouterProvider.otherwise('/tasks');
+    this.$locationProvider.html5Mode(false);
 
-    $stateProvider
+    this.$stateProvider
       .state('tasks', {
         url: '/tasks',
         views: {
@@ -56,7 +60,8 @@ export class RouterConfig {
 
 export class RouterService {
 
-  constructor(@Inject('$state') private $state) { }
+  constructor(
+    @Inject('$state') private $state: angular.ui.IStateService) {}
 
   goToAddTask() {
     this.$state.go('tasks.add');

@@ -1,13 +1,13 @@
-import {Inject} from 'utils/di';
-import {makeAuthenticatedMethod} from 'utils/store-utils';
-import {TASK_ACTIONS} from 'constants/action-constants';
+import {Inject} from '../../utils/di';
+import {makeAuthenticatedMethod} from '../../utils/store-utils';
+import {TASK_ACTIONS} from '../../actions/action-constants';
 
 import {List, fromJS} from 'immutable';
 import * as Rx from 'rx.all';
 
 export class TasksStore {
-  private _tasksSubject: Rx.ReplaySubject<Object>;
-  private _tasks;
+  private _tasksSubject: Rx.ReplaySubject<any>;
+  private _tasks: List<any>;
 
   /* Authenticated methods */
   private getTasks: Function;
@@ -17,9 +17,10 @@ export class TasksStore {
   private getTask: Function;
 
   constructor(
-    @Inject('$log') private $log,
-    @Inject('koast') private koast,
-    @Inject('dispatcher') private dispatcher
+    @Inject('koast') 
+      private koast,
+    @Inject('dispatcher') 
+      private dispatcher: Rx.Subject<any>
   ) {
     this.registerActionHandlers();
     this.addAuthenticatedMethods();
@@ -38,39 +39,17 @@ export class TasksStore {
   
   private registerActionHandlers() {
     this.dispatcher.filter(
-      (action) => action.actionType === TASK_ACTIONS.GET_TASKS)
-        .subscribe(
-          () => this.getTasks());
+      action => action.actionType === TASK_ACTIONS.GET_TASKS)
+        .subscribe(action => this.getTasks());
 
     this.dispatcher.filter(
-      (action) => action.actionType === TASK_ACTIONS.ADD_TASK)
-        .subscribe(
-          (action) => this.addTask(action.newTask));
+      action => action.actionType === TASK_ACTIONS.ADD_TASK)
+        .subscribe(action => this.addTask(action.newTask));
 
     this.dispatcher.filter(
-      (action) => action.actionType === TASK_ACTIONS.UPDATE_TASK)
-        .subscribe(
-          (action) => this.updateTask(action.task));
+      action => action.actionType === TASK_ACTIONS.UPDATE_TASK)
+        .subscribe(action => this.updateTask(action.task));
   }
-
-  // private getTasks() {
-  //   Rx.Observable.fromPromise(
-  //     this.server.get('/api/v1/tasks'))
-  //       .subscribe(
-  //         (tasks) => {
-  //           this._tasks = fromJS(tasks);
-  //           this.emitChange();
-  //         },
-  //         (error) => this.emitError(error));
-  // }
-    
-  // private addTask(newTask) {
-  //   Rx.Observable.fromPromise(
-  //     this.server.post('/api/v1/tasks', newTask))
-  //       .subscribe(
-  //         () => this.getTasks(),
-  //         (error) => this.emitError(error));
-  // }
 
   private addAuthenticatedMethods() {
 
@@ -79,27 +58,28 @@ export class TasksStore {
       () => Rx.Observable.fromPromise(
         this.koast.queryForResources('tasks'))
           .subscribe(
-            (tasks) => {
+            tasks => {
               this._tasks = fromJS(tasks);
               this.emitChange();
             },
-            (error) => this.emitError(error))
+            error => this.emitError(error))
       );
 
     this.getTask = makeAuthenticatedMethod(
       this.koast,
-      (id) => this.koast.getResource('tasks', { _id: id })
+      id => this.koast.getResource('tasks', { _id: id })
       );
+      
     this.addTask = makeAuthenticatedMethod(
       this.koast,
-      (task) => Rx.Observable.fromPromise(
+      task => Rx.Observable.fromPromise(
         this.koast.createResource('tasks', task))
           .subscribe(() => this.getTasks())
       );
 
     this.updateTask = makeAuthenticatedMethod(
       this.koast,
-      (task) => task.save()
+      task => task.save()
         .then(this.getTasks)
       );
   }
@@ -117,8 +97,8 @@ export class TasksStore {
   }
 
   public getTaskById(id) {
-    return this.tasks.filter(
-      (task) => task._id === id)[0];
+    return this._tasks.find(
+      task => task._id === id);
   }
 
 }

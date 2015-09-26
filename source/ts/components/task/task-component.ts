@@ -1,6 +1,6 @@
-import {Inject} from 'utils/di';
-import {UsersStore} from 'stores/users/users-store';
-import {TasksStore} from 'stores/tasks/tasks-store';
+import {Inject} from '../../utils/di';
+import {UsersStore} from '../../stores/users/users-store';
+import {TasksStore} from '../../stores/tasks/tasks-store';
 
 export class TaskComponent {
 
@@ -13,12 +13,9 @@ export class TaskComponent {
     }
   };
 
-  private task;
-  private user;
-  private errorMessage;
+  private task: any;
+  private user: any;
+  private errorMessage: String;
 
-  constructor(
-    @Inject('$log') private $log
-    ) {
-  }
+  constructor() {}
 }

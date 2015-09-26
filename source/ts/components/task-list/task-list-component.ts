@@ -1,4 +1,10 @@
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
+import {TasksStore} from '../../stores/tasks/tasks-store';
+import {UsersStore} from '../../stores/users/users-store';
+import {RouterService} from '../../services/router/router-service';
+import {AuthenticationStore} 
+  from '../../stores/authentication/authentication-store';
+import {TaskActions} from '../../actions/task/task-actions';
 
 export class TaskListComponent {
 
@@ -6,71 +12,55 @@ export class TaskListComponent {
   public static templateUrl = 'components/task-list/task-list-component.html';
   private static options = {};
 
-  private _tasks;
-  private _users;
-  private _user;
-  private _displayName;
-  private _errorMessage;
+  private _tasks: any[];
+  private _users: {};
+  private _user: any;
+  private _displayName: String;
+  private _errorMessage: String;
 
   constructor(
-    @Inject('$log') private $log,
-    @Inject('router') private router,
-    @Inject('authenticationStore') private authenticationStore,
-    @Inject('tasksStore') private tasksStore,
-    @Inject('usersStore') private usersStore,
-    @Inject('tasksActions') private tasksActions
+    @Inject('$scope') 
+      private $scope: angular.IScope,
+    @Inject('router') 
+      private router: RouterService,
+    @Inject('authenticationStore') 
+      private authenticationStore: AuthenticationStore,
+    @Inject('tasksStore') 
+      private tasksStore: TasksStore,
+    @Inject('usersStore') 
+      private usersStore: UsersStore
     ) {
 
-      this.authenticationStore.userSubject.subscribe(
-        Rx.Observer.create(
-          (user) => this._user = user,
-          (error) => this._errorMessage = error
-        ));
+    let authSubscription = this.authenticationStore.userSubject.subscribe(
+      user => this._user = user,
+      error => this._errorMessage = error);
 
-      this.tasksStore.tasksSubject.subscribe(
-        Rx.Observer.create(
-          (tasks) => this._tasks = tasks,
-          (error) => this._errorMessage = error
-        ));
-        
-      this.usersStore.usersSubject.subscribe(
-        Rx.Observer.create(
-          (users: Array<Object>) => {
-            this._users = users.reduce(
-              (prevValue, currValue: {username: string}) => {
-                prevValue[currValue.username] = currValue;
-                return prevValue;
-              }, {});
-            this._displayName = this.usersStore
-              .getUserDisplayName(this.user.data.username);
-             
-          },
-          (error) => this._errorMessage = error
-        ));
+    let tasksSubscription = this.tasksStore.tasksSubject.subscribe(
+      tasks => this._tasks = tasks,
+      error => this._errorMessage = error);
+
+    let usersSubscription = this.usersStore.usersSubject.subscribe(
+      users => {
+        this._users = users;
+        this._displayName = users[this.user.data.username].displayName;
+      },
+      error => this._errorMessage = error);
+    
+    this.$scope.$on('$destroy', () => {
+      authSubscription.dispose();
+      tasksSubscription.dispose();
+      usersSubscription.dispose();
+    });
   }
 
-  private addTask(task) {
-    this.tasksActions.addTask(task);
-    this.router.goToTaskList();  
-  }
-
-  private goToAddTask() {
-    this.router.goToAddTask.bind(this.router);
-  }
-  
-  private getDisplayName() {
-    this.usersStore.getUserDisplayName(
-      this.user.data.username);
-  }
-  
   get tasks() {
     return this._tasks;
   }
-  
+
   get displayName() {
     return this._displayName;
   }
-  
+
   get user() {
     return this._user;
   }

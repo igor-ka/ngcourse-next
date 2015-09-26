@@ -13,14 +13,12 @@ export class LoginFormComponent {
     }
   };
 
-  private errorMessage;
-  private username;
-  private password;
+  private errorMessage: String;
+  private username: String;
+  private password: String;
   private fireSubmit: Function;
 
-  constructor() {
-    //
-  }
+  constructor() {}
 
   private submit() {
     this.fireSubmit({

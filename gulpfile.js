@@ -128,20 +128,25 @@ gulp.task('compile', ['lint'], function (done) {
   
 });
 
-gulp.task('bundle', ['build'], function (done) {
+gulp.task('fonts', function() {
+
+  return gulp.src('node_modules/font-awesome/fonts/**/*')
+    .pipe(gulp.dest('output/dist/font-awesome/fonts/'));
+  
+});
+
+
+gulp.task('bundle', ['build', 'fonts'], function (done) {
   
   var builder = new Builder();
     
   builder.loadConfig('source/system.config.js')
   .then(function() {
-    builder.config({ 
-      paths: {
-        '*': 'output/js/*'
-      }
-    });
-    
-    return builder.buildSFX('app', 'output/dist/app.min.js', 
-      { minify: true, mangle: false, runtime: false });
+    return builder.buildStatic(
+      'output/js/app', 
+      'output/dist/app.min.js', 
+      { minify: true, mangle: false, runtime: false }
+    );
   })
   .then(function () {
     return gulp.src('output/dist/**/*').pipe(size({title: 'Distribution Size:'}));
@@ -173,7 +178,7 @@ gulp.task('serve', ['build'], function () {
   gulp.watch('source/index.html', ['html']);
   gulp.watch('source/*.config.js', ['config']);
   gulp.watch('source/ts/**/*.html', ['template-cache']);
-  gulp.watch('source/ts/**/*.ts', ['bundle']);
+  gulp.watch('source/ts/**/*.ts', ['compile']);
   
 });
 
