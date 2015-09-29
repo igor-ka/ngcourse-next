@@ -34,7 +34,7 @@ gulp.task('html', function () {
     .pipe(replace('<link href="/css/styles.css" rel="stylesheet" type="text/css" />', '<link href="/styles.min.css" rel="stylesheet" type="text/css" />'))
     .pipe(replace('<script src="/node_modules/systemjs/dist/system.js"></script>', ''))
     .pipe(replace('<script src="/system.config.js"></script>', ''))
-    .pipe(replace('<script>System.import(\'app\');</script>', '<script src="/app.min.js"></script>'))
+    .pipe(replace('<script>System.import(\'js/app\');</script>', '<script src="/app.min.js"></script>'))
     .pipe(gulp.dest('output/dist/'));
 });
 

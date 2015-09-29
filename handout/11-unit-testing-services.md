@@ -9,65 +9,60 @@ Since our services are classes with all of their dependencies injected through t
 Let's create some unit tests for our `TasksService` class, starting by mocking out it's only dependency, `ServerService`.
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts" />
-import {TasksService} from 'services/tasks/tasks-service';
-import {expect} from 'chai';
+import {TasksService} from './tasks-service';
 
-export function main() {
-    
-  describe('TasksService', () => {
-    let _mockServerService;
-    
-    let _mockTasks = [{
-      owner: 'alice',
-      description: 'Build the dog shed.',
-      done: true
-    }, {
-      owner: 'bob',
-      description: 'Get the milk.',
-      done: false
-    }, {
-      owner: 'alice',
-      description: 'Fix the door handle.',
-      done: true
-    }];
+describe('TasksService', () => {
+  
+  let _mockServerService;
+  
+  let _mockTasks = [{
+    owner: 'alice',
+    description: 'Build the dog shed.',
+    done: true
+  }, {
+    owner: 'bob',
+    description: 'Get the milk.',
+    done: false
+  }, {
+    owner: 'alice',
+    description: 'Fix the door handle.',
+    done: true
+  }];
 
-    beforeEach(() => { 
-      _mockServerService = {
-        get: () => Q.when(_mockTasks)
-      };
-    });
-
-    it('should get loaded', function() {
-      let tasksService = new TasksService(_mockServerService);
-      expect(tasksService.getTasks()).to.not.be.undefined;
-    });
+  beforeEach(() => { 
+    _mockServerService = {
+      get: () => Promise.resolve(_mockTasks)
+    };
   });
-}
+
+  it('should get loaded', function() {
+    let tasksService = new TasksService(_mockServerService);
+    chai.expect(tasksService.getTasks()).to.not.be.undefined;
+  });
+});
+
 ```
 
-Let's save this to `src/services/tasks/tasks-service.test.js`.
+Let's save this to `source/ts/services/tasks/tasks-service.test.js`.
 
 The sad truth, though, is that we have only established that `tasksService.getTasks()` does return a promise. We can't really judge the success of this test until we know what that promise resolves to.
 
 ## An Asynchronous Test
 
 So, we want to check what the promise resolves too, but this only will happen
-*later*. One solution is to set up an asynchronous promise.
-
-So, we need to use an asynchronous test that would wait for the promise to resolve.
+*later*. So, we need to use an asynchronous test that would wait for the promise to resolve.
 
 ```javascript
   ...
   beforeEach(() => { 
     _mockServerService = {
-      get: () => Q.when(_mockTasks)
+      get: () => Promise.resolve(_mockTasks)
     };
   });
 
-  it('should get loaded', () => {
+  it('should get loaded', function() {
     let tasksService = new TasksService(_mockServerService);
-    expect(tasksService.getTasks()).to.not.be.undefined;
+    chai.expect(tasksService.getTasks()).to.not.be.undefined;
   });
   
   it('should get tasks', (done) => {
@@ -79,13 +74,13 @@ So, we need to use an asynchronous test that would wait for the promise to resol
     let tasksService = new TasksService(_mockServerService);
     
     return tasksService.getTasks()
-      .then((tasks) => {
+      .then(tasks => {
         // Assertions thrown here will result to a failed promise downstream.
         expect(tasks).to.deep.equal(_mockTasks);
         done();
       })
       // Remember to call done(), otherwise the test will time out (and fail).
-      .then(null, (error) => {
+      .then(null, error => {
         done(error);
       });
   });
@@ -101,7 +96,7 @@ actually need to define a new function in the handler. We can just provide
 `done` as the handler.
 
 ```javascript
-  .then(null, (error) => done(error));
+  .then(null, error => done(error));
 ```
 
 is equivalent to:
@@ -119,11 +114,8 @@ what you want to use.
   ...
   it('should get tasks', () => {
     let tasksService = new TasksService(_mockServerService);
-    
     return tasksService.getTasks()
-      .then((tasks) => {
-        expect(tasks).to.deep.equal(_mockTasks);
-      });
+      .then(tasks => chai.expect(tasks).to.deep.equal(_mockTasks));
   });
   ...
 ```
@@ -139,7 +131,7 @@ we'll wrap the existing function with `sinon.spy()`:
   ...
   beforeEach(() => { 
     _mockServerService = {
-      get: sinon.spy(() => Q.when(_mockTasks))
+      get: sinon.spy(() => Promise.resolve(_mockTasks))
     };
     _mockServerService.get.reset();
   });
@@ -153,16 +145,10 @@ about the calls. For example, we can check if the function has been called:
 ```javascript
   ...
   it('should only call server service get once', () => {
-
     let tasksService = new TasksService(_mockServerService);
-
     return tasksService.getTasks() // Call getTasks the first time.
-      .then(() => {
-        return tasksService.getTasks(); // Call it again.
-      })
-      .then(() => {
-        expect(_mockServerService.get.calledOnce).to.be.true; // Check the number of calls.
-      });
+      .then(() => tasksService.getTasks())
+      .then(() => chai.expect(_mockServerService.get.calledOnce).to.be.true);
   });
   ...
 ```

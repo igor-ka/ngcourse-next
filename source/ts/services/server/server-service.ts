@@ -11,22 +11,16 @@ export class ServerService {
 
   public get(path) {
     return this.$http.get(this.API_BASE_URL + path)
-      .then(function(response) {
-        return response.data;
-      });
+      .then(response => response.data);
   }
 
   public post(path, data) {
     return this.$http.post(this.API_BASE_URL + path, data)
-      .then(function(response) {
-        return response.data;
-      });
+      .then(response => response.data);
   }
 
   public put(path, id, data) {
     return this.$http.post(this.API_BASE_URL + path + '/' + id, data)
-      .then(function(response) {
-        return response.data;
-      });
+      .then(response => response.data);
   }
 }

@@ -4,62 +4,62 @@ In the previous chapter we learned about Flux architecture by implementing our `
 
 ## Unit Testing a Component that depends on a Store
 
-Let's start by having a look at out test for `TaskListComponent`. Create a new file *src/components/task-list/task-list-component.test.ts*, and copy the code below.
+Let's start by having a look at out test for `TaskListComponent`. Create a new file *source/ts/components/task-list/task-list-component.test.ts*, and copy the code below.
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts" />
-import {TaskListComponent} from 'components/task-list/task-list-component';
-import {TaskActions} from 'actions/task/task-actions';
-import {expect} from 'chai';
+  import {TaskListComponent} from './task-list-component';
+  import {TaskActions} from '../../actions/task/task-actions';
 
-export function main() {
+  import 'angular';
+  import 'angular-mocks';
+  import 'rx.all';
+  import 'rx.testing';
+  import 'rx.virtualtime';
 
-  let _$log;
-  let _tasksStoreMock;  
-  
+  let _$scope;
+  let _tasksStoreMock;
+
   let _tasksMock = [{
-      owner: 'alice',
-      description: 'Build the dog shed.',
-      done: true
-    }, {
-      owner: 'bob',
-      description: 'Get the milk.',
-      done: false
-    }, {
-      owner: 'alice',
-      description: 'Fix the door handle.',
-      done: true
-    }];
-    
+    owner: 'alice',
+    description: 'Build the dog shed.',
+    done: true
+  }, {
+    owner: 'bob',
+    description: 'Get the milk.',
+    done: false
+  }, {
+    owner: 'alice',
+    description: 'Fix the door handle.',
+    done: true
+  }];
+
   describe('TaskListComponent', () => {
 
     beforeEach(() => { 
-      inject(($log) => {
-        _$log = $log;
+      angular.mock.inject($rootScope => {
+        _$scope = $rootScope.$new();
       });
-
+      
     });
-
+    
     it('should get data from stores', () => {
       
       let scheduler = new Rx.TestScheduler();
         
       let tasksObservable = scheduler.createHotObservable(
-        Rx.ReactiveTest.onNext(200, _tasksMock));  
+        Rx.ReactiveTest.onNext(200, _tasksMock));   
       
       _tasksStoreMock = {
         tasksSubject: tasksObservable
       };
-        
+      
       let taskListComponent = new TaskListComponent(
-        _$log, _tasksStoreMock, TaskActions);
+        _$scope, _tasksStoreMock);
       
       scheduler.advanceTo(220);
-      expect(taskListComponent.tasks).to.equal(_tasksMock);
+      chai.expect(taskListComponent.tasks).to.equal(_tasksMock);
     });
-
   });
-}
 ```
 
 The top part of the test should be familiar, we are just creating mock data to use within our test, and injecting `$log` dependency to be available to our component. We should look at the anatomy of the test defined in our only `it` block.
@@ -80,36 +80,32 @@ Similarly we can write another test that will verify our error path as well
     let scheduler = new Rx.TestScheduler();
       
     let tasksObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onError(200, 'error')); 
+      Rx.ReactiveTest.onError(200, 'error'));
     
     _tasksStoreMock = {
       tasksSubject: tasksObservable
     };
-
+    
     let taskListComponent = new TaskListComponent(
-      _$log, _tasksStoreMock, TaskActions);
+        _$scope, _tasksStoreMock);
     
     scheduler.advanceTo(220);
-    expect(taskListComponent.errorMessage).to.equal('error');
+    chai.expect(taskListComponent.errorMessage).to.equal('error');
   });
   ...
 ```
 
 ## Unit Testing a Store
 
-There are some similarities between testing services and stores. Let's have a look at the store test below, and copy the code into *src/stores/tasks/tasks-store.test.ts*.
+There are some similarities between testing services and stores. Let's have a look at the store test below, and copy the code into *source/ts/stores/tasks/tasks-store.test.ts*.
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts"/>
-import {TasksStore} from 'stores/tasks/tasks-store';
-import {TASK_ACTIONS} from 'constants/action-constants';
-import {TaskActions} from 'actions/task/task-actions';
-import {getService} from 'utils/test-utils';
-import {expect} from 'chai';
-//import {Rx} from 'rx';
+  import {TasksStore} from '../../stores/tasks/tasks-store';
+  import {TASK_ACTIONS} from '../../actions/action-constants';
 
-export function main() {
-  
+  import 'rx.testing';
+  import 'rx.virtualtime';
+
   describe('TasksStore', () => {
     
     let _scheduler;
@@ -143,11 +139,12 @@ export function main() {
       };
       
       _mockServerService = {
-        get: () => Q.when(_mockTasks),
-        post: (newTask) => Q.when(_mockTasks.push(_mockNewTask))
+        get: () => Promise.resolve(_mockTasks),
+        post: (newTask) => Promise.resolve(
+          _mockTasks.push(_mockNewTask))
       };
       
-      inject(($log) => _$log = $log);
+      inject($log => _$log = $log);
       
       _scheduler = new Rx.TestScheduler();
     });
@@ -162,25 +159,19 @@ export function main() {
       
       let tasksStore = new TasksStore(_$log, _mockServerService, _mockDispatcher);
 
-      tasksStore.tasksSubject
-        .observeOn(Rx.Scheduler.timeout)
-        .subscribe(
-          (tasks) => {
-
-          expect(tasks).to.not.be.undefined;
-          expect(tasks).to.contain(_mockNewTask);
-          
+      tasksStore.tasksSubject.subscribe(
+        tasks => {
+          chai.expect(tasks).to.not.be.undefined;
+          chai.expect(tasks).to.contain(_mockNewTask);
           done();
-
         }
       );
       
       _scheduler.advanceTo(25);
-      
     });
   });
 }
 
 ```
 
-Most of the code above should be familiar by this point. The main goal of the unit test is to instantiate a store while creating a mock dispatcher using RxJS to schedule an action to be piped into a store. 
+Most of the code above should be familiar by this point. The main goal of the unit test is to instantiate a store while creating a mock dispatcher using RxJS to schedule an action to be piped into a store. Note that we are using an asynchronous test here, since we are working with observable streams.

@@ -1,13 +1,10 @@
-import {makeDirective, makeSelector} from 'utils/component-utils';
-import {TaskComponent} from 'components/task/task-component';
-
 import 'angular';
 import 'angular-mocks';
-import 'template-cache';
 
-// import 'chai';
-// import 'mocha';
-    
+import {makeDirective, makeSelector} from '../../utils/component-utils';
+import {TaskComponent} from './task-component';
+import '../../template-cache';
+
 describe('TaskComponent', () => {
 
   let _$scope;
@@ -17,18 +14,16 @@ describe('TaskComponent', () => {
     .directive(
       makeSelector(TaskComponent), 
       makeDirective(TaskComponent));
-        
-  beforeEach(() => angular.mock.module('tasks')); 
+   
   beforeEach(() => { 
+    angular.mock.module('tasks');
     angular.mock.inject(($compile, $rootScope) => {
       _$scope = $rootScope.$new();
       _$compile = $compile;
     });
-
   });
 
-  it('generate the approprate HTML', () => {
-    
+  it('generate the appropriate HTML', () => {
     _$scope.task = {
       owner: 'alice',
       description: 'Fix the door handle.',
@@ -50,7 +45,5 @@ describe('TaskComponent', () => {
     _$scope.$digest();
     
     chai.expect(compiled.html()).to.contain('Fix the door handle.');
-  
   });
-
 });

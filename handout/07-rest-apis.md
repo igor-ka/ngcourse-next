@@ -188,6 +188,7 @@ hard to track. Instead, we will be using a more basic Angular server, `$http`.
 Let's start by just getting a list of tasks:
 
 ```javascript
+...
 export class TaskListComponent {
 
   private static selector = 'ngc-tasks';
@@ -228,12 +229,12 @@ We'll focus on a somewhat different different approach, though:
 ```javascript
   ...
     this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
-      .then((response) => {
+      .then(response => {
         this.$log.info(response.data);
         this.tasks = response.data;
       })
       .then(null, 
-        (error) => this.$log.error(status, error));
+        error => this.$log.error(status, error));
   ...      
 ```
 

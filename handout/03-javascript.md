@@ -173,9 +173,7 @@ function by this name, but the function will use name when reporting errors.
   bar(); // This will fail.
 ```
 
-In our case of defining an Angular controller, we use a function expression to define an
-anonymous function and then pass it as the second argument argument to
-`controller()`:
+In our case of defining an Angular controller, we use a function expression to define an anonymous function and then pass it as the second argument argument to `controller()`:
 
 ```javascript
   .controller('MainCtrl', function($scope) {

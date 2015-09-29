@@ -10,9 +10,9 @@ A **unit test** is used to test individual components of the system. An
 **integration test** is a test which tests the system as a whole, and how it
 will run in production.
 
-Unit tests should only verify the behavior of a specific unit of code. If
-the unit's behavior is modified, then the unit test would be updated as well.
-Unit tests should not make assumptions about the behavior of _other_ parts of
+Unit tests should only verify the behaviour of a specific unit of code. If
+the unit's behaviour is modified, then the unit test would be updated as well.
+Unit tests should not make assumptions about the behaviour of _other_ parts of
 your codebase or your dependencies. When other parts of your codebase are
 modified, your unit tests **should not fail**. (If they do fail, you have
 written a test that relies on other components, it is therefore not a unit
@@ -38,13 +38,9 @@ Mocha provides better support for asynchronous testing by adding support for the
 
 ## A Basic Mocha Test
 
-First, let's write a simple test and run it. Put this code into `src/simple.test.js`.
+First, let's write a simple test and run it. Put this code into `source/ts/simple.test.js`.
 
 ```javascript
-/// <reference path="../typings/tsd.d.ts"/>
-import {expect} from 'chai';
-
-export function main() {
   describe('Simple Test', () => {
     it('2*2 should equal 4', () => {
       let x;
@@ -56,7 +52,7 @@ export function main() {
       }
     });
   });
-}
+
 ```
 
 ## Running Mocha Tests with Karma and Gulp
@@ -64,12 +60,12 @@ export function main() {
 We can now run this code from the command line using our gulp task (more in subsequent chapters):
 
 ```bash
-  gulp test
+  gulp karma
 ```
 
 This will run **all** tests under client.
 
-See *gulpfile.js/unit-tests.js* on how to implement the `test` task code for more details. Karma configuration is in `client/testing/karma.conf.js`.
+See *gulpfile.js* on how to implement the `karma` task code for more details. Karma configuration is in `karma.conf.js`.
 
 ## The Importance of Test Documentation
 
@@ -83,98 +79,95 @@ maintenance.
 Chai is an assertion library. It makes it easy to throw errors when things are
 not as we expect them to be. Chai has two styles: "[TDD](http://en.wikipedia.org/wiki/Test-driven_development)" and "[BDD](http://en.wikipedia.org/wiki/Behavior-driven_development)". We'll be using the "[BDD](http://en.wikipedia.org/wiki/Behavior-driven_development)" style.
 
-We have already installed Chai when we ran `bower install` and we are already
+We have already installed Chai when we ran `npm install` and we are already
 loading it when we run Karma via `gulp`. So, now we can go straight to using
 it.
 
 ```javascript
-  /// <reference path="../typings/tsd.d.ts"/>
-  // Load Chai's expect library for assertions.
-  import {expect} from 'chai';
-
-  export function main() {
-    describe('Simple Test', () => {
-      it('2*2 should equal 4', () => {
-        let x = 2 * 2;
-        let y = 4;
-        // Assert that x is defined.
-        expect(x).to.not.be.undefined;
-        // Assert that x equals to specific value.
-        expect(x).to.equal(4);
-        // Assert that x equals to y.
-        expect(x).to.equal(y);
-        // See http://chaijs.com/api/bdd/ for more assertion options.
-      });
+  describe('Simple Test', () => {
+    it('2*2 should equal 4', () => {
+      let x = 2 * 2;
+      let y = 4;
+      // Assert that x is defined.
+      chai.expect(x).to.not.be.undefined;
+      // Assert that x equals to specific value.
+      chai.expect(x).to.equal(4);
+      // Assert that x equals to y.
+      chai.expect(x).to.equal(y);
+      // See http://chaijs.com/api/bdd/ for more assertion options.
     });
-  }
+  });
 ```
 
 ## Unit Testing Simple Components
 
-Let's see how we can apply what we learned so far and unit test our `TaskComponent`. Create a new file *src/components/task/task-component.test.ts*, and copy the following unit-test code.
+Let's see how we can apply what we learned so far and unit test our `TaskComponent`. Create a new file *source/ts/components/task/task-component.test.ts*, and copy the following unit-test code.
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts" />
-import {makeDirective, makeSelector} from 'utils/component-utils';
-import {TaskComponent} from 'components/task/task-component';
-import {expect} from 'chai';
-import 'templateCacheHtml';
+import 'angular';
+import 'angular-mocks';
 
-export function main() {
-    
-  describe('TaskComponent', () => {
+import {makeDirective, makeSelector} from '../../utils/component-utils';
+import {TaskComponent} from './task-component';
+import '../../template-cache';
 
-    let _$scope;
-    let _$compile;
+describe('TaskComponent', () => {
 
-    angular.module('tasks', ['ngcourse.templates'])
-      .directive(
-        makeSelector(TaskComponent), 
-        makeDirective(TaskComponent));
-          
-    beforeEach(() => angular.mock.module('tasks')); 
-    beforeEach(() => { 
-      inject(($compile, $rootScope) => {
-        _$scope = $rootScope.$new();
-        _$compile = $compile;
-      });
+  let _$scope;
+  let _$compile;
 
-    });
-
-    it('generate the approprate HTML', () => {
-      
-      _$scope.task = {
-        owner: 'alice',
-        description: 'Fix the door handle.',
-        done: true
-      };
-      
-      let element = angular.element(
-        `<ngc-task task="task"></ngc-task>`);
-        
-      let compiled = _$compile(element)(_$scope);
-    
-      _$scope.$digest();
-      
-      expect(compiled.html()).to.contain('Fix the door handle.');
+  angular.module('tasks', ['ngcourse.templates'])
+    .directive(
+      makeSelector(TaskComponent), 
+      makeDirective(TaskComponent));
+   
+  beforeEach(() => { 
+    angular.mock.module('tasks');
+    angular.mock.inject(($compile, $rootScope) => {
+      _$scope = $rootScope.$new();
+      _$compile = $compile;
     });
   });
-}
+
+  it('generate the appropriate HTML', () => {
+    _$scope.task = {
+      owner: 'alice',
+      description: 'Fix the door handle.',
+      done: true
+    };
+    
+    _$scope.user = {
+      displayName: 'Alice'
+    };
+    
+    let element = angular.element(
+      `<ngc-task
+        task="task" 
+        user="user">
+      </ngc-task>`);
+      
+    let compiled = _$compile(element)(_$scope);
+  
+    _$scope.$digest();
+    
+    chai.expect(compiled.html()).to.contain('Fix the door handle.');
+  });
+});
 ```
 
 There's a lot going on here, so let's break it down a bit.
 
 ### Template Cache
 
-First let's talk about `import 'templateCacheHtml';`. The first time a template is used within AngularJS context, it is put into the template cache for quick retrieval on subsequent requests.  
+First let's talk about `import '../../template-cache';`. The first time a template is used within AngularJS context, it is put into the template cache for quick retrieval on subsequent requests.  
 
-In our application we are using a gulp plugin within our `partials` gulp task (which can be found in `gulfile.js/build.js`) to put all of our .html templates into the cache right away. Template cache is just a map, with a template URL as a key and the template as a value. Our gulp task puts our templates into the template cache map and wraps them into an angular module we named "ngcourse.templates".
+In our application we are using a gulp plugin within our `template-cache` gulp task (which can be found in `gulfile.js`) to put all of our .html templates into the cache right away. Template cache is just a map, with a template URL as a key and the template as a value. Our gulp task puts our templates into the template cache map and wraps them into an angular module we named 'ngcourse.templates'.
 
-So importing our template cache, and defining a mock tasks module with a "ngcourse.templates" as it's dependency gives us access to our component's template within the test.
+So importing our template cache, and defining a mock tasks module with a 'ngcourse.templates' as it's dependency gives us access to our component's template within the test.
 
 ### Before Each 
 
-This is simple, as the name implies, this block defines a set of operations to be run before each test defined usnig the `it` block.
+This is simple, as the name implies, this block defines a set of operations to be run before each test defined using the `it` block.
 
 ### Inject
 

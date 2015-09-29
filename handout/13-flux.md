@@ -1,6 +1,6 @@
 # Part 13: Flux Architecture
 
-Flux is an architectural design pattern introduced and used by Facebook as an alternative to traditionl MVC patterns to build modern web applications. Flux is not a library and implementing it within your application can be done witout depending on any 3rd part code. Moreover Flux is language and framework agnostic and can be used outside single web-page application and JavaScript context. The cored ideas behind Flux are inspired by game programming, specifically rendering of the changes of your domain model.
+Flux is an architectural design pattern introduced and used by Facebook as an alternative to traditional MVC patterns to build modern web applications. Flux is not a library and implementing it within your application can be done without depending on any 3rd part code. Moreover Flux is language and framework agnostic and can be used outside single web-page application and JavaScript context. The cored ideas behind Flux are inspired by game programming, specifically rendering of the changes of your domain model.
 
 ## Core Concepts
 
@@ -10,21 +10,21 @@ The diagram below illustrates the flow of data through the Flux "pipeline".
 
 ![alt tag] (https://facebook.github.io/flux/img/flux-simple-f8-diagram-with-client-action-1300w.png)
 
-When the user interacts with the View (i.e. a component), the view propogates an Action through a Dispatcher (i.e. a message bus) to the Stores where your domain model or state and the application logic are stored. Once the Store updates it's domain model it propogates a "change" event to which Components in your application can subsribe, and re-render themselves accordingly to the new data.
+When the user interacts with the View (i.e. a component), the view propagates an Action through a Dispatcher (i.e. a message bus) to the Stores where your domain model or state and the application logic are stored. Once the Store updates it's domain model it propagates a "change" event to which Components in your application can subscribe, and re-render themselves accordingly to the new data.
 
 Let's have a more in depth look at each of those parts in our "Flux machine".
 
 ### Dispatcher
 
-Disptacher acts as a central message bus responsible for distributing the incoming Actions to the appropriate stores. It has no logic of its own and simply acts as a hub for Action creator methods to push Actions to. Store will listen on the dispatcher for incoming Actions responding to relevant ones.
+Dispatcher acts as a central message bus responsible for distributing the incoming Actions to the appropriate stores. It has no logic of its own and simply acts as a hub for Action creator methods to push Actions to. Store will listen on the dispatcher for incoming Actions responding to relevant ones.
 
 ### Stores
 
-As we mentioned above, Stores contain and manage your application's model and logic pertaining to a particular domain of your application. As a result an application will have many stores, each focused on the specific aspect of your domain. Stores are subsribed to the Dispatcher, our event bus, and listen to Actions that are relevent to them. The important part, is that nothing outside the store can modify the application state stored within it directly. Nothing outside the Store should know how the store manages it's state, and the Store can be accessed in read-only fasion, i.e. by providing getters to the outside world. In summary, the only way for a Store to modify the domain model of your application is by responding to an action comming through a Dispatcher.
+As we mentioned above, Stores contain and manage your application's model and logic pertaining to a particular domain of your application. As a result an application will have many stores, each focused on the specific aspect of your domain. Stores are subscribed to the Dispatcher, our event bus, and listen to Actions that are relevant to them. The important part, is that nothing outside the store can modify the application state stored within it directly. Nothing outside the Store should know how the store manages it's state, and the Store can be accessed in read-only fashion, i.e. by providing getters to the outside world. In summary, the only way for a Store to modify the domain model of your application is by responding to an action coming through a Dispatcher.
 
 ## Actions
 
-Actions are a simple objects representing an action. The ussually contain and action name and an optional payload. Most of the time actions are emitted from the views.
+Actions are a simple objects representing an action. The usually contain and action name and an optional payload. Most of the time actions are emitted from the views.
 
 ## Views
 
@@ -32,20 +32,19 @@ Our views are our components
 
 ## Implementing Dispatcher and Actions
 
-Our dispatcher is very simple, let's modify our *src/app.ts* file
+Our dispatcher is very simple, let's modify our *source/ts/app.ts* file
 
 ```javascript
   angular.module('ngcourse.dispatcher', [])
     .service('dispatcher', Rx.Subject);
 ```
 
-In Chapter 08 - RxJS we have subsribed to Observables with Observers that implemented the `onNext`, `onError` and `onCompleted` methods. Rx.Subject is a combination of an Observer and Observable in one class. It is used here for convinience as you will see later, we use both aspects of it within the dispatcher.
+In Chapter 12 - RxJS we have subscribed to Observables with Observers that implemented the `onNext`, `onError` and `onCompleted` methods. Rx.Subject is a combination of an Observer and Observable in one class. It is used here for convenience as you will see later.
 
-Now, let add some actions to push onto our dispatcher later. Create a new file in *src/actions/task-actions.ts*
+Now, let add some actions to push onto our dispatcher later. Create a new file in *source/ts/actions/task-actions.ts*
 
 ```javascript
-  /// <reference path="../../../typings/tsd.d.ts" />
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class TaskActions {
 
@@ -61,7 +60,7 @@ Now, let add some actions to push onto our dispatcher later. Create a new file i
   }
 ```
 
-It is a poor practice to use hardcoded strings like `'GET_TASKS'` above. We should extract our constants into a separate file, *src/constants/action-constants.ts*
+It is a poor practice to use hardcoded strings like `'GET_TASKS'` above. We should extract our constants into a separate file, *source/ts/actions/action-constants.ts*
 
 ```javascript
   export const TASK_ACTIONS = {
@@ -73,7 +72,7 @@ and let's use those constants in *task-actions.ts* instead
 
 ``` javascript
   ...
-  import {TASK_ACTIONS} from 'constants/action-constants';
+  import {TASK_ACTIONS} from '../action-constants';
 
   export class TaskActions {
     ...
@@ -90,13 +89,9 @@ Great! Now we can create our first store.
 
 ## Implementing a Store
 
-Now that we have a dispatcher and actions defined, lets start on our first Store. Let's create a new file for it in *src/stores/tasks/tasks-store.ts*
+Now that we have a dispatcher and actions defined, lets start on our first Store. Let's create a new file for it in *source/ts/stores/tasks/tasks-store.ts*
 
 ```javascript
-  /// <reference path="../../../typings/tsd.d.ts" />
-  import {Inject} from 'utils/di';
-  import {TASK_ACTIONS} from 'constants/action-constants';
-
   export class TasksStore {
 
     private _tasks;
@@ -116,9 +111,8 @@ Our Store's domain object will be a list of tasks that we will receive from the 
 Before we do anything we need to listen to incoming Actions relevant to this store. Let's listen to incoming actions from our Dispatcher.
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts" />
-import {Inject} from 'utils/di';
-import {TASK_ACTIONS} from 'constants/action-constants';
+import {Inject} from '../../utils/di';
+import {TASK_ACTIONS} from '../../actions/action-constants';
 
 export class TasksStore {
 
@@ -135,7 +129,7 @@ export class TasksStore {
   
   private registerActionHandlers() {
     this.dispatcher.filter(
-      (action) => action.actionType === TASK_ACTIONS.GET_TASKS)
+      action => action.actionType === TASK_ACTIONS.GET_TASKS)
         .subscribe(
           () => this.getTasks());
   }
@@ -146,7 +140,7 @@ export class TasksStore {
 }
 ```
 
-For convinience we have created a new method on our Store called `registerActionHandlers()` where we will listen to incoming actions.
+For convenience we have created a new method on our Store called `registerActionHandlers()` where we will listen to incoming actions.
 Notice how we use `filter()` method to filter the actions that are relevant to this store, in this case we are only responding to `TASK_ACTIONS.GET_TASKS` and invoking a method called `getTasks()` to process this action.
 
 ### Getting the tasks from the server
@@ -165,15 +159,14 @@ Lets retrieve some tasks from the server using our *ServerService* implemented i
   private getTasks() {
     Rx.Observable.fromPromise(
       this.server.get('/api/v1/tasks'))
-        .subscribe(
-          (tasks) => this._tasks = tasks);
+        .subscribe(tasks => this._tasks = tasks);
   }
   ...
 ```
 
-Notice the use of `Rx.Observable.fromPromise` that we have covered in the previous chapter to wrap our Promise base server. This is not required and you could achieve a similar result using `then()` methods of the underlying promise. Also, we have added a call to `getTasks()` method within the constructor to initialize our store with the data at the begining of it's lifecycle.
+Notice the use of `Rx.Observable.fromPromise` that we have covered in the previous chapter to wrap our Promise base server. This is not required and you could achieve a similar result using `then()` methods of the underlying promise. Also, we have added a call to `getTasks()` method within the constructor to initialize our store with the data at the beginning of it's lifecycle.
 
-### Notifying Store Subsribers of State Change
+### Notifying Store Subscribers of State Change
 
 So far we have implemented `getTasks()` to get the data we need from the server and store it in our domain model, i.e. `this._tasks` variable. In practice our stores will have component listening to the change on our domain model. We will implement this mechanism using what we learned about RxJS below.
 
@@ -212,9 +205,9 @@ So far we have implemented `getTasks()` to get the data we need from the server 
 
 Let go through this code step by step:
 
-1. We created a `Rx.ReplaySubject(1)` as a private instance variable to be our change notification subject. This is a special subject that will replay a value from its buffer when a new subsriber is added.
-2. We have added a new getter property `get tasksSubject()`, that can be used by an observer to subsribe to and be notified whenever a change occurs to our domain model.
-3. We implemented 2 utility method that we will use within our store to notify our on change observer of change to the model within the store, or an error that occured within the store with `emitChange()` and `emitError(error)` respectivly.
+1. We created a `Rx.ReplaySubject(1)` as a private instance variable to be our change notification subject. This is a special subject that will replay a value from its buffer when a new subscriber is added.
+2. We have added a new getter property `get tasksSubject()`, that can be used by an observer to subscribe to and be notified whenever a change occurs to our domain model.
+3. We implemented 2 utility method that we will use within our store to notify our on change observer of change to the model within the store, or an error that occurred within the store with `emitChange()` and `emitError(error)` respectively.
 
 Now that we have all the parts in place in order to notify our observer of changes within the store, let's modify our `getTasks()` method as follows.
 
@@ -224,11 +217,11 @@ Now that we have all the parts in place in order to notify our observer of chang
     Rx.Observable.fromPromise(
       this.server.get('/api/v1/tasks'))
         .subscribe(
-          (tasks) => {
+          tasks => {
             this._tasks = tasks;
             this.emitChange();
           },
-          (error) => this.emitError(error));
+          error => this.emitError(error));
   }
   ...
 ```
@@ -265,25 +258,66 @@ export class TaskListComponent {
     ) {
 
     this.tasksStore.tasksSubject.subscribe(
-      Rx.Observer.create(
-        (tasks) => this._tasks = tasks,
-        (error) => this._errorMessage = error
-      ));
+      tasks => this._tasks = tasks,
+      error => this._errorMessage = error);
   }
   ...
 ```
 
-All we are doing here is providing an observer to listen to store change events or error comming from the store. When a change occurs within the Store our Component gets notified and updates it's own (view related) list of tasks. If an error has occurred within the store the component get notified as well and can display it to the user (in some friendly form).
+All we are doing here is providing an observer to listen to store change events or error coming from the store. When a change occurs within the Store our Component gets notified and updates it's own (view related) list of tasks. If an error has occurred within the store the component get notified as well and can display it to the user (in some friendly form).
 
-Since we used a `ReplaySubject` with a buffer of 1, we are guaranteed to get notified of the data within the store, even if our component got instantiated after this event has already occured. This reduced the need to call `this.tasksStore.tasks` on each components instantiation.
+Since we used a `ReplaySubject` with a buffer of 1, we are guaranteed to get notified of the data within the store, even if our component got instantiated after this event has already occurred. This reduced the need to call `this.tasksStore.tasks` on each components instantiation.
 
-Note, how we did not have to change our `TaskComponent` implementation, as a result of `TaskListComponent` passing it it's data from above. An important guideline with the stores, is that for the most part only top level components within your application should subsribe to them, and then pass it down to components below.
+Note, how we did not have to change our `TaskComponent` implementation, as a result of `TaskListComponent` passing it data from above. An important guideline with the stores, is that for the most part only top level components within your application should subscribe to them, and then pass it down to components below.
 
-## A Case for Immutables
+## Clean up
 
-The import part is that Stores, provide read-only access to its data. As Stores should not provide setters to change their state. Technically if our `TaskListComponent` decided to change the array of `tasks` it received from the store it in effect would change the state of the store's domain. What if a component want to make a change to this data for some UI purposes?
+Even though our application is relatively small, and RxJS subscriptions are relatively lightweight on resources, we should cleanup our subscription when it is no longer needed. How do we know if the subscription is no longer needed?
 
-This is why our stores should contain their state in the immutable data structures. To illustrate on how this can be achieved, let's refactor our `TasksStore` to use immutables for it's model. Even though there could be several ways we could achieve this, for the purposes of this example we are going to be using the `Immutable.js` library: https://facebook.github.io/immutable-js/
+There is another part of Angular we need to cover, and that is component life cycle events accessible to us via the `$scope` service.
+
+Let's inject this service into out component as shown below:
+
+```javascript
+  ...
+  constructor(@Inject('$scope') private $scope, ...)
+  ...
+```
+
+since we will need to dispose of our subscription above we need to keep a reference to it when we subscribe:
+
+```javascript
+  ...
+  let tasksSubscription = this.tasksStore.tasksSubject.subscribe(
+    tasks => this._tasks = tasks,
+    error => this._errorMessage = error);
+  ...
+```
+
+Finally, let's use `$scope`'s `$on` method to subscribe to the `$destroy` even of the component in question:
+
+```javascript
+  ...
+  constructor(
+    @Inject('$log') private $log,
+    '$scope') private $scope,
+    @Inject('tasksStore') private tasksStore
+    ) {
+
+    let tasksSubscription = this.tasksStore.tasksSubject.subscribe(
+      tasks => this._tasks = tasks,
+      error => this._errorMessage = error);
+
+    this.$scope.$on('$destroy', () => tasksSubscription.dispose());
+  }
+  ...
+```
+
+## A Case for Immutable Data
+
+The important part is that Stores, provide read-only access to its data. As Stores should not provide setters to change their state. Technically if our `TaskListComponent` decided to change the array of `tasks` it received from the store, it in effect would change the state of the store's domain. What if a component wants to make a change to this data for some UI purposes?
+
+This is why our stores should contain their state in the immutable data structures. To illustrate on how this can be achieved, let's refactor our `TasksStore` to use immutable for it's model. Even though there could be several ways we could achieve this, for the purposes of this example we are going to be using the `Immutable.js` library: https://facebook.github.io/immutable-js/
 
 ```javascript
   import {List, fromJS} from 'immutable';
@@ -310,23 +344,23 @@ This is why our stores should contain their state in the immutable data structur
       Rx.Observable.fromPromise(
         this.server.get('/api/v1/tasks'))
           .subscribe(
-            (tasks) => {
+            tasks => {
               this._tasks = fromJS(tasks);
               this.emitChange();
             },
-            (error) => this.emitError(error));
+            error => this.emitError(error));
     }
   }
 ```
 
-## Emiting Actions from Views
+## Emitting Actions from Views
 
 So far we have responded to changes within our Stores. Let's make a view that emits an Action.
 
-Create a new file in *src/components/task-add/task-add-component.ts*
+Create a new file in *source/ts/components/task-add/task-add-component.ts*
 
 ```javascript
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
 
 export class TaskAddComponent {
 
@@ -371,7 +405,7 @@ and a corresponding *task-add-component.html*
 </div>
 ```
 
-Let's modify our *src/constants/actions-constants.ts* file to add our new action.
+Let's modify our *source/ts/actions/actions-constants.ts* file to add our new action.
 
 ```javascript
   export const TASK_ACTIONS = {
@@ -380,7 +414,7 @@ Let's modify our *src/constants/actions-constants.ts* file to add our new action
   };
 ```
 
-define a new action in *src/actions/task-actions.ts*
+define a new action in *source/ts/actions/task-actions.ts*
 
 ```javascript
   ...
@@ -414,7 +448,7 @@ and finally modify our *TaskStore* to listen on a new action and call the corres
       this.server.post('/api/v1/tasks', newTask))
         .subscribe(
           () => this.getTasks(),
-          (error) => this.emitError(error));
+          error => this.emitError(error));
   }
   ...
 ```

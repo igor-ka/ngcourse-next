@@ -1,6 +1,3 @@
-// import 'chai';
-// import 'mocha';
-
 describe('Simple Test', () => {
   it('2*2 should equal 4', () => {
     let x = 2 * 2;

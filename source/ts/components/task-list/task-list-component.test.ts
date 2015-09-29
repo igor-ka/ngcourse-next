@@ -1,5 +1,5 @@
-import {TaskListComponent} from 'components/task-list/task-list-component';
-import {TaskActions} from 'actions/task/task-actions';
+import {TaskListComponent} from './task-list-component';
+import {TaskActions} from '../../actions/task/task-actions';
 
 import 'angular';
 import 'angular-mocks';
@@ -14,29 +14,29 @@ let _userStoreMock;
 let _routerMock;
 
 let _tasksMock = [{
-    owner: 'alice',
-    description: 'Build the dog shed.',
-    done: true
-  }, {
-    owner: 'bob',
-    description: 'Get the milk.',
-    done: false
-  }, {
-    owner: 'alice',
-    description: 'Fix the door handle.',
-    done: true
-  }];
+  owner: 'alice',
+  description: 'Build the dog shed.',
+  done: true
+}, {
+  owner: 'bob',
+  description: 'Get the milk.',
+  done: false
+}, {
+  owner: 'alice',
+  description: 'Fix the door handle.',
+  done: true
+}];
 
 let _usersMock = { 
-    'alice' : {
-      username: 'alice',
-      displayName: 'Alice'
-    },
-    'bob': {
-      username: 'bob',
-      displayName: 'Robert'
-    }
-  };
+  'alice' : {
+    username: 'alice',
+    displayName: 'Alice'
+  },
+  'bob': {
+    username: 'bob',
+    displayName: 'Robert'
+  }
+};
 
 let _userMock = {
   data: {
@@ -48,7 +48,7 @@ let _userMock = {
 describe('TaskListComponent', () => {
 
   beforeEach(() => { 
-    angular.mock.inject(($rootScope) => {
+    angular.mock.inject($rootScope => {
       _$scope = $rootScope.$new();
     });
     

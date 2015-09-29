@@ -7,8 +7,6 @@ some of the more interesting things we can do with promises.
 
 ```javascript
   ...
-  import {Inject} from 'utils/di';
-
   export class TasksService {
 
     private taskPromise;
@@ -27,20 +25,18 @@ some of the more interesting things we can do with promises.
 
 ```javascript
   ...
-  import {Inject} from 'utils/di';
-
   export class ServerService {
 
     private baseUrl = 'http://ngcourse.herokuapp.com';
 
     constructor(
       @Inject('$http') private $http,
-      @Inject('user') private user) { }
+      @Inject('user') private userService) { }
       
     public get(path) {
-      return this.user.whenAuthenticated()
+      return this.userService.whenAuthenticated()
         .then(() => this.$http.get(API_BASE_URL + path))
-        .then((response) => response.data);
+        .then(response => response.data);
     }
   }
 ```
@@ -53,7 +49,7 @@ turning it into a function that returns a promise.
 The first approach is to use `$q.defer()`:
 
 ```javascript
-  public getFooPromise(param) {
+  function getFooPromise(param) {
     let deferred = $q.defer();
     getFooWithCallbacks(param, (error, result) => {
       if (error) {
@@ -69,7 +65,7 @@ The first approach is to use `$q.defer()`:
 An alternative is to use the ES6-style constructor:
 
 ```javascript
-  public getFooPromise(name) {
+  function getFooPromise(name) {
     return $q((resolve, reject) => {
       getFooWithCallbacks(param, (error, result) => {
         if (error) {
@@ -110,13 +106,13 @@ methods when you want to avoid calling a function that would have given you
 a promise.
 
 ```javascript
-  public get(path) {
+  function get(path) {
     if (!networkInformation.isOnline) {
       return $q.reject('offline');
     } else {
-      return user.whenAuthenticated()
+      return userService.whenAuthenticated()
         .then(() => $http.get(API_BASE_URL + path))
-        .then((response) => response.data);
+        .then(response => response.data);
     }
   };
 ```
@@ -125,18 +121,18 @@ Or, better yet:
 
 ```javascript
 
-  public waitForPreconditions() {
+  function waitForPreconditions() {
     if (!networkInformation.isOnline) {
       return $q.reject('offline');
     } else {
-      return user.whenAuthenticated();
+      return userService.whenAuthenticated();
     }
   }
 
-  public get(path) {
+  function get(path) {
     return waitForPreconditions()
       .then(() => $http.get(API_BASE_URL + path))
-      .then((response) => response.data);
+      .then(response => response.data);
     }
   };
 ```
@@ -149,9 +145,7 @@ number of other AngularJS functions.
 ## Promises vs Events
 
 While promises are nearly always better than Node- style callbacks, the choice
-of when to use promises vs a publish-subscribe approach (e.g., via
-`$broadcast`) is a bit more complex. Here are the key differences between the
-two approaches:
+of when to use promises vs a publish-subscribe approach is a bit more complex. Here are the key differences between the two approaches:
 
 | Promises                           | Events (aka “Publish – Subscribe”) |
 |------------------------------------|------------------------------------|

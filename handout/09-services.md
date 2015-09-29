@@ -10,8 +10,7 @@ and they should be kept out of controllers.
 Instead, we'll put those functions in an AngularJS service. Let's put this in *src/services/tasks/tasks-service.ts*
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts" />
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
 
 export class TasksService {
 
@@ -19,9 +18,7 @@ export class TasksService {
 
   public getTasks () {
     return this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
-      .then(function(response) {
-        return response.data;
-      });
+      .then(response => response.data);
   };
 }
 ```
@@ -30,7 +27,7 @@ Note we have added a new module definition and need to update *app.ts*.
 
 ```javascript
   ...
-  import {TasksService} from 'services/tasks/tasks-service';
+  import {TasksService} from './services/tasks/tasks-service';
   ...
   angular.module('ngcourse', [])
     ...
@@ -44,7 +41,7 @@ Note we have added a new module definition and need to update *app.ts*.
   ...    
 ```
 
-We can now simplify our code code to use this service:
+We can now simplify our code to use this service:
 
 ```javascript
   ...
@@ -55,7 +52,7 @@ We can now simplify our code code to use this service:
       @Inject('tasksService') private tasksService
       ) {
         this.tasksService.getTasks()
-          .then((tasks) => this.tasks = tasks);
+          .then(tasks => this.tasks = tasks);
     }
 ```
 
@@ -72,11 +69,10 @@ service.
 ## More Services
 
 When it comes to services, the more the better. Let's refactor some of the
-code from our `tasks` service into a new `server` service *src/services/server/server-service.ts*.
+code from our `tasks` service into a new `server` service *source/ts/services/server/server-service.ts*.
 
 ```javascript
-  /// <reference path="../../../typings/tsd.d.ts" />
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class ServerService {
 
@@ -86,9 +82,7 @@ code from our `tasks` service into a new `server` service *src/services/server/s
       
     public get(path) {
       return this.$http.get(this.baseUrl + path)
-        .then(function(response) {
-          return response.data;
-        });
+        .then(response => response.data);
     }
   }
 ```
@@ -97,7 +91,7 @@ Again, let's add a new definition in *app.ts*.
 
 ```javascript
   ...
-  import {ServerService} from 'services/server/server-service';
+  import {ServerService} from './services/server/server-service';
   ...
   angular.module('ngcourse', [])
     ...
@@ -108,8 +102,7 @@ Again, let's add a new definition in *app.ts*.
 While our `TaskService` code gets simplified to:
 
 ```javascript
-  /// <reference path="../../../typings/tsd.d.ts" />
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class TasksService {
 
@@ -139,7 +132,7 @@ We could decompose yet more, though:
 and 
 
 ```javascript
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
 
 export class ServerService {
 
@@ -149,9 +142,7 @@ export class ServerService {
     
   public get(path) {
     return this.$http.get(this.API_BASE_URL + path)
-      .then(function(response) {
-        return response.data;
-      });
+      .then(response => response.data);
   }
 }
 ```
@@ -171,7 +162,7 @@ let's make `server` its own module:
     .service('serverService', ServerService);
 ```
 
-We can then make it a dependency in our `ngcourse` module (in `app.js`):
+We can then make it a dependency in our `ngcourse` module (in `app.ts`):
 
 ```javascript
   angular.module('ngcourse', [
@@ -190,9 +181,7 @@ Your `.run()` is essentially you modules's equivalent of the "main" block.
     'ngcourse.server'
   ])
 
-  .run(function($log) {
-    $log.info('All ready!');
-  });
+  .run($log => $log.info('All ready!'));
 ```
 
 Keep in mind, though, that Angular's modules are somewhat of a fiction.

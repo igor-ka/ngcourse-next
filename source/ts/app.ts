@@ -77,7 +77,7 @@ angular.module('ngcourse', [
     makeDirective(TaskEditComponent))
 
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
-  .run(function(koast, API_BASE_URL) {
+  .run((koast, API_BASE_URL) => {
     koast.init({
       baseUrl: API_BASE_URL
     });
