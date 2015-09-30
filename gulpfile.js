@@ -111,6 +111,7 @@ gulp.task('compile', ['lint'], function (done) {
   return tsResult.js
     .pipe(rename(function (path) {
       path.dirname = path.dirname.replace('source/ts', 'js');
+      path.dirname = path.dirname.replace('source\\ts', 'js'); //windows fix
     }))
     .pipe(size({title: 'JS Size:'}))
     .pipe(sourcemaps.write({sourceRoot: '/'}))
