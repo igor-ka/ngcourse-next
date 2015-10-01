@@ -1,4 +1,4 @@
-import {TasksService} from 'services/tasks/tasks-service';
+import {TasksService} from './tasks-service';
 
 describe('TasksService', () => {
   
@@ -33,21 +33,14 @@ describe('TasksService', () => {
   it('should get tasks', () => {
     let tasksService = new TasksService(_mockServerService);
     return tasksService.getTasks()
-      .then((tasks) => {
-        chai.expect(tasks).to.deep.equal(_mockTasks);
-      });
+      .then(tasks => chai.expect(tasks).to.deep.equal(_mockTasks));
   });
 
   it('should only call server service get once', () => {
     let tasksService = new TasksService(_mockServerService);
     return tasksService.getTasks() // Call getTasks the first time.
-      .then(() => {
-        return tasksService.getTasks(); // Call it again.
-      })
-      .then(() => {
-        // Check the number of calls.
-        chai.expect(_mockServerService.get.calledOnce).to.be.true;
-      });
+      .then(() => tasksService.getTasks())
+      .then(() => chai.expect(_mockServerService.get.calledOnce).to.be.true);
   });
 
 });

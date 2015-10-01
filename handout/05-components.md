@@ -11,16 +11,20 @@ Let's start by setting up a really simple angular app -- so simple in fact that 
 ```html
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="/bower_components/es6-module-loader/dist/es6-module-loader.js"></script>
-    <script src="/bower_components/system.js/dist/system.js"></script>
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link href="/node_modules/basscss/css/basscss.css" rel="stylesheet" type="text/css"/>
+    <link href="/node_modules/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <div>Hello World!</div>
-    <script src="/app/loader.config.js"></script>
-    <script>
-      System.import('app');
-    </script>
+    <script src="/node_modules/systemjs/dist/system.js"></script>
+    <script src="/system.config.js"></script>
+    <script>System.import('js/app');</script>
   </body>
 </html>
 ```
@@ -43,7 +47,7 @@ This app doesn't do anything at all. To make it do something remotely interestin
 
 In Angular 1.x, directives are the building blocks of your application. Directives can be described as markers on the DOM tree that allow to define custom behaviour and/or transformations on that DOM element.
 
-Let's define a basic directive in our *app.ts* file to see this in action,
+Let's define a basic directive in our *source/ts/app.ts* file to see this in action,
 
 ```javascript
   ...
@@ -125,7 +129,7 @@ angular.module('ngcourse')
   );
 ```
 
-Note Angular's `{{ }}` syntax, refered to as the double mustache, used here
+Note Angular's `{{ }}` syntax, referred to as the double moustache, used here
 to bind controller's property to the template.
 
 Let's recap:
@@ -134,19 +138,19 @@ Let's recap:
 The template is just an HTML snippet defining a view that represent this directive. Templates have access to any properties or functions defined on the directive's controller scope.
 
 ### Controller
-The controller is just an ES6 class that backs component's view represented by a template. The template above binds the `userDisplayName` property defined on the `MainDirectiveCtrl` controller class using the double-mustache syntax `{{ ctrl.userDisplayName }}`.
+The controller is just an ES6 class that backs component's view represented by a template. The template above binds the `userDisplayName` property defined on the `MainDirectiveCtrl` controller class using the double-moustache syntax `{{ ctrl.userDisplayName }}`.
 
 ## Using an External Template
 
-Our templates are usualy too complex to include as a string. So, instead we often provide a URL to the template file by using `templateUrl` instead of the `template` option in our Directive Definition Object (DDO).
+Our templates are usually too complex to include as a string. So, instead we often provide a URL to the template file by using `templateUrl` instead of the `template` option in our Directive Definition Object (DDO).
 
-Let's create a new directory *src/components/main/* and extract our template into a html file called *main-component.html*. Our templateUrl option should now point to *components/main/main-component.html*.
+Let's create a new directory *source/ts/components/main/* and extract our template into a html file called *main-component.html*. Our templateUrl option should now point to *components/main/main-component.html*.
 
 ## Using an External Controller Class
 
 In the same fashion we should extract our controller class into a separate file, as we want to avoid clutter when our application grows.
 
-Create a file called *main-component.ts* in the */components/main/main-component.html* and move our controller class definition there.
+Create a file called *main-component.ts* in the *source/ts/components/main/main/* folder and move our controller class definition there.
 
 ### Import and Export
 
@@ -166,7 +170,7 @@ export class MainDirectiveCtrl {
 Now in *app.ts* lets import our class as follows:
 
 ```javascript
-import {MainDirectiveCtrl} from 'components/main/main-component';
+import {MainDirectiveCtrl} from './components/main/main-component';
 ...
 angular.module('ngcourse', []);
 
@@ -192,14 +196,14 @@ With Angular 1.x basics out of the way we can start talking about...
 
 # Components
 
-As directive in Angular 1.x, in Angular 2, components are the building blocks of your application. As a matter of fact what we built in the previous section is refered to as **Component Directive** within Angular 1.x context. 
+As directive in Angular 1.x, in Angular 2, components are the building blocks of your application. As a matter of fact what we built in the previous section is referred to as **Component Directive** within Angular 1.x context. 
 
 Angular 2's components are conceptually similar to component directives from Angular 1.x. The structure of Angular 2 application can be viewed as the tree of components, with a root element of that tree being the entry point of your application.
 
 In summary, component is an object that structures and represents a UI element. It consists of two parts, component **controller** in charge of view logic and component **template** representing the view.
 
 With that in mind let's define a basic component in a separate typescript file 
-in *src/components/main/main-component.ts*:
+located in *source/ts/components/main/main-component.ts*:
 
 ```javascript
 export class MainComponent {
@@ -229,7 +233,7 @@ Lets change our *app.ts* and let Angular know about our component via the `.dire
 
 ```javascript
 ...
-import {makeDirective, makeSelector} from 'utils/component-utils';
+import {makeDirective, makeSelector} from './utils/component-utils';
 ...
 angular.module('ngcourse')
   .directive(
@@ -356,10 +360,10 @@ In short, the order of parameters in the `$inject` property relative to the clas
 
 ### Utility Method for Dependency Injection
 
-To simplify DI within our code we can use a utility function provided in *utils/di.ts* file as follows:
+To simplify DI within our code we can use a utility function provided in *source/ts/utils/di.ts* file as follows:
 
 ```javascript
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class MainComponent {
 
@@ -378,7 +382,7 @@ To simplify DI within our code we can use a utility function provided in *utils/
 ## Two-Way Data Binding with `ng-model`
 
 We can also control our component's property value from within the HTML.
-Modify the template of of our component to include the following:
+Modify the template of our component to include the following:
 
 ```html
   <div>
@@ -392,7 +396,7 @@ Modify the template of of our component to include the following:
   </div>
 ```
 
-In the above example, the `ng-model` directive bi-directionaly binds an element to our component's class property. Note that if the property does not exist on the controller, it will be created.
+In the above example, the `ng-model` directive bi-directionally binds an element to our component's class property. Note that if the property does not exist on the controller, it will be created.
 
 **Important Note:** Two way binding in Angular 2 is one of the biggest changes compared to Angular 1.x. Angular 2 provides a mechanism allowing us to achieve 2-way data binding similarly to today, however this is mostly syntactic sugar while the underlying framework is different. A more detailed look into this will be provided in one of subsequent chapter of this course.
 
@@ -444,12 +448,12 @@ We'll also need to modify our component's controller as follows:
 
 ## Splitting Up the Components
 
-By this point our component is getting unweildy. Let's split it into two separate components. 
+By this point our component is getting unwieldy. Let's split it into two separate components. 
 
-The first component will be located in *src/components/task-list/task-list-component.ts* and will implement our simple task counter.
+The first component will be located in *source/ts/components/task-list/task-list-component.ts* and will implement our simple task counter.
 
 ```javascript
-  import {Inject} from 'utils/di';
+  import {Inject} from ‘../../utils/di’;
 
   export class TaskListComponent {
     private numberOfTasks;
@@ -483,7 +487,7 @@ We should also create a template file for this component with the familiar marku
 The second component will be remain at *components/main/main-component.ts* and will be responsible for user authentication. 
 
 ```javascript
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class MainComponent {
     private static selector = 'ngc-main';
@@ -519,8 +523,8 @@ The last thing remaining is to wire up our components within Angular application
 
 ```javascript
   ...
-  import {MainComponent} from 'components/main/main-component';
-  import {TaskListComponent} from 'components/task-list/task-list-component';
+  import {MainComponent} from './components/main/main-component';
+  import {TaskListComponent} from './components/task-list/task-list-component';
   ...
   angular.module('ngcourse')
     .directive(
@@ -537,9 +541,9 @@ The last thing remaining is to wire up our components within Angular application
 
 ## Application Structure with Components
 
-A useuful way of conceptualizing Angular application design is to look at it as a tree of nested components each having an isolated scope. 
+A useful way of conceptualizing Angular application design is to look at it as a tree of nested components each having an isolated scope. 
 
-Let's try adding another `<ngc-tasks></ngc-tasks>` element to the template of a component we defined in *src/components/main/main-component.ts* and observe what happens in the browser.
+Let's try adding another `<ngc-tasks></ngc-tasks>` element to the template of a component we defined in *source/ts/components/main/main-component.ts* and observe what happens in the browser.
 
 ### Passing Data Between Components
 
@@ -572,10 +576,10 @@ Now the `username` property is passed from `MainComponent` to `TaskListComponent
 
 ### Responding to Component Events
 
-Let's restructure our code further and create a new component to handle the login form for us. We will put this component in a new file *src/components/login-form/login-form-component.ts* and create an html template file for it as well.
+Let's restructure our code further and create a new component to handle the login form for us. We will put this component in a new file *source/ts/components/login-form/login-form-component.ts* and create an html template file for it as well.
 
 ```javascript
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class LoginFormComponent {
 
@@ -650,7 +654,7 @@ And change our wiring in `app.ts`
 Let's change *main-component.ts* and its template to accomodate this change:
 
 ```javascript
-  import {Inject} from 'utils/di';
+  import {Inject} from '../../utils/di';
 
   export class MainComponent {
     private static selector = 'ngc-main';
@@ -682,8 +686,6 @@ Let's change *main-component.ts* and its template to accomodate this change:
   </div>
 ```
 
-The reponsibility of our `MainComponent` has changed after re-factoring. Let's rename it to `AuthenticationComponent`, it's controller class to `AuthenticationCtrl` and the selector in *app.ts* to `ngcAuthenticator`.
-
 ### Passing Data Between Components Summary
 
 In the above sections we have seen 2 ways to pass data between components using the `bindToController` options. 
@@ -694,7 +696,7 @@ In the above sections we have seen 2 ways to pass data between components using 
 
 `=` and `&` are the mechanism that allow our component to have a "public API".
 
-Note, if the attribute name and the property of the component class match the name can be ommited. i.e instead of `username: '=username'` we can just write `username: '='`, with the same shortcut applying to `&`.
+Note, if the attribute name and the property of the component class match the name can be omitted. i.e instead of `username: '=username'` we can just write `username: '='`, with the same shortcut applying to `&`.
 
 ## Iteration with `ng-repeat`
 
@@ -718,7 +720,7 @@ Let's modify the temaplate in *task-list-component.ts*
   </div>
 ```
 
-In the TaskListCtrl all we do is set `tasks` to an array:
+In the TaskListComponent all we do is set `tasks` to an array:
 
 ```javascript
 ...
@@ -755,7 +757,7 @@ Note that in the template of this component we also change `{{ ctrl.numberOfTask
 
 For the sake of a simple application our `TaskListComponent` class is fine, but as the complexity and size of our application grow we want to divide responsibilities among our components further.
 
-How should we divide responsobilities between our components? Let's start with our task list example above.
+How should we divide responsibilities between our components? Let's start with our task list example above.
 
 `TaskListComponent` will be responsible with retrieving and maintaining the list of tasks from the domain model. It should be able to retrieve the tasks, and it should be able to add a new task to the domain model (abstracted our in later sections).
 
@@ -805,8 +807,8 @@ What is left is to modify our *task-list-component.html*
   </div>
 ```
 
-The refactoring above illustrates and important categorisation between components, as it allows us to think of components in the following ways.
+The refactoring above illustrates and important categorization between components, as it allows us to think of components in the following ways.
 
 **Macro Components:** which are application specific, higher-level, container components, with access to the application's domain model.
 
-**Micro Components:** which are components responsible for UI rendering and/or behvariour of specific entities passed in via components API (i.e component properties and events). Those components are more inline with the upcoming Web Component standards.
+**Micro Components:** which are components responsible for UI rendering and/or behaviour of specific entities passed in via components API (i.e component properties and events). Those components are more inline with the upcoming Web Component standards.

@@ -1,7 +1,5 @@
 # Angular Course from rangle.io
 
-THIS IS WORK IN PROGRESS.
-
 This repository contains handout materials and code for rangle.io's AngularJS
 training course, focusing on building Angular 1.x applications the Angular 2 way.
 
@@ -29,22 +27,15 @@ own machine.
 
 The students should start by checking out the "base" branch for their session, which has all the necessary configurations but no actual client side code. The "master" branch contains the final state of the project.
 
-You will then need to have `bower` and `tsd`, to install dependencies and typings:
-
-```bash
-  sudo npm install -g bower # skip "sudo" on windows
-  sudo npm install -g tsd # skip "sudo" on windows
-```
-
 You will then need to build the front end using:
 
 ```bash
   npm install
 ```
 
-The above install npm modules, bower dependencies, and typings for the course
+The above installs npm modules and typings for the course
 
-Once you've done that, you can access the front-end of the project, by running a simple gulp task `gulp serve` within the root directory.
+Once you've done that, you can access the front-end of the project, by running a simple gulp task `gulp serve` within the root directory of the project.
 
 ```bash
   gulp serve
@@ -52,7 +43,7 @@ Once you've done that, you can access the front-end of the project, by running a
 
 (Any other static web server should do, though.)
 
-Then point your browser to http://localhost:3000/
+Then point your browser to http://localhost:8080/
 
 If you see a login screen, you are all set. You can login as "alice" with
 password "x", at which point you should see a list of tasks.

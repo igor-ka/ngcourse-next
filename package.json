@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "gulpfile.js",
   "scripts": {
-    "postinstall": "tsd install && tsd link",
+    "postinstall": "tsd install && tsd link && gulp build",
     "test": "node node_modules/karma/bin/karma start karma.conf.js"
   },
   "repository": {

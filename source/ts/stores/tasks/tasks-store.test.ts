@@ -37,7 +37,7 @@ describe('TasksStore', () => {
       done: false
     };
 
-    angular.mock.inject(($log) => _$log = $log);
+    angular.mock.inject($log => _$log = $log);
     
     _mockKoast = {
       user: {
@@ -64,15 +64,11 @@ describe('TasksStore', () => {
     
     let tasksStore = new TasksStore(_mockKoast, _mockDispatcher);
 
-    tasksStore.tasksSubject
-      .subscribe(
-        (tasks) => {
-
+    tasksStore.tasksSubject.subscribe(
+      tasks => {
         chai.expect(tasks).to.not.be.undefined;
         chai.expect(tasks).to.contain(_mockNewTask);
-        
         done();
-
       }
     );
     

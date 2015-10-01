@@ -42,14 +42,9 @@ It also does dependency management for your back-end application.  You specify
 module dependencies in a file called `package.json`; running `npm install`
 will resolve, download and install your back-end application's dependencies.
 
-## Front-End Code Sharing and Distribution: [bower](https://bower.io)
+## Universal Module Loading: [SystemJS](https://github.com/systemjs/systemjs)
 
-`bower` is very similar to `npm`, but for the front-end part of your application.
-Any frameworks or 3rd-party libraries that need to be accessible in the user's
-browser will be managed by `bower`.
-
-Similarly to `npm`, `bower` tracks dependencies in a file called `bower.json`.
-Running `bower install` will resolve, download, and install them.
+Universal dynamic module loader that can load ES6 modules, AMD, CommonJS and global scripts in the browser and NodeJS.
 
 ## Task Automation
 
@@ -85,8 +80,8 @@ Code written with AngularJS should work on any modern web browser however
 Before we proceed, get the code from Git if you have not done so:
 
 ```bash
-  git clone https://github.com/rangle/ngcourse.git
-  cd ngcourse
+  git clone https://github.com/rangle/ngcourse-next.git
+  cd ngcourse-next
 ```
 
 Now, switch to the branch that we'll be using for today's course:
@@ -104,7 +99,6 @@ Install NPM and Bower packages:
 
 ```
   npm install
-  bower install
 ```
 
 Finally, install `http-server` if you have not yet done so:
@@ -116,5 +110,5 @@ Finally, install `http-server` if you have not yet done so:
 We can run the app with:
 
 ```
-  http-server client/
+  http-server output/dist
 ```

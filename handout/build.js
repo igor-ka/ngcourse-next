@@ -19,11 +19,7 @@ var parts = [
   '12-rxjs.md',
   '13-flux.md',
   '14-unit-testing-flux-components.md',
-  '15-routing.md',
-  '16-authentication.md',
-  '17-providers.md',
-  '18-advanced-form-validation.md',
-  '19-refactoring-legacy-code.md'
+  '15-routing.md'
 ];
 
 // Synchronous highlighting with highlight.js

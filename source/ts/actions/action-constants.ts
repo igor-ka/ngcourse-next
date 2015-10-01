@@ -1,5 +1,3 @@
-import {Inject} from '../utils/di';
-
 export const AUTHENTICATION_ACTIONS = {
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT'

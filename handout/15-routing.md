@@ -9,13 +9,7 @@ convenient.
 ## UI-Router
 
 Angular's built in routing solution ('ng-route') has been de facto superseded
-by [ui-router](https://github.com/angular-ui/ui-router/blob/master/README.md). We'll be using that. To install UI-Router with Bower:
-
-```bash
-  bower install --save angular-ui-router
-```
-
-You'll also need to update your `src/app.ts` to inject the new module into your main module:
+by [ui-router](https://github.com/angular-ui/ui-router/blob/master/README.md). We'll be using that. To use UI-Router you'll need to update your `source/ts/app.ts` to inject the new module into your main module:
 
 ```javascript
   angular.module('ngcourse', [
@@ -30,11 +24,10 @@ You'll also need to update your `src/app.ts` to inject the new module into your 
 Let's start by adding our own "router" module which will serve as a wrapper
 around ui-router. Our module will have a `.config()` section.
 
-This goes in `src/services/router/router-service.js`
+This goes in `source/ts/services/router/router-service.js`
 
 ```javascript
-/// <reference path="../../../typings/tsd.d.ts" />
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
 
 export class RouterConfig {
 

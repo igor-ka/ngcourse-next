@@ -1,4 +1,4 @@
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
 
 export class LoginFormComponent {
 

@@ -84,6 +84,7 @@ Any text editor will work. At Rangle.io the most popular editors/IDEs are:
 
 * [Sublime Text](http://www.sublimetext.com/)
 * [Atom](https://atom.io/)
+* [Visual Code](https://www.visualstudio.com/en-us/products/code-vs.aspx)
 * [WebStorm](https://www.jetbrains.com/webstorm/)
 * Vim
 
@@ -96,23 +97,15 @@ following steps through the command line. This is the best way to check that
 Clone the training repository:
 
 ```sh
-  git clone https://github.com/rangle/ngcourse.git
-  cd ngcourse
+  git clone https://github.com/rangle/ngcourse-next.git
+  cd ngcourse-next
 ```
 
-Install `bower` globally via `npm`:
+Install the project's `npm` modules:
 
 ```sh
-  npm install -g bower
+  npm install
 ```
-
-Install the project's `bower` components using `bower`:
-
-```sh
-  bower install
-```
-
-*If you get an error while running this command, see the next section.*
 
 Install `http-server` using `npm`:
 
@@ -123,7 +116,7 @@ Install `http-server` using `npm`:
 Fire up the server:
 
 ```sh
-  http-server client/
+  http-server output/dist
 ```
 
 Once you've run those commands, you should be able to access the server at
@@ -157,11 +150,4 @@ git config —global http.proxy <proxy server url>
 
 ```sh
 npm config set proxy <proxy server url>
-```
-
-### bower
-
-```sh
-echo '"proxy": "<proxy server url>"' >> .bowerrc
-echo '"https-proxy": "<proxy server url>"' >> .bowerrc
 ```
