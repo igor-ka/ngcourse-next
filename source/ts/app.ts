@@ -4,24 +4,26 @@ import 'immutable';
 import 'koast-angular';
 import 'lodash';
 import 'rx.all';
-import 'template-cache';
 
-import {TasksStore} from 'stores/tasks/tasks-store';
-import {UsersStore} from 'stores/users/users-store';
-import {AuthenticationStore} from 'stores/authentication/authentication-store';
-import {ServerService} from 'services/server/server-service';
-import {RouterService, RouterConfig} from 'services/router/router-service';
-import {TaskListComponent} from 'components/task-list/task-list-component';
-import {TaskAddComponent} from 'components/task-add/task-add-component';
-import {TaskEditComponent} from 'components/task-edit/task-edit-component';
-import {TaskComponent} from 'components/task/task-component';
-import {MainComponent} from 'components/main/main-component';
-import {LoginFormComponent} from 'components/login-form/login-form-component';
-import {TaskActions} from 'actions/task/task-actions';
-import {UserActions} from 'actions/user/user-actions';
-import {AuthenticationActions} from
-  'actions/authentication/authentication-actions';
-import {makeDirective, makeSelector} from 'utils/component-utils';
+import './template-cache';
+
+import {TasksStore} from './stores/tasks/tasks-store';
+import {UsersStore} from './stores/users/users-store';
+import {AuthenticationStore} 
+  from './stores/authentication/authentication-store';
+import {ServerService} from './services/server/server-service';
+import {RouterService, RouterConfig} from './services/router/router-service';
+import {TaskListComponent} from './components/task-list/task-list-component';
+import {TaskAddComponent} from './components/task-add/task-add-component';
+import {TaskEditComponent} from './components/task-edit/task-edit-component';
+import {TaskComponent} from './components/task/task-component';
+import {MainComponent} from './components/main/main-component';
+import {LoginFormComponent} from './components/login-form/login-form-component';
+import {TaskActions} from './actions/task/task-actions';
+import {UserActions} from './actions/user/user-actions';
+import {AuthenticationActions} 
+  from './actions/authentication/authentication-actions';
+import {makeDirective, makeSelector} from './utils/component-utils';
 
 angular.module('ngcourse.router', ['ui.router'])
   .config(RouterConfig)
@@ -75,9 +77,7 @@ angular.module('ngcourse', [
     makeDirective(TaskEditComponent))
 
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
-  .run(function($log: angular.ILogService, koast, API_BASE_URL) {
-    $log.info('All ready!');
-
+  .run(function(koast, API_BASE_URL) {
     koast.init({
       baseUrl: API_BASE_URL
     });

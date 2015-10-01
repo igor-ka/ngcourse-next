@@ -1,5 +1,9 @@
-import {Inject} from 'utils/di';
-import {AuthenticationStore} from 'stores/authentication/authentication-store';
+import {Inject} from '../../utils/di';
+import {AuthenticationStore} 
+  from '../../stores/authentication/authentication-store';
+import {UsersStore} from '../../stores/users/users-store';
+import {AuthenticationActions} 
+  from '../../actions/authentication/authentication-actions';
 
 export class MainComponent {
 
@@ -9,28 +13,34 @@ export class MainComponent {
     transclude: true
   };
   
-  private _user;
-  private _displayName;
-  private _errorMessage;
+  private _user: any;
+  private _displayName: String;
+  private _errorMessage: String;
 
   constructor(
-    @Inject('$log') private $log,
-    @Inject('authenticationStore') private authenticationStore,
-    @Inject('authenticationActions') private authenticationActions,
-    @Inject('usersStore') private usersStore) {
+    @Inject('$scope') 
+      private $scope: angular.IScope,
+    @Inject('authenticationStore') 
+      private authenticationStore: AuthenticationStore,
+    @Inject('authenticationActions') 
+      private authenticationActions: AuthenticationActions,
+    @Inject('usersStore') 
+      private usersStore: UsersStore) {
     
-    this.authenticationStore.userSubject.subscribe(
-      Rx.Observer.create(
-        (user) => this._user = user,
-        (error) => this._errorMessage = error
-      ));    
+    let authSubscription = 
+      this.authenticationStore.userSubject.subscribe(
+        user => this._user = user,
+        error => this._errorMessage = error);
 
-    this.usersStore.usersSubject.subscribe(
-      Rx.Observer.create(
-        () => this._displayName = this.usersStore
-          .getUserDisplayName(this.user.data.username),
-        (error) => this._errorMessage = error
-      ));
+    let usersSubscription = 
+      this.usersStore.usersSubject.subscribe(
+        users => this._displayName = users[this.user.data.username].displayName,
+        error => this._errorMessage = error);
+      
+     this.$scope.$on('$destroy', () => {
+      authSubscription.dispose();
+      usersSubscription.dispose();
+    });
   }
 
   private login(form) {
@@ -41,13 +51,8 @@ export class MainComponent {
     this.authenticationActions.logout();
   }
   
-  private getDisplayName() {
-    this.usersStore.getUserDisplayName(
-      this.user.data.username);
-  }
-  
   get user() {
-    return this._user;  
+    return this._user;
   }
   
   get displayName() {

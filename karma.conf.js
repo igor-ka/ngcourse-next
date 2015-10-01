@@ -26,20 +26,16 @@ module.exports = function (config) {
 
       config: {
         paths: {
-          'angular-mocks': '/node_modules/angular-mocks/angular-mocks.js',
-          'rx.testing': '/node_modules/rx/dist/rx.testing.js',
-          'rx.virtualtime': '/node_modules/rx/dist/rx.virtualtime.js',
-          'traceur': '/node_modules/traceur/bin/traceur-runtime.js',
-          'systemjs': '/node_modules/systemjs/dist/system.js',
-          'system-polyfills': '/node_modules/systemjs/dist/system-polyfills.js',
-          'es6-module-loader': '/node_modules/es6-module-loader/dist/es6-module-loader.js'
+          'angular-mocks': 'node_modules/angular-mocks/angular-mocks.js',
+          'rx.testing': 'node_modules/rx/dist/rx.testing.js',
+          'rx.virtualtime': 'node_modules/rx/dist/rx.virtualtime.js',
+          'traceur': 'node_modules/traceur/bin/traceur-runtime.js',
+          'systemjs': 'node_modules/systemjs/dist/system.js',
+          'system-polyfills': 'node_modules/systemjs/dist/system-polyfills.js',
+          'es6-module-loader': 'node_modules/es6-module-loader/dist/es6-module-loader.js',
+          '*': 'output/js/*'
         }
       }
-    },
-
-    proxies: {
-      '/node_modules/': '/base/node_modules/',
-      '/js/': '/base/output/js/'
     },
 
     // plugins: ['karma-mocha', 'karma-chai', 'karma-sinon', 'karma-systemjs', 'karma-chrome-launcher'],
@@ -67,7 +63,7 @@ module.exports = function (config) {
 
     colors: true,
 
-    // logLevel: config.LOG_DEBUG,
+    //logLevel: config.LOG_DEBUG,
     logLevel: config.LOG_INFO,
 
     autoWatch: true,

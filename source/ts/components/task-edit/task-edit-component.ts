@@ -1,4 +1,7 @@
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
+import {TaskActions} from '../../actions/task/task-actions';
+import {RouterService} from '../../services/router/router-service';
+import {TasksStore} from '../../stores/tasks/tasks-store';
 
 export class TaskEditComponent {
 
@@ -6,24 +9,30 @@ export class TaskEditComponent {
   private static templateUrl = 'components/task-edit/task-edit-component.html';
   private static options = {};
 
-  private _task;
-  private _errorMessage;
+  private _task: any;
+  private _errorMessage: String;
 
   constructor(
-    @Inject('$log') private $log,
-    @Inject('tasksActions') private tasksActions,
-    @Inject('tasksStore') private tasksStore,
-    @Inject('$stateParams') private $stateParams,
-    @Inject('router') private router
+    @Inject('$scope') 
+      private $scope: angular.IScope,
+    @Inject('tasksActions') 
+      private tasksActions: TaskActions,
+    @Inject('tasksStore') 
+      private tasksStore: TasksStore,
+    @Inject('$stateParams') 
+      private $stateParams,
+    @Inject('router') 
+      private router: RouterService
   ) {
-
-    let taskId = this.$stateParams._id;
+    let tasksSubscription = 
+      this.tasksStore.tasksSubject.subscribe(
+        tasks => 
+          this._task = this.tasksStore.getTaskById(this.$stateParams._id),
+        error => this._errorMessage = error);
       
-    this.tasksStore.tasksSubject.subscribe(
-      Rx.Observer.create(
-        (tasks) => this._task = this.tasksStore.getTaskById(taskId),
-        (error) => this._errorMessage = error
-      ));
+    this.$scope.$on('$destroy', () => {
+      tasksSubscription.dispose();
+    });
   }
 
   updateTask(task) {

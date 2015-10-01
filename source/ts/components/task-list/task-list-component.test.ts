@@ -7,8 +7,7 @@ import 'rx.all';
 import 'rx.testing';
 import 'rx.virtualtime';
 
-let _$log;
-
+let _$scope;
 let _tasksStoreMock;  
 let _authStoreMock;  
 let _userStoreMock;  
@@ -28,14 +27,16 @@ let _tasksMock = [{
     done: true
   }];
 
-let _usersMock = [{
-    username: 'alice',
-    displayName: 'Alice'
-  },
-  {
-    username: 'bob',
-    displayName: 'Robert'
-  }];
+let _usersMock = { 
+    'alice' : {
+      username: 'alice',
+      displayName: 'Alice'
+    },
+    'bob': {
+      username: 'bob',
+      displayName: 'Robert'
+    }
+  };
 
 let _userMock = {
   data: {
@@ -47,8 +48,8 @@ let _userMock = {
 describe('TaskListComponent', () => {
 
   beforeEach(() => { 
-    angular.mock.inject(($log) => {
-      _$log = $log;
+    angular.mock.inject(($rootScope) => {
+      _$scope = $rootScope.$new();
     });
     
   });
@@ -75,16 +76,12 @@ describe('TaskListComponent', () => {
     };
     
     _userStoreMock = {
-      usersSubject: usersObservable,
-      getUserDisplayName: (username) => {
-        _usersMock.filter(
-          (user) => user.username === username)[0];
-      }
+      usersSubject: usersObservable
     };
     
     let taskListComponent = new TaskListComponent(
-      _$log, _routerMock, _authStoreMock, 
-      _tasksStoreMock, _userStoreMock, TaskActions);
+      _$scope, _routerMock, _authStoreMock, 
+      _tasksStoreMock, _userStoreMock);
     
     scheduler.advanceTo(220);
     chai.expect(taskListComponent.tasks).to.equal(_tasksMock);
@@ -112,16 +109,12 @@ describe('TaskListComponent', () => {
     };
     
     _userStoreMock = {
-      usersSubject: usersObservable,
-      getUserDisplayName: (username) => {
-        _usersMock.filter(
-          (user) => user.username === username)[0];
-      }
+      usersSubject: usersObservable
     };
     
     let taskListComponent = new TaskListComponent(
-      _$log, _routerMock, _authStoreMock, 
-      _tasksStoreMock, _userStoreMock, TaskActions);
+      _$scope, _routerMock, _authStoreMock, 
+      _tasksStoreMock, _userStoreMock);
     
     scheduler.advanceTo(220);
     chai.expect(taskListComponent.errorMessage).to.equal('error');

@@ -1,13 +1,13 @@
-import {Inject} from 'utils/di';
+import {Inject} from '../../utils/di';
 
 export class ServerService {
 
   constructor(
-    @Inject('$http') private $http, 
-    @Inject('API_BASE_URL') private API_BASE_URL
-  ) {
-    // L&L destructuring can be used here instead  
-  }
+    @Inject('$http') 
+      private $http: angular.IHttpService, 
+    @Inject('API_BASE_URL') 
+      private API_BASE_URL
+  ) {}
 
   public get(path) {
     return this.$http.get(this.API_BASE_URL + path)
