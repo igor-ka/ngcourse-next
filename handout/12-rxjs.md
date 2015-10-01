@@ -89,7 +89,7 @@ Let's modify our example and see how it works out.
     
     console.log('Starting Observable Sequence!');
     
-    return () => console.log('Stoping to Listen to this Observable Sequence');
+    return onDispose = () => console.log('Stoping to Listen to this Observable Sequence');
     
   });
 
@@ -129,7 +129,7 @@ The correct implementation in this case would be to cancel the timeout instead, 
     
     console.log('Starting Observable Sequence!');
     
-    return () => {
+    return onDispose = () => {
       console.log('Releasing Resources of this Observable Sequence');
       clearTimeout(timeoutId);
     };
@@ -149,14 +149,14 @@ The correct implementation in this case would be to cancel the timeout instead, 
 
 Both promises and observables provide us with abstractions that help us deal with the asynchronous nature of our applications. However, there are important differences between the two. 
 
-1. As can be seen in the example above, observables can define both the setup and teardown aspects of asynchronous behaviour. Observables are cancellable.
-2. Moreover, observables can be retried using one of the retry operators provided by the API, such as `retry` and `retryWhen`. On the other hand in the case of promises, the caller must have access to the original function that returned the promise in order to have a retry capability.
+1. As seen in the example above, observables can define both the setup and teardown aspects of asynchronous behaviour. Observables are cancellable.
+2. Moreover, Observables can be retried using one of the retry operators provided by the API, such as `retry` and `retryWhen`. On the other hand in the case of promises, the caller must have access to the original function that returned the promise in order to have a retry capability.
 
 ## Creating Observable Sequences
 
 In the example above we have been creating observables from scratch which is especially useful in understanding the anatomy of an observable. 
 
-However, a lot of the times we will create observables from callbacks, promises, events, collections or using many of the LINQ methods available on the API.
+However, a lot of the times we will create observables from callbacks, promises, events, collections or using many of the operators available on the API.
 
 Now that we got the anatomy and structure of observables understood, let's look at some of the many other ways to create observables.
 
