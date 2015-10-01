@@ -33,9 +33,9 @@ You will then need to build the front end using:
   npm install
 ```
 
-The above install npm modules, bower dependencies, and typings for the course
+The above installs npm modules and typings for the course
 
-Once you've done that, you can access the front-end of the project, by running a simple gulp task `gulp serve` within the *output* directory.
+Once you've done that, you can access the front-end of the project, by running a simple gulp task `gulp serve` within the root directory of the project.
 
 ```bash
   gulp serve
