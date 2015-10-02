@@ -9,8 +9,6 @@ information.
 
 ## The Handouts
 
-THE HANDOUTS ARE YET TO BE UPDATED TO MATCH THE CHANGES TO THE CODE.
-
 See the [handout](https://github.com/rangle/ngcourse/tree/master/handout) for
 the handout. You can either view it in your browser or build it into a PDF
 using the instructions in the README file in the handout directory.
@@ -41,9 +39,17 @@ Once you've done that, you can access the front-end of the project, by running a
   gulp serve
 ```
 
-(Any other static web server should do, though.)
-
 Then point your browser to http://localhost:8080/
+
+Any other static web server should do as well. 
+
+Application bundle suitable for deployment can be generated using the following task:
+
+```sh
+gulp bundle
+```
+
+The output of the bundle will go into *output/dist*, which can be served by any static web server.
 
 If you see a login screen, you are all set. You can login as "alice" with
 password "x", at which point you should see a list of tasks.
