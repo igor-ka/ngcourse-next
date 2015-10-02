@@ -107,16 +107,10 @@ Install the project's `npm` modules:
   npm install
 ```
 
-Install `http-server` using `npm`:
+Fire up the development server:
 
 ```sh
-  npm install -g http-server
-```
-
-Fire up the server:
-
-```sh
-  http-server output/dist
+gulp serve
 ```
 
 Once you've run those commands, you should be able to access the server at
