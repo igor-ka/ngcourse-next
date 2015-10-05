@@ -14,6 +14,8 @@ var minifyCss = require('gulp-minify-css');
 var concatCss = require('gulp-concat-css');
 var tslint = require('gulp-tslint');
 var size = require('gulp-size');
+var webdriver = require('gulp-webdriver');
+var selenium = require('selenium-standalone');
 
 gulp.task('default', ['build']);
 
@@ -189,4 +191,35 @@ gulp.task('karma', ['build'], function (done) {
       configFile: __dirname + '/karma.conf.js',
    }, done)
    .start();
+});
+
+// Runs end-to-end tests using webdriverio and selenium against
+// a local application instance.
+gulp.task('e2e', ['selenium', 'serve'], function (done) {
+  return gulp.src('wdio.conf.js')
+    .pipe(webdriver({
+      desiredCapabilities: {
+        browserName: 'chrome'
+      }
+    }))
+    .once('end', function () {
+      selenium.child.kill();
+      browserSync.exit();
+      process.exit();
+    });
+});
+
+// Start up a selenium server for e2e testing.
+gulp.task('selenium', function (done) {
+  selenium.install({
+    logger: function (message) { }
+  }, function (err) {
+    if (err) return done(err);
+
+    selenium.start(function (err, child) {
+      if (err) return done(err);
+      selenium.child = child;
+      done();
+    });
+  });
 });
