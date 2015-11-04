@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Rangle.io NgCourse-Next",
   "license": "MIT",
-  "main": "gulpfile.js",
   "scripts": {
     "postinstall": "npm run typings",
     "typings": "rimraf app/__typings && tsd install && tsd link",
@@ -14,11 +13,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/igor-ka/ngcourse-next.git"
+    "url": "https://github.com/rangle/ngcourse-next.git"
   },
   "author": "Igor Krivanov",
   "bugs": {
-    "url": "https://github.com/igor-ka/ngcourse-next/issues"
+    "url": "https://github.com/rangle/ngcourse-next/issues"
   },
   "dependencies": {
     "angular": "^1.4.6",
@@ -37,8 +36,6 @@
     "css-loader": "^0.21.0",
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
-    "gulp": "^3.9.0",
-    "gulp-webdriver": "^1.0.1",
     "html-webpack-plugin": "^1.6.2",
     "istanbul": "^0.3.21",
     "istanbul-instrumenter-loader": "^0.1.3",
