@@ -10,7 +10,7 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        'source/e2e/**/*.spec.js'
+        'app/e2e/**/*.spec.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -30,7 +30,7 @@ exports.config = {
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
     capabilities: [{
-        browserName: 'firefox'
+        browserName: 'chrome'
     }],
     //
     // ===================

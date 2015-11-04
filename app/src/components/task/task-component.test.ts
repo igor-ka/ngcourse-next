@@ -3,18 +3,17 @@ import 'angular-mocks';
 
 import {makeDirective, makeSelector} from '../../utils/component-utils';
 import {TaskComponent} from './task-component';
-import '../../template-cache';
-
+      
 describe('TaskComponent', () => {
 
   let _$scope;
   let _$compile;
-
-  angular.module('tasks', ['ngcourse.templates'])
+  
+  angular.module('tasks', [])
     .directive(
       makeSelector(TaskComponent), 
       makeDirective(TaskComponent));
-   
+        
   beforeEach(() => { 
     angular.mock.module('tasks');
     angular.mock.inject(($compile, $rootScope) => {

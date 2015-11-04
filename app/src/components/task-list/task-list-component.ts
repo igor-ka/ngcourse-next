@@ -9,7 +9,7 @@ import {TaskActions} from '../../actions/task/task-actions';
 export class TaskListComponent {
 
   private static selector = 'ngc-tasks';
-  public static templateUrl = 'components/task-list/task-list-component.html';
+  public static template = require('./task-list-component.html');
   private static options = {};
 
   private _tasks: any[];
@@ -73,5 +73,3 @@ export class TaskListComponent {
     return this._errorMessage;
   }
 }
-
-

@@ -3,9 +3,8 @@ import {TaskActions} from '../../actions/task/task-actions';
 
 import 'angular';
 import 'angular-mocks';
-import 'rx.all';
-import 'rx.testing';
-import 'rx.virtualtime';
+import * as Rx from 'rx';
+
 
 let _$scope;
 let _tasksStoreMock;  
@@ -66,7 +65,7 @@ describe('TaskListComponent', () => {
       
     let usersObservable = scheduler.createHotObservable(
       Rx.ReactiveTest.onNext(200, _usersMock));    
-    
+
     _tasksStoreMock = {
       tasksSubject: tasksObservable
     };
@@ -78,12 +77,14 @@ describe('TaskListComponent', () => {
     _userStoreMock = {
       usersSubject: usersObservable
     };
-    
+
     let taskListComponent = new TaskListComponent(
       _$scope, _routerMock, _authStoreMock, 
       _tasksStoreMock, _userStoreMock);
-    
+
     scheduler.advanceTo(220);
+    
+    
     chai.expect(taskListComponent.tasks).to.equal(_tasksMock);
   });
   

@@ -1,8 +1,9 @@
 import {TasksStore} from '../../stores/tasks/tasks-store';
 import {TASK_ACTIONS} from '../../actions/action-constants';
 
-import 'rx.testing';
-import 'rx.virtualtime';
+import 'rx';
+// import 'rx.testing';
+// import 'rx.virtualtime';
 
 describe('TasksStore', () => {
   

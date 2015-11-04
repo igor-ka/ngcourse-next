@@ -1,11 +1,13 @@
 import 'angular';
 import 'angular-ui-router';
 import 'immutable';
+import 'rx';
+import 'lodash-compat';
 import 'koast-angular';
-import 'lodash';
-import 'rx.all';
 
-import './template-cache';
+import 'basscss/css/basscss.css';
+import 'font-awesome/css/font-awesome.css';
+import '../css/styles.css';
 
 import {TasksStore} from './stores/tasks/tasks-store';
 import {UsersStore} from './stores/users/users-store';
@@ -48,7 +50,6 @@ angular.module('ngcourse.dispatcher', [])
   .service('dispatcher', Rx.Subject);
 
 angular.module('ngcourse', [
-  'ngcourse.templates',
   'ngcourse.authentication',
   'ngcourse.tasks',
   'ngcourse.users',

@@ -5,7 +5,7 @@ import {RouterService} from '../../services/router/router-service';
 export class TaskAddComponent {
 
   private static selector = 'ngc-task-add';
-  private static templateUrl = 'components/task-add/task-add-component.html';
+  private static template = require('./task-add-component.html');
   private static options = {};
 
   constructor(

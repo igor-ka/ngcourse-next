@@ -3,8 +3,7 @@ import {Inject} from '../../utils/di';
 export class LoginFormComponent {
 
   private static selector = 'ngc-login-form';
-  private static templateUrl = 
-    'components/login-form/login-form-component.html';
+  private static template = require('./login-form-component.html');
     
   private static options = {
     bindToController: {
@@ -18,7 +17,8 @@ export class LoginFormComponent {
   private password: String;
   private fireSubmit: Function;
 
-  constructor() {}
+  constructor() {
+  }
 
   private submit() {
     this.fireSubmit({

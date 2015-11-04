@@ -8,7 +8,7 @@ import {AuthenticationActions}
 export class MainComponent {
 
   private static selector = 'ngc-main';
-  private static templateUrl = 'components/main/main-component.html';
+  private static template = require('./main-component.html');
   private static options = {
     transclude: true
   };
