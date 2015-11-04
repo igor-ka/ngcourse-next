@@ -23,7 +23,7 @@ export class RouterConfig {
           '': {
             controller: TaskListComponent,
             controllerAs: 'ctrl',
-            templateUrl: TaskListComponent.templateUrl
+            template: TaskListComponent.template
             // template: '<ngc-tasks></ngc-tasks>'
           }
         }

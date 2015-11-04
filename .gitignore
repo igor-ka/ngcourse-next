@@ -1,4 +1,5 @@
+.DS_Store
 node_modules
-output
-source/typings
+app/__build/
+app/__typings/
 handout/*.html

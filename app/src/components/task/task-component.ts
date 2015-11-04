@@ -5,7 +5,7 @@ import {TasksStore} from '../../stores/tasks/tasks-store';
 export class TaskComponent {
 
   public static selector = 'ngc-task';
-  public static templateUrl = 'components/task/task-component.html';
+  public static template = require('./task-component.html');
   private static options = {
     bindToController: {
       task: '=',

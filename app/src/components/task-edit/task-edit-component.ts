@@ -6,7 +6,7 @@ import {TasksStore} from '../../stores/tasks/tasks-store';
 export class TaskEditComponent {
 
   private static selector = 'ngc-task-edit';
-  private static templateUrl = 'components/task-edit/task-edit-component.html';
+  private static template = require('./task-edit-component.html');
   private static options = {};
 
   private _task: any;
