@@ -1,7 +1,6 @@
 import 'angular';
 import 'angular-mocks';
 
-import {makeDirective, makeSelector} from '../../utils/component-utils';
 import {TaskComponent} from './task-component';
       
 describe('TaskComponent', () => {
@@ -11,8 +10,8 @@ describe('TaskComponent', () => {
   
   angular.module('tasks', [])
     .directive(
-      makeSelector(TaskComponent), 
-      makeDirective(TaskComponent));
+      TaskComponent.selector, 
+      TaskComponent.directiveFactory);
         
   beforeEach(() => { 
     angular.mock.module('tasks');

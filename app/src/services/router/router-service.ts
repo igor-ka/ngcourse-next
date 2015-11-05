@@ -1,16 +1,17 @@
-import {Inject} from '../../utils/di';
-import {TaskListComponent} 
-  from '../../components/task-list/task-list-component';
+import {TaskListComponent} from '../../components/index';
 
 export class RouterConfig {
 
+  static $inject = [
+    '$stateProvider',
+    '$urlRouterProvider',
+    '$locationProvider'
+  ];
+
   constructor(
-    @Inject('$stateProvider') 
-      private $stateProvider: angular.ui.IStateProvider,
-    @Inject('$urlRouterProvider') 
-      private $urlRouterProvider: angular.ui.IUrlRouterProvider,
-    @Inject('$locationProvider') 
-      private $locationProvider: angular.ILocationProvider
+    private $stateProvider: angular.ui.IStateProvider,
+    private $urlRouterProvider: angular.ui.IUrlRouterProvider,
+    private $locationProvider: angular.ILocationProvider
   ) {
 
     this.$urlRouterProvider.otherwise('/tasks');
@@ -21,10 +22,7 @@ export class RouterConfig {
         url: '/tasks',
         views: {
           '': {
-            controller: TaskListComponent,
-            controllerAs: 'ctrl',
-            template: TaskListComponent.template
-            // template: '<ngc-tasks></ngc-tasks>'
+            template: '<ngc-tasks></ngc-tasks>'
           }
         }
       })
@@ -51,7 +49,7 @@ export class RouterConfig {
           timeout: function($timeout) {
             return $timeout(function() { 
               // delay
-              }, 3000);
+            }, 3000);
           }
         }
       });
@@ -60,8 +58,9 @@ export class RouterConfig {
 
 export class RouterService {
 
-  constructor(
-    @Inject('$state') private $state: angular.ui.IStateService) {}
+  static $inject = ['$state'];
+
+  constructor(private $state: angular.ui.IStateService) { }
 
   goToAddTask() {
     this.$state.go('tasks.add');

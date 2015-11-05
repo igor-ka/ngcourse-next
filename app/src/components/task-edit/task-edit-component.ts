@@ -1,28 +1,39 @@
-import {Inject} from '../../utils/di';
 import {TaskActions} from '../../actions/task/task-actions';
 import {RouterService} from '../../services/router/router-service';
 import {TasksStore} from '../../stores/tasks/tasks-store';
 
 export class TaskEditComponent {
 
-  private static selector = 'ngc-task-edit';
-  private static template = require('./task-edit-component.html');
-  private static options = {};
-
   private _task: any;
   private _errorMessage: String;
+  
+  static selector = 'ngcTaskEdit';
+  
+  static directiveFactory: ng.IDirectiveFactory = () => {
+    return {
+      restrict: 'E',
+      scope: {},
+      controllerAs: 'ctrl',
+      bindToController: true,
+      controller: TaskEditComponent,
+      template: require('./task-edit-component.html')
+    };
+  };
 
+  static $inject = [
+    '$scope',
+    'tasksActions',
+    'tasksStore',
+    '$stateParams',
+    'router'
+  ];
+  
   constructor(
-    @Inject('$scope') 
-      private $scope: angular.IScope,
-    @Inject('tasksActions') 
-      private tasksActions: TaskActions,
-    @Inject('tasksStore') 
-      private tasksStore: TasksStore,
-    @Inject('$stateParams') 
-      private $stateParams,
-    @Inject('router') 
-      private router: RouterService
+    private $scope: angular.IScope,
+    private tasksActions: TaskActions,
+    private tasksStore: TasksStore,
+    private $stateParams,
+    private router: RouterService
   ) {
     let tasksSubscription = 
       this.tasksStore.tasksSubject.subscribe(

@@ -1,21 +1,27 @@
-import {Inject} from '../../utils/di';
-
 export class LoginFormComponent {
 
-  private static selector = 'ngc-login-form';
-  private static template = require('./login-form-component.html');
-    
-  private static options = {
-    bindToController: {
-      errorMessage: '=',
-      fireSubmit: '&onSubmit'
-    }
-  };
 
   private errorMessage: String;
   private username: String;
   private password: String;
   private fireSubmit: Function;
+
+  static selector = 'ngcLoginForm';
+
+  static directiveFactory: ng.IDirectiveFactory = () => {
+    return {
+      transclude: true,
+      restrict: 'E',
+      scope: {},
+      controllerAs: 'ctrl',
+      bindToController: {
+        errorMessage: '=',
+        fireSubmit: '&onSubmit'
+      },
+      controller: LoginFormComponent,
+      template: require('./login-form-component.html')
+    };
+  };
 
   constructor() {
   }

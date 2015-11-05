@@ -1,13 +1,14 @@
-import {Inject} from '../../utils/di';
-
 export class ServerService {
 
+  static $inject = [
+    '$http',
+    'API_BASE_URL'
+  ];
+
   constructor(
-    @Inject('$http') 
-      private $http: angular.IHttpService, 
-    @Inject('API_BASE_URL') 
-      private API_BASE_URL
-  ) {}
+    private $http: angular.IHttpService,
+    private API_BASE_URL
+  ) { }
 
   public get(path) {
     return this.$http.get(this.API_BASE_URL + path)

@@ -1,7 +1,4 @@
-import 'angular';
 import 'angular-ui-router';
-import 'immutable';
-import 'rx';
 import 'lodash-compat';
 import 'koast-angular';
 
@@ -9,23 +6,36 @@ import 'basscss/css/basscss.css';
 import 'font-awesome/css/font-awesome.css';
 import '../css/styles.css';
 
-import {TasksStore} from './stores/tasks/tasks-store';
-import {UsersStore} from './stores/users/users-store';
-import {AuthenticationStore} 
-  from './stores/authentication/authentication-store';
-import {ServerService} from './services/server/server-service';
-import {RouterService, RouterConfig} from './services/router/router-service';
-import {TaskListComponent} from './components/task-list/task-list-component';
-import {TaskAddComponent} from './components/task-add/task-add-component';
-import {TaskEditComponent} from './components/task-edit/task-edit-component';
-import {TaskComponent} from './components/task/task-component';
-import {MainComponent} from './components/main/main-component';
-import {LoginFormComponent} from './components/login-form/login-form-component';
-import {TaskActions} from './actions/task/task-actions';
-import {UserActions} from './actions/user/user-actions';
-import {AuthenticationActions} 
-  from './actions/authentication/authentication-actions';
-import {makeDirective, makeSelector} from './utils/component-utils';
+import * as angular from 'angular';
+import * as Rx from 'rx';
+
+import {
+  ServerService, 
+  RouterService, 
+  RouterConfig
+} from './services/index';
+
+import {
+  TasksStore, 
+  UsersStore, 
+  AuthenticationStore
+} from './stores/index';
+
+import {
+  LoginFormComponent,
+  TaskListComponent,
+  TaskComponent,
+  TaskAddComponent,
+  TaskEditComponent,
+  MainComponent
+} from './components/index';
+
+import {
+  TaskActions, 
+  UserActions, 
+  AuthenticationActions
+} from './actions/index';
+
 
 angular.module('ngcourse.router', ['ui.router'])
   .config(RouterConfig)
@@ -33,11 +43,26 @@ angular.module('ngcourse.router', ['ui.router'])
 
 angular.module('ngcourse.authentication', [])
   .service('authenticationStore', AuthenticationStore)
-  .service('authenticationActions', AuthenticationActions);
+  .service('authenticationActions', AuthenticationActions)
+  .directive(
+  LoginFormComponent.selector,
+  LoginFormComponent.directiveFactory);
 
 angular.module('ngcourse.tasks', [])
   .service('tasksStore', TasksStore)
-  .service('tasksActions', TaskActions);
+  .service('tasksActions', TaskActions)
+  .directive(
+    TaskListComponent.selector,
+    TaskListComponent.directiveFactory)
+  .directive(
+    TaskComponent.selector,
+    TaskComponent.directiveFactory)
+  .directive(
+    TaskAddComponent.selector,
+    TaskAddComponent.directiveFactory)
+  .directive(
+    TaskEditComponent.selector,
+    TaskEditComponent.directiveFactory);
 
 angular.module('ngcourse.users', [])
   .service('usersStore', UsersStore)
@@ -57,26 +82,9 @@ angular.module('ngcourse', [
   'ngcourse.router',
   'ngcourse.dispatcher',
   'koast'])
-
   .directive(
-    makeSelector(MainComponent),
-    makeDirective(MainComponent))
-  .directive(
-    makeSelector(LoginFormComponent),
-    makeDirective(LoginFormComponent))
-  .directive(
-    makeSelector(TaskListComponent),
-    makeDirective(TaskListComponent))
-  .directive(
-    makeSelector(TaskComponent),
-    makeDirective(TaskComponent))
-  .directive(
-    makeSelector(TaskAddComponent),
-    makeDirective(TaskAddComponent))
-  .directive(
-    makeSelector(TaskEditComponent),
-    makeDirective(TaskEditComponent))
-
+    MainComponent.selector,
+    MainComponent.directiveFactory)
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
   .run((koast, API_BASE_URL) => {
     koast.init({
