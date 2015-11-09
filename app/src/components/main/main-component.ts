@@ -1,12 +1,12 @@
-import {AuthenticationStore}
-from '../../stores/authentication/authentication-store';
-import {UsersStore} from '../../stores/users/users-store';
+import {AuthenticationStore, UsersStore}
+  from '../../stores';
 import {AuthenticationActions}
-from '../../actions/authentication/authentication-actions';
+  from '../../actions';
 
 export class MainComponent {
 
-  private _user: any;
+  private _authenticationInfo: any;
+  private user;
   private _displayName: String;
   private _errorMessage: String;
 
@@ -37,19 +37,11 @@ export class MainComponent {
     private authenticationActions: AuthenticationActions,
     private usersStore: UsersStore) {
 
-    let authSubscription =
-      this.authenticationStore.userSubject.subscribe(
-        user => this._user = user,
-        error => this._errorMessage = error);
-
-    let usersSubscription =
-      this.usersStore.usersSubject.subscribe(
-        users => this._displayName = users[this.user.data.username].displayName,
-        error => this._errorMessage = error);
+    let disposable = authenticationStore.authenticationInfo
+      .subscribe(user => this._authenticationInfo = user);
 
     this.$scope.$on('$destroy', () => {
-      authSubscription.dispose();
-      usersSubscription.dispose();
+      disposable.dispose();
     });
   }
 
@@ -61,8 +53,8 @@ export class MainComponent {
     this.authenticationActions.logout();
   }
 
-  get user() {
-    return this._user;
+  get authenticationInfo() {
+    return this._authenticationInfo;
   }
 
   get displayName() {

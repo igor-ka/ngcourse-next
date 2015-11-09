@@ -12,7 +12,10 @@ import * as Rx from 'rx';
 import {
   ServerService, 
   RouterService, 
-  RouterConfig
+  RouterConfig,
+  TasksService,
+  UsersService,
+  AuthenticationService
 } from './services';
 
 import {
@@ -42,6 +45,7 @@ angular.module('ngcourse.router', ['ui.router'])
   .service('router', RouterService);
 
 angular.module('ngcourse.authentication', [])
+.service('authenticationService', AuthenticationService)
   .service('authenticationStore', AuthenticationStore)
   .service('authenticationActions', AuthenticationActions)
   .directive(
@@ -49,6 +53,7 @@ angular.module('ngcourse.authentication', [])
   LoginFormComponent.directiveFactory);
 
 angular.module('ngcourse.tasks', [])
+  .service('tasksService', TasksService)
   .service('tasksStore', TasksStore)
   .service('tasksActions', TaskActions)
   .directive(
@@ -65,11 +70,12 @@ angular.module('ngcourse.tasks', [])
     TaskEditComponent.directiveFactory);
 
 angular.module('ngcourse.users', [])
+  .service('usersService', UsersService)
   .service('usersStore', UsersStore)
   .service('usersActions', UserActions);
 
 angular.module('ngcourse.server', [])
-  .service('server', ServerService);
+  .service('serverService', ServerService);
 
 angular.module('ngcourse.dispatcher', [])
   .service('dispatcher', Rx.Subject);
@@ -86,17 +92,25 @@ angular.module('ngcourse', [
     MainComponent.selector,
     MainComponent.directiveFactory)
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
-  .run((koast, API_BASE_URL) => {
-    koast.init({
-      baseUrl: API_BASE_URL
-    });
-    koast.setApiUriPrefix('/api/v2/');
-    koast.addEndpoint('tasks', ':_id', {
-      useEnvelope: true
-    });
-    koast.addEndpoint('users', ':_id', {
-      useEnvelope: true
-    });
+  .run((
+    koast, 
+    API_BASE_URL, 
+    tasksActions, 
+    usersActions, 
+    authenticationActions) => {
+      
+      tasksActions.getTasks();
+      usersActions.getUsers();
+      koast.init({
+        baseUrl: API_BASE_URL
+      });
+      koast.setApiUriPrefix('/api/v2/');
+      koast.addEndpoint('tasks', ':_id', {
+        useEnvelope: true
+      });
+      koast.addEndpoint('users', ':_id', {
+        useEnvelope: true
+      });
   });
 
 angular.element(document).ready(function() {

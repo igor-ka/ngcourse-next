@@ -86,8 +86,8 @@
     "node/node.d.ts": {
       "commit": "54f064352a3615443f7bff4198078db15e28247b"
     },
-    "es6-promise/es6-promise.d.ts": {
-      "commit": "54f064352a3615443f7bff4198078db15e28247b"
+    "es6-shim/es6-shim.d.ts": {
+      "commit": "35989a3ab4834b8e8b2b56788f1d4fc46a25dc8d"
     }
   }
 }

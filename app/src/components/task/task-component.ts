@@ -2,10 +2,11 @@ import {UsersStore} from '../../stores/users/users-store';
 import {TasksStore} from '../../stores/tasks/tasks-store';
 
 export class TaskComponent {
-  
+
   private task: any;
   private user: any;
   private errorMessage: String;
+  private onDelete: Function;
 
   static selector = 'ngcTask';
 
@@ -16,10 +17,21 @@ export class TaskComponent {
       controllerAs: 'ctrl',
       bindToController: {
         task: '=',
-        user: '='
+        user: '=',
+        onDelete: '&'
       },
       controller: TaskComponent,
       template: require('./task-component.html')
     };
   };
+
+  constructor() {
+    console.log(this.user);  
+  }
+  
+  delete() {
+    this.onDelete({
+      data: this.task
+    });
+  }
 }

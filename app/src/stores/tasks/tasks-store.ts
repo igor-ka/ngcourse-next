@@ -1,106 +1,53 @@
-import {makeAuthenticatedMethod} from '../../utils/store-utils';
 import {TASK_ACTIONS} from '../../actions/action-constants';
-
-import {List, fromJS} from 'immutable';
+import {Task} from '../../services'
 import * as Rx from 'rx';
 
 export class TasksStore {
-  private _tasksSubject: Rx.ReplaySubject<any>;
-  private _tasks: List<any>;
-
-  /* Authenticated methods */
-  private getTasks: Function;
-  private addTask: Function;
-  private updateTask: Function;
-  private deleteTask: Function;
-  private getTask: Function;
+  
+  private _tasks: Rx.ReplaySubject<Task[]>;
+  private _error: Rx.ReplaySubject<any>;
 
   static $inject = [
     'koast',
     'dispatcher'
   ];
-  
+
   constructor(
     private koast,
-    private dispatcher: Rx.Subject<any>
-  ) {
+    private dispatcher: Rx.Subject<any>) {
+    
+    this._tasks = new Rx.ReplaySubject<Task[]>(1);
+    this._error = new Rx.ReplaySubject(1);
+    
     this.registerActionHandlers();
-    this.addAuthenticatedMethods();
-    this.initialize();
   }
-
-  private initialize() {
-    this._tasks = List();
-    this._tasksSubject = new Rx.ReplaySubject(1);
-    this.getTasks();
+  
+  get tasks() {
+    return this._tasks;
   }
-
-  get tasksSubject() {
-    return this._tasksSubject;
+  
+  get error() {
+    return this._error;
   }
-
+  
   private registerActionHandlers() {
     this.dispatcher.filter(
-      action => action.actionType === TASK_ACTIONS.GET_TASKS)
-      .subscribe(action => this.getTasks());
-
+      action => action.actionType === TASK_ACTIONS.GET_TASKS_RESPONSE)
+        .subscribe(action => this._tasks.onNext(action.tasks));
+      
     this.dispatcher.filter(
-      action => action.actionType === TASK_ACTIONS.ADD_TASK)
-      .subscribe(action => this.addTask(action.newTask));
-
-    this.dispatcher.filter(
-      action => action.actionType === TASK_ACTIONS.UPDATE_TASK)
-      .subscribe(action => this.updateTask(action.task));
+      action => action.actionType === TASK_ACTIONS.GET_TASKS_RESPONSE_ERROR)
+        .subscribe(action => this._error.onNext({
+          type: action.actionType, 
+          error: action.error 
+        }));
   }
 
-  private addAuthenticatedMethods() {
-
-    this.getTasks = makeAuthenticatedMethod(
-      this.koast,
-      () => Rx.Observable.fromPromise(
-        this.koast.queryForResources('tasks'))
-        .subscribe(
-        tasks => {
-          this._tasks = fromJS(tasks);
-          this.emitChange();
-        },
-        error => this.emitError(error))
-    );
-
-    this.getTask = makeAuthenticatedMethod(
-      this.koast,
-      id => this.koast.getResource('tasks', { _id: id })
-    );
-
-    this.addTask = makeAuthenticatedMethod(
-      this.koast,
-      task => Rx.Observable.fromPromise(
-        this.koast.createResource('tasks', task))
-        .subscribe(() => this.getTasks())
-    );
-
-    this.updateTask = makeAuthenticatedMethod(
-      this.koast,
-      task => task.save()
-        .then(this.getTasks)
-    );
-  }
-
-  private emitChange() {
-    this._tasksSubject.onNext(this.tasks);
-  }
-
-  private emitError(error) {
-    this._tasksSubject.onError(error);
-  }
-
-  get tasks() {
-    return this._tasks.toJS();
-  }
-
-  public getTaskById(id) {
-    return this._tasks.find(
-      task => task._id === id);
+  getTaskById(id) {
+    return this._tasks
+      .flatMap(tasks => Rx.Observable.from(tasks)
+        .filter(task => task._id === id))
+        .map(task => angular.copy(task));
   }
 
 }
