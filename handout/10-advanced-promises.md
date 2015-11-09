@@ -10,7 +10,8 @@ some of the more interesting things we can do with promises.
   export class TasksService {
 
     private taskPromise;
-    constructor(@Inject('serverService') private serverService) { }
+    static $inject = ['serverService'];
+    constructor(private serverService) { }
 
     public getTasks () {
 
@@ -29,9 +30,10 @@ some of the more interesting things we can do with promises.
 
     private baseUrl = 'http://ngcourse.herokuapp.com';
 
+    static $inject = ['$http', 'userService'];
     constructor(
-      @Inject('$http') private $http,
-      @Inject('user') private userService) { }
+      private $http,
+      private userService) { }
       
     public get(path) {
       return this.userService.whenAuthenticated()

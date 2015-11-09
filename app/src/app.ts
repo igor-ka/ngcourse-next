@@ -13,13 +13,13 @@ import {
   ServerService, 
   RouterService, 
   RouterConfig
-} from './services/index';
+} from './services';
 
 import {
   TasksStore, 
   UsersStore, 
   AuthenticationStore
-} from './stores/index';
+} from './stores';
 
 import {
   LoginFormComponent,
@@ -28,13 +28,13 @@ import {
   TaskAddComponent,
   TaskEditComponent,
   MainComponent
-} from './components/index';
+} from './components';
 
 import {
   TaskActions, 
   UserActions, 
   AuthenticationActions
-} from './actions/index';
+} from './actions';
 
 
 angular.module('ngcourse.router', ['ui.router'])

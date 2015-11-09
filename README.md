@@ -33,23 +33,17 @@ You will then need to build the front end using:
 
 The above installs npm modules and typings for the course
 
-Once you've done that, you can access the front-end of the project, by running a simple gulp task `gulp serve` within the root directory of the project.
+Once you've done that, you can access the front-end of the project, by running a simple gulp task `npm start` within the root directory of the project.
 
 ```bash
-  gulp serve
+  npm start
 ```
 
 Then point your browser to http://localhost:8080/
 
 Any other static web server should do as well. 
 
-Application bundle suitable for deployment can be generated using the following task:
-
-```sh
-gulp bundle
-```
-
-The output of the bundle will go into *output/dist*, which can be served by any static web server.
+The output of the bundle will go into *app/__build*, which can be served by any static web server.
 
 If you see a login screen, you are all set. You can login as "alice" with
 password "x", at which point you should see a list of tasks.

@@ -110,7 +110,7 @@ Install the project's `npm` modules:
 Fire up the development server:
 
 ```sh
-gulp serve
+  npm start
 ```
 
 Once you've run those commands, you should be able to access the server at
