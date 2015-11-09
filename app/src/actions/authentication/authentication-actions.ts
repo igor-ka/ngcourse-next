@@ -1,11 +1,11 @@
-import {Inject} from '../../utils/di';
 import {AUTHENTICATION_ACTIONS} from '../action-constants';
 
 export class AuthenticationActions {
 
+  static $inject = ['dispatcher'];
+  
   constructor(
-    @Inject('dispatcher') 
-      private dispatcher: Rx.Subject<any>) {}
+    private dispatcher: Rx.Subject<any>) { }
 
   login(credentials) {
     this.dispatcher.onNext({

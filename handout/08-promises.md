@@ -1,6 +1,6 @@
 # Part 8: Introduction to Promises.
 
-In Part 6 we saw that `$http` methods give us promises. But what exactly is a
+In Part 7 we saw that `$http` methods give us promises. But what exactly is a
 promise?
 
 ## Promises vs Callbacks
@@ -262,7 +262,7 @@ A better approach is to break them up into meaningful functions.
       .then(tasks => filterTasks(tasks, {owner: user.username}));
   }
 
-  function getMyTasks()
+  getMyTasks()
     .then(tasks => {
       $log.info(tasks);
       vm.tasks = tasks;

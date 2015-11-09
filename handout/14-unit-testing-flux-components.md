@@ -4,7 +4,7 @@ In the previous chapter we learned about Flux architecture by implementing our `
 
 ## Unit Testing a Component that depends on a Store
 
-Let's start by having a look at out test for `TaskListComponent`. Create a new file *source/ts/components/task-list/task-list-component.test.ts*, and copy the code below.
+Let's start by having a look at out test for `TaskListComponent`. Create a new file *app/src/components/task-list/task-list-component.test.ts*, and copy the code below.
 
 ```javascript
   import {TaskListComponent} from './task-list-component';
@@ -97,7 +97,7 @@ Similarly we can write another test that will verify our error path as well
 
 ## Unit Testing a Store
 
-There are some similarities between testing services and stores. Let's have a look at the store test below, and copy the code into *source/ts/stores/tasks/tasks-store.test.ts*.
+There are some similarities between testing services and stores. Let's have a look at the store test below, and copy the code into *app/src/stores/tasks/tasks-store.test.ts*.
 
 ```javascript
   import {TasksStore} from '../../stores/tasks/tasks-store';

@@ -1,11 +1,11 @@
-import {Inject} from '../../utils/di';
 import {TASK_ACTIONS} from '../action-constants';
 
 export class TaskActions {
 
+  static $inject = ['dispatcher'];
+
   constructor(
-    @Inject('dispatcher') 
-      private dispatcher: Rx.Subject<any>) {}
+    private dispatcher: Rx.Subject<any>) { }
 
   getTasks() {
     this.dispatcher.onNext({

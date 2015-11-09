@@ -9,7 +9,7 @@ convenient.
 ## UI-Router
 
 Angular's built in routing solution ('ng-route') has been de facto superseded
-by [ui-router](https://github.com/angular-ui/ui-router/blob/master/README.md). We'll be using that. To use UI-Router you'll need to update your `source/ts/app.ts` to inject the new module into your main module:
+by [ui-router](https://github.com/angular-ui/ui-router/blob/master/README.md). We'll be using that. To use UI-Router you'll need to update your `app/src/app.ts` to inject the new module into your main module:
 
 ```javascript
   angular.module('ngcourse', [
@@ -24,17 +24,17 @@ by [ui-router](https://github.com/angular-ui/ui-router/blob/master/README.md). W
 Let's start by adding our own "router" module which will serve as a wrapper
 around ui-router. Our module will have a `.config()` section.
 
-This goes in `source/ts/services/router/router-service.js`
+This goes in `app/src/services/router/router-service.js`
 
 ```javascript
-import {Inject} from '../../utils/di';
 
 export class RouterConfig {
 
+  static $inject = ['$stateProvider', '$urlRouterProvider', '$locationProvider'];
   constructor(
-    @Inject('$stateProvider') private $stateProvider,
-    @Inject('$urlRouterProvider') private $urlRouterProvider,
-    @Inject('$locationProvider') private $locationProvider
+    private $stateProvider,
+    private $urlRouterProvider,
+    private $locationProvider
   ) {
 
     $urlRouterProvider.otherwise('/tasks');
@@ -201,7 +201,7 @@ or the "controller" way
       '': {
         controller: TaskListComponent,
         controllerAs: 'ctrl',
-        templateUrl: TaskListComponent.templateUrl
+        template: TaskListComponent.template
       }
     }
   })
@@ -337,7 +337,8 @@ However, let's wrap this in a service, we can use the same *router-service.ts* f
   ...
   export class RouterService {
 
-    constructor(@Inject('$state') private $state) { }
+    static $inject = ['$state'];
+    constructor(private $state) { }
 
     goToTask(taskId) {
       this.$state.go('tasks.details', {
@@ -356,7 +357,7 @@ However, let's wrap this in a service, we can use the same *router-service.ts* f
 
 ## Accessing Parameters Using `$stateParams`
 
-`$stateParams` can be injected into your components using the `@Inject` and used as follows:
+`$stateParams` can be injected into your components using the `$inject` and used as follows:
 
 ```javascript
   $stateParams._id

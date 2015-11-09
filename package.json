@@ -27,7 +27,7 @@
     "immutable": "^3.7.5",
     "koast-angular": "^0.2.2",
     "lodash-compat": "^3.10.1",
-    "rx": "^4.0.6"
+    "rx": "4.0.0"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.7",

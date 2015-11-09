@@ -38,7 +38,7 @@ Mocha provides better support for asynchronous testing by adding support for the
 
 ## A Basic Mocha Test
 
-First, let's write a simple test and run it. Put this code into `source/ts/simple.test.js`.
+First, let's write a simple test and run it. Put this code into `app/src/simple.test.js`.
 
 ```javascript
   describe('Simple Test', () => {
@@ -101,7 +101,7 @@ it.
 
 ## Unit Testing Simple Components
 
-Let's see how we can apply what we learned so far and unit test our `TaskComponent`. Create a new file *source/ts/components/task/task-component.test.ts*, and copy the following unit-test code.
+Let's see how we can apply what we learned so far and unit test our `TaskComponent`. Create a new file *app/src/components/task/task-component.test.ts*, and copy the following unit-test code.
 
 ```javascript
 import 'angular';

@@ -1,18 +1,29 @@
-import {Inject} from '../../utils/di';
 import {TaskActions} from '../../actions/task/task-actions';
 import {RouterService} from '../../services/router/router-service';
 
 export class TaskAddComponent {
 
-  private static selector = 'ngc-task-add';
-  private static template = require('./task-add-component.html');
-  private static options = {};
-
+  static selector = 'ngcTaskAdd';
+  
+  static directiveFactory: ng.IDirectiveFactory = () => {
+    return {
+      restrict: 'E',
+      scope: {},
+      controllerAs: 'ctrl',
+      bindToController: {},
+      controller: TaskAddComponent,
+      template: require('./task-add-component.html')
+    };
+  };
+  
+  static $inject = [
+    'router',
+    'tasksActions'
+  ];
+  
   constructor(
-    @Inject('router') 
-      private router: RouterService,
-    @Inject('tasksActions') 
-      private tasksActions: TaskActions
+    private router: RouterService,
+    private tasksActions: TaskActions
    ) {}
 
   save(task) {

@@ -191,16 +191,11 @@ Let's start by just getting a list of tasks:
 ...
 export class TaskListComponent {
 
-  private static selector = 'ngc-tasks';
-  private static templateUrl = 'components/task-list/task-list-component.html';
-  private static options = {};
-
-  private tasks;
-
-  constructor(
-    @Inject('$log') private $log,
-    @Inject('$http') private $http
-    ) {
+  ...
+    
+  static $inject = ['$log', '$http'];
+  
+  constructor(private $log, private $http) {
 
     this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
       .success((data, status) => {

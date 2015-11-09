@@ -32,7 +32,7 @@ Our views are our components
 
 ## Implementing Dispatcher and Actions
 
-Our dispatcher is very simple, let's modify our *source/ts/app.ts* file
+Our dispatcher is very simple, let's modify our *app/src/app.ts* file
 
 ```javascript
   angular.module('ngcourse.dispatcher', [])
@@ -41,14 +41,14 @@ Our dispatcher is very simple, let's modify our *source/ts/app.ts* file
 
 In Chapter 12 - RxJS we have subscribed to Observables with Observers that implemented the `onNext`, `onError` and `onCompleted` methods. Rx.Subject is a combination of an Observer and Observable in one class. It is used here for convenience as you will see later.
 
-Now, let add some actions to push onto our dispatcher later. Create a new file in *source/ts/actions/task-actions.ts*
+Now, let add some actions to push onto our dispatcher later. Create a new file in *app/src/actions/task-actions.ts*
 
 ```javascript
-  import {Inject} from '../../utils/di';
 
   export class TaskActions {
 
-    constructor(@Inject private dispatcher) {
+    static $inject = ['dispatcher'];
+    constructor(private dispatcher) {
       this.dispatcher = dispatcher;
     }
 
@@ -60,7 +60,7 @@ Now, let add some actions to push onto our dispatcher later. Create a new file i
   }
 ```
 
-It is a poor practice to use hardcoded strings like `'GET_TASKS'` above. We should extract our constants into a separate file, *source/ts/actions/action-constants.ts*
+It is a poor practice to use hardcoded strings like `'GET_TASKS'` above. We should extract our constants into a separate file, *app/src/actions/action-constants.ts*
 
 ```javascript
   export const TASK_ACTIONS = {
@@ -89,17 +89,18 @@ Great! Now we can create our first store.
 
 ## Implementing a Store
 
-Now that we have a dispatcher and actions defined, lets start on our first Store. Let's create a new file for it in *source/ts/stores/tasks/tasks-store.ts*
+Now that we have a dispatcher and actions defined, lets start on our first Store. Let's create a new file for it in *app/src/stores/tasks/tasks-store.ts*
 
 ```javascript
   export class TasksStore {
 
     private _tasks;
 
+    static $inject = ['$log', 'server', 'dispatcher'];
     constructor(
-      @Inject('$log') private $log,
-      @Inject('server') private server,
-      @Inject('dispatcher') private dispatcher
+      private $log,
+      private server,
+      private dispatcher
       ) {
 
     }
@@ -111,17 +112,17 @@ Our Store's domain object will be a list of tasks that we will receive from the 
 Before we do anything we need to listen to incoming Actions relevant to this store. Let's listen to incoming actions from our Dispatcher.
 
 ```javascript
-import {Inject} from '../../utils/di';
 import {TASK_ACTIONS} from '../../actions/action-constants';
 
 export class TasksStore {
 
   private _tasks;
 
+  static $inject = ['$log', 'server', 'dispatcher'];
   constructor(
-    @Inject('$log') private $log,
-    @Inject('server') private server,
-    @Inject('dispatcher') private dispatcher
+    private $log,
+    private server,
+    private dispatcher
     ) {
       this._tasks = [];
       this.registerActionHandlers();
@@ -175,10 +176,11 @@ So far we have implemented `getTasks()` to get the data we need from the server 
   private _tasksSubject;
   private _tasks;
 
+  static $inject = ['$log', 'server', 'dispatcher'];
   constructor(
-    @Inject('$log') private $log,
-    @Inject('server') private server,
-    @Inject('dispatcher') private dispatcher
+    private $log,
+    private server,
+    private dispatcher
     ) {
       this._tasks = [];
       this._tasksSubject = new Rx.ReplaySubject(1);
@@ -245,16 +247,15 @@ Our Store is only a part of a bigger picture, let's use our store within our `Ta
 ```javascript
 export class TaskListComponent {
 
-  private static selector = 'ngc-tasks';
-  private static templateUrl = 'components/task-list/task-list-component.html';
-  private static options = {};
+  ...
 
   private _tasks;
   private _errorMessage;
 
+  static $inject = ['$log', 'tasksStore'];
   constructor(
-    @Inject('$log') private $log,
-    @Inject('tasksStore') private tasksStore
+    private $log,
+    private tasksStore
     ) {
 
     this.tasksStore.tasksSubject.subscribe(
@@ -280,7 +281,7 @@ Let's inject this service into out component as shown below:
 
 ```javascript
   ...
-  constructor(@Inject('$scope') private $scope, ...)
+  constructor(private $scope, ...)
   ...
 ```
 
@@ -299,9 +300,9 @@ Finally, let's use `$scope`'s `$on` method to subscribe to the `$destroy` even o
 ```javascript
   ...
   constructor(
-    @Inject('$log') private $log,
-    '$scope') private $scope,
-    @Inject('tasksStore') private tasksStore
+    private $log,
+    private $scope,
+    private tasksStore
     ) {
 
     let tasksSubscription = this.tasksStore.tasksSubject.subscribe(
@@ -357,20 +358,29 @@ This is why our stores should contain their state in the immutable data structur
 
 So far we have responded to changes within our Stores. Let's make a view that emits an Action.
 
-Create a new file in *source/ts/components/task-add/task-add-component.ts*
+Create a new file in *app/src/components/task-add/task-add-component.ts*
 
 ```javascript
-import {Inject} from '../../utils/di';
 
 export class TaskAddComponent {
 
-  private static selector = 'ngc-task-add';
-  private static templateUrl = 'components/task-add/task-add-component.html';
-  private static options = {};
+  static selector = 'ngcTaskAdd';
+  
+  static directiveFactory: ng.IDirectiveFactory = () => {
+    return {
+      restrict: 'E',
+      scope: {},
+      controllerAs: 'ctrl',
+      bindToController: {},
+      controller: TaskAddComponent,
+      template: require('./task-add-component.html')
+    };
+  };
 
+  static $inject = ['$log', 'tasksActions'];
   constructor(
-    @Inject('$log') private $log,
-    @Inject('tasksActions') private tasksActions
+    private $log,
+    private tasksActions
    ) {
      //
   }
@@ -405,7 +415,7 @@ and a corresponding *task-add-component.html*
 </div>
 ```
 
-Let's modify our *source/ts/actions/actions-constants.ts* file to add our new action.
+Let's modify our *app/src/actions/actions-constants.ts* file to add our new action.
 
 ```javascript
   export const TASK_ACTIONS = {
@@ -414,7 +424,7 @@ Let's modify our *source/ts/actions/actions-constants.ts* file to add our new ac
   };
 ```
 
-define a new action in *source/ts/actions/task-actions.ts*
+define a new action in *app/src/actions/task-actions.ts*
 
 ```javascript
   ...

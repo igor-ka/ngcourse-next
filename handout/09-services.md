@@ -10,11 +10,12 @@ and they should be kept out of controllers.
 Instead, we'll put those functions in an AngularJS service. Let's put this in *src/services/tasks/tasks-service.ts*
 
 ```javascript
-import {Inject} from '../../utils/di';
 
 export class TasksService {
 
-  constructor(@Inject('$http') private $http) { }
+  static $inject = ['$log', '$http'];
+  
+  constructor(private $log, private $http) { }
 
   public getTasks () {
     return this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
@@ -47,10 +48,9 @@ We can now simplify our code to use this service:
   ...
   export class TaskListComponent {
     ...
-    constructor(
-      @Inject('$log') private $log,
-      @Inject('tasksService') private tasksService
-      ) {
+    static $inject = ['$log', 'tasksService'];
+  
+    constructor(private $log, private tasksService) {
         this.tasksService.getTasks()
           .then(tasks => this.tasks = tasks);
     }
@@ -69,16 +69,17 @@ service.
 ## More Services
 
 When it comes to services, the more the better. Let's refactor some of the
-code from our `tasks` service into a new `server` service *source/ts/services/server/server-service.ts*.
+code from our `tasks` service into a new `server` service *app/src/services/server/server-service.ts*.
 
 ```javascript
-  import {Inject} from '../../utils/di';
 
   export class ServerService {
 
     private baseUrl = 'http://ngcourse.herokuapp.com';
 
-    constructor(@Inject('$http') private $http) { }
+    static $inject = ['$http'];
+    
+    constructor(private $http) { }
       
     public get(path) {
       return this.$http.get(this.baseUrl + path)
@@ -102,11 +103,11 @@ Again, let's add a new definition in *app.ts*.
 While our `TaskService` code gets simplified to:
 
 ```javascript
-  import {Inject} from '../../utils/di';
 
   export class TasksService {
 
-    constructor(@Inject('serverService') private serverService) { }
+    static $inject = ['serverService'];
+    constructor(private serverService) { }
 
     public getTasks () {
       return this.serverService.get('/api/v1/tasks');
@@ -132,13 +133,12 @@ We could decompose yet more, though:
 and 
 
 ```javascript
-import {Inject} from '../../utils/di';
 
 export class ServerService {
 
-  constructor(
-    @Inject('$http') private $http,
-    @Inject('API_BASE_URL') private API_BASE_URL) { }
+  static $inject = ['$http', 'API_BASE_URL'];
+  
+  constructor(private $http, private API_BASE_URL) { }
     
   public get(path) {
     return this.$http.get(this.API_BASE_URL + path)

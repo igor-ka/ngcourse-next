@@ -43,7 +43,7 @@ describe('TasksService', () => {
 
 ```
 
-Let's save this to `source/ts/services/tasks/tasks-service.test.js`.
+Let's save this to `app/src/services/tasks/tasks-service.test.js`.
 
 The sad truth, though, is that we have only established that `tasksService.getTasks()` does return a promise. We can't really judge the success of this test until we know what that promise resolves to.
 

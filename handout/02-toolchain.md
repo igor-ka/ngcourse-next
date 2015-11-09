@@ -42,30 +42,11 @@ It also does dependency management for your back-end application.  You specify
 module dependencies in a file called `package.json`; running `npm install`
 will resolve, download and install your back-end application's dependencies.
 
-## Universal Module Loading: [SystemJS](https://github.com/systemjs/systemjs)
+## Module Loading, Bundling and Build Tasks: [Webpack](http://webpack.github.io/docs/what-is-webpack.html)
 
-Universal dynamic module loader that can load ES6 modules, AMD, CommonJS and global scripts in the browser and NodeJS.
-
-## Task Automation
-
-Even though JavaScript is an interpreted language, any non-trivial JavaScript
-application will have 'build-time' tasks that need to be executed as part of
-deployment.  Examples include:
-
-* minifying JavaScript code
-* compiling CSS meta-languages like [less](http://lesscss.org) or [sass](http://sass-lang.com)
-* running unit tests
-* starting up the back-end.
-
-For this course, we'll be using a task runner called [gulp](http://gulpjs.com/).
-
-If you come from a Java or C background, `gulp` conceptually fills the role of
-`ant` or `make` (although the implementation is quite different).
-
-At a high level, it allows you to specify 'build targets' for the various tasks
-you need to automate.
-
-`gulp` build targets are specified in a file called `gulpfile.js`.
+Webpack takes modules with dependencies and generates static assets representing those modules.
+It can bunlde JavaScript, CSS, HTML or just about anything via additional loaders. Webpack can also
+be extended via plugins, for example minification and mangling can be done using the UglifyJS plugin for webpack.
 
 ## Chrome
 
@@ -101,14 +82,20 @@ Install NPM and Bower packages:
   npm install
 ```
 
-Finally, install `http-server` if you have not yet done so:
+Start webpack's development server
+
+```
+  npm start
+```
+
+We can also serve the app from a build directory using something like `http-server`.
+
+Install it if you have not yet done so:
 
 ```
   npm install -g http-server
 ```
 
-We can run the app with:
-
 ```
-  http-server output/dist
+  http-server app/__build
 ```

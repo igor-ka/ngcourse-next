@@ -1,16 +1,11 @@
-import {Inject} from '../../utils/di';
 import {TasksStore} from '../../stores/tasks/tasks-store';
 import {UsersStore} from '../../stores/users/users-store';
 import {RouterService} from '../../services/router/router-service';
-import {AuthenticationStore} 
-  from '../../stores/authentication/authentication-store';
+import {AuthenticationStore}
+from '../../stores/authentication/authentication-store';
 import {TaskActions} from '../../actions/task/task-actions';
 
 export class TaskListComponent {
-
-  private static selector = 'ngc-tasks';
-  public static template = require('./task-list-component.html');
-  private static options = {};
 
   private _tasks: any[];
   private _users: {};
@@ -18,18 +13,32 @@ export class TaskListComponent {
   private _displayName: String;
   private _errorMessage: String;
 
+  static selector = 'ngcTasks';
+
+  static directiveFactory: ng.IDirectiveFactory = () => ({
+    restrict: 'E',
+    controllerAs: 'ctrl',
+    scope: {},
+    bindToController: true,
+    controller: TaskListComponent,
+    template: require('./task-list-component.html')
+  });
+
+  static $inject = [
+    '$scope',
+    'router',
+    'authenticationStore',
+    'tasksStore',
+    'usersStore'
+  ];
+
   constructor(
-    @Inject('$scope') 
-      private $scope: angular.IScope,
-    @Inject('router') 
-      private router: RouterService,
-    @Inject('authenticationStore') 
-      private authenticationStore: AuthenticationStore,
-    @Inject('tasksStore') 
-      private tasksStore: TasksStore,
-    @Inject('usersStore') 
-      private usersStore: UsersStore
-    ) {
+    private $scope: ng.IScope,
+    private router: RouterService,
+    private authenticationStore: AuthenticationStore,
+    private tasksStore: TasksStore,
+    private usersStore: UsersStore
+  ) {
 
     let authSubscription = this.authenticationStore.userSubject.subscribe(
       user => this._user = user,
@@ -45,7 +54,7 @@ export class TaskListComponent {
         this._displayName = users[this.user.data.username].displayName;
       },
       error => this._errorMessage = error);
-    
+
     this.$scope.$on('$destroy', () => {
       authSubscription.dispose();
       tasksSubscription.dispose();
