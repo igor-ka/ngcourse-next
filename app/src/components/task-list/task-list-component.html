@@ -4,7 +4,7 @@
     <div class="flex-auto">
       <h3 id="qa-display-name"
         class="mb0 mt1 caps">
-        {{ctrl.displayName}}
+        {{ctrl.user.displayName}}
       </h3>
       <p class="h1 mb0">We've Got {{ctrl.tasks.length}} Tasks</p>
     </div>
@@ -13,7 +13,8 @@
   <div class="md-col-8 mx-auto rounded tasks-list mb4">
     <ngc-task ng-repeat="task in ctrl.tasks" 
       task="task" 
-      user="ctrl.users[task.owner]">
+      user="ctrl.users[task.owner]"
+      on-delete="ctrl.delete(task)">
     </ngc-task>
   </div>
 </div>

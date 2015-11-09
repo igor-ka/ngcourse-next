@@ -1,16 +1,26 @@
-import {ServerService} from '../../services/server/server-service';
+import {ServerService, AuthenticationService} from '../../services';
+
+export interface Task {
+  _id: string,
+   owner: string
+   description: string
+}
 
 export class TasksService {
 
-  private tasksPromise: Promise<any>;
+  static $inject = ['serverService', 'authenticationService'];
 
-  static $inject = ['serverService'];
+  constructor(
+    private serverService: ServerService, 
+    private authenticationService: AuthenticationService) { }
 
-  constructor(private serverService: ServerService) { }
+  getTasks = (): Promise<Task[]> => this.serverService.get('/api/v1/tasks');
 
-  public getTasks() {
-    this.tasksPromise = this.tasksPromise ||
-    this.serverService.get('/api/v1/tasks');
-    return this.tasksPromise;
-  };
+  addTask = (task) => this.serverService.post('/api/v1/tasks', task);
+
+  updateTask = (task) => this.serverService.put('/api/v1/tasks', task._id, task);
+
+  getTask = (task) => this.serverService.get('/api/v1/tasks/', task._id);
+
+  deleteTask = (task) => this.serverService.delete('/api/v1/tasks', task._id);
 }

@@ -1,14 +1,11 @@
-import {makeAuthenticatedMethod} from '../../utils/store-utils';
 import {USER_ACTIONS} from '../../actions/action-constants';
-import {List, Map, fromJS} from 'immutable';
+import {User} from '../../services';
+import * as Rx from 'rx';
 
 export class UsersStore {
 
-  private _users: Map<String, any>;
-  private _usersSubject: Rx.ReplaySubject<any>;
-  
-  /* Authenticated methods */
-  private getUsers: Function;
+  private _users: Rx.ReplaySubject<User[]>;
+  private _error: Rx.ReplaySubject<any>;
 
   static $inject = [
     'koast',
@@ -19,58 +16,53 @@ export class UsersStore {
     private koast,
     private dispatcher: Rx.Subject<any>
   ) {
+    this._users = new Rx.ReplaySubject<User[]>(1);
+    this._error = new Rx.ReplaySubject(1);
+    
     this.registerActionHandlers();
-    this.addAuthenticatedMethods();
-    this.initialize();
   }
-
-  private initialize() {
-    this._users = Map<String, any>();
-    this._usersSubject = new Rx.ReplaySubject(1);
-    this.getUsers();
-  }
-
-  get usersSubject() {
-    return this._usersSubject;
-  }
-
-  private registerActionHandlers() {
-    this.dispatcher.filter(
-      (action) => action.actionType === USER_ACTIONS.GET_USERS)
-      .subscribe(() => this.getUsers());
-  }
-
-  private addAuthenticatedMethods() {
-    this.getUsers = makeAuthenticatedMethod(
-      this.koast,
-      () => Rx.Observable.fromPromise(
-        this.koast.queryForResources('users'))
-        .subscribe(
-        (users: Object[]) => {
-          this._users.clear();
-
-          this._users = this._users.withMutations(mutableUsersMap => {
-            users.forEach((value: any) => {
-              mutableUsersMap.set(value.username, value);
-            });
-
-          });
-
-          this.emitChange();
-        },
-        error => this.emitError(error))
-    );
-  }
-
-  private emitChange() {
-    this._usersSubject.onNext(this.users);
-  }
-
-  private emitError(error) {
-    this._usersSubject.onError(error);
-  }
-
+  
   get users() {
-    return this._users.toJS();
+    return this._users;
+  }
+  
+  get error() {
+    return this._error;
+  }
+  
+  private registerActionHandlers() {
+        
+    this.dispatcher.filter(
+      action => action.actionType === USER_ACTIONS.GET_USERS_RESPONSE)
+      .subscribe(action => this._users.onNext(action.users));
+      
+    this.dispatcher.filter(
+      action => action.actionType === USER_ACTIONS.GET_USERS_RESPONSE_ERROR)
+      .subscribe(action => this._users.onError({
+        type: action.actionType, 
+        error: action.error 
+      }));
+  }
+  
+  getUser(username: string) {
+    return this._users
+      .flatMap(users => Rx.Observable.from(users))
+      .filter(user => user.username === username);
+  }
+  
+  get usersByUsername() {
+    return this.users
+      .flatMap(users => Rx.Observable.from(users))
+      .scan((map, user) => {
+        map[user.username] = user;
+        return map;
+      });
+      
+    // return this.users.map(users => {
+    //   let usersByUsername = {}
+    //   users.forEach(user => usersByUsername[user.username] = user);
+    //   return usersByUsername;
+    // });
+
   }
 }

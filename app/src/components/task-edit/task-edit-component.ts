@@ -6,7 +6,7 @@ export class TaskEditComponent {
 
   private _task: any;
   private _errorMessage: String;
-  
+
   static selector = 'ngcTaskEdit';
   
   static directiveFactory: ng.IDirectiveFactory = () => {
@@ -36,9 +36,9 @@ export class TaskEditComponent {
     private router: RouterService
   ) {
     let tasksSubscription = 
-      this.tasksStore.tasksSubject.subscribe(
-        tasks => 
-          this._task = this.tasksStore.getTaskById(this.$stateParams._id),
+      this.tasksStore.getTaskById(this.$stateParams._id)
+      .subscribe(
+        task => this._task = task,
         error => this._errorMessage = error);
       
     this.$scope.$on('$destroy', () => {

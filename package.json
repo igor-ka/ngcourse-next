@@ -23,6 +23,7 @@
     "angular": "^1.4.7",
     "angular-ui-router": "^0.2.15",
     "basscss": "^7.0.4",
+    "es6-shim": "^0.33.10",
     "font-awesome": "^4.4.0",
     "immutable": "^3.7.5",
     "koast-angular": "^0.2.2",

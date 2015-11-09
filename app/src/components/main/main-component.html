@@ -1,11 +1,11 @@
 <ngc-login-form
-  ng-hide="ctrl.user.isAuthenticated"
+  ng-hide="ctrl.authenticationInfo.isAuthenticated"
   on-submit="ctrl.login(data)"
   error-message="ctrl.errorMessage">
 </ngc-login-form>
 
 <div class="clearfix white bg-blue"
-  ng-show="ctrl.user.isAuthenticated">
+  ng-show="ctrl.authenticationInfo.isAuthenticated">
   <div class="left col-4 aqua">
     <p class="btn py2 m0 truncate">
       <i class="fa fa-bolt px1"></i> 
@@ -30,6 +30,6 @@
 </div>
 
 <div class="px2"
-  ng-show="ctrl.user.isAuthenticated"
+  ng-show="ctrl.authenticationInfo.isAuthenticated"
   ng-transclude>
 </div>

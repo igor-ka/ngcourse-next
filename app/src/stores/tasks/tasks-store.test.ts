@@ -1,9 +1,7 @@
-import {TasksStore} from '../../stores/tasks/tasks-store';
-import {TASK_ACTIONS} from '../../actions/action-constants';
+import {TasksStore} from '../../stores';
+import {TASK_ACTIONS} from '../../actions';
 
-import 'rx';
-// import 'rx.testing';
-// import 'rx.virtualtime';
+import * as Rx from 'rx';
 
 describe('TasksStore', () => {
   
@@ -59,13 +57,13 @@ describe('TasksStore', () => {
 
     _mockDispatcher = _scheduler.createColdObservable(
       Rx.ReactiveTest.onNext(10, {
-        actionType: TASK_ACTIONS.ADD_TASK,
+        actionType: TASK_ACTIONS.GET_TASKS_RESPONSE,
         newTask: _mockNewTask
       }));
     
     let tasksStore = new TasksStore(_mockKoast, _mockDispatcher);
 
-    tasksStore.tasksSubject.subscribe(
+    tasksStore.tasks.subscribe(
       tasks => {
         chai.expect(tasks).to.not.be.undefined;
         chai.expect(tasks).to.contain(_mockNewTask);

@@ -14,9 +14,11 @@
   </div>
 
   <div class="px2">
-    <a ng-show="ctrl.task.can.edit"
-      ui-sref="tasks.details({_id: ctrl.task._id})">
+    <a ui-sref="tasks.details({_id: ctrl.task._id})">
       <i class="fa fa-pencil-square p1 gray"></i>
+    </a>
+    <a href ng-click="ctrl.delete()">
+      <i class="fa fa-times p1 gray"></i>
     </a>
   <div>
 </div>

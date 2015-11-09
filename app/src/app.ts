@@ -12,14 +12,17 @@ import * as Rx from 'rx';
 import {
   ServerService, 
   RouterService, 
-  RouterConfig
-} from './services/index';
+  RouterConfig,
+  TasksService,
+  UsersService,
+  AuthenticationService
+} from './services';
 
 import {
   TasksStore, 
   UsersStore, 
   AuthenticationStore
-} from './stores/index';
+} from './stores';
 
 import {
   LoginFormComponent,
@@ -28,13 +31,13 @@ import {
   TaskAddComponent,
   TaskEditComponent,
   MainComponent
-} from './components/index';
+} from './components';
 
 import {
   TaskActions, 
   UserActions, 
   AuthenticationActions
-} from './actions/index';
+} from './actions';
 
 
 angular.module('ngcourse.router', ['ui.router'])
@@ -42,6 +45,7 @@ angular.module('ngcourse.router', ['ui.router'])
   .service('router', RouterService);
 
 angular.module('ngcourse.authentication', [])
+.service('authenticationService', AuthenticationService)
   .service('authenticationStore', AuthenticationStore)
   .service('authenticationActions', AuthenticationActions)
   .directive(
@@ -49,6 +53,7 @@ angular.module('ngcourse.authentication', [])
   LoginFormComponent.directiveFactory);
 
 angular.module('ngcourse.tasks', [])
+  .service('tasksService', TasksService)
   .service('tasksStore', TasksStore)
   .service('tasksActions', TaskActions)
   .directive(
@@ -65,11 +70,12 @@ angular.module('ngcourse.tasks', [])
     TaskEditComponent.directiveFactory);
 
 angular.module('ngcourse.users', [])
+  .service('usersService', UsersService)
   .service('usersStore', UsersStore)
   .service('usersActions', UserActions);
 
 angular.module('ngcourse.server', [])
-  .service('server', ServerService);
+  .service('serverService', ServerService);
 
 angular.module('ngcourse.dispatcher', [])
   .service('dispatcher', Rx.Subject);
@@ -86,7 +92,10 @@ angular.module('ngcourse', [
     MainComponent.selector,
     MainComponent.directiveFactory)
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
-  .run((koast, API_BASE_URL) => {
+  .run((koast, API_BASE_URL, tasksActions, usersActions, authenticationActions) => {
+    tasksActions.getTasks();
+    usersActions.getUsers();
+    //authenticationActions.getAuthInfo();
     koast.init({
       baseUrl: API_BASE_URL
     });
