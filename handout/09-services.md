@@ -15,7 +15,7 @@ export class TasksService {
 
   static $inject = ['$log', '$http'];
   
-  constructor(rivate $log, private $http) { }
+  constructor(private $log, private $http) { }
 
   public getTasks () {
     return this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
@@ -50,7 +50,7 @@ We can now simplify our code to use this service:
     ...
     static $inject = ['$log', 'tasksService'];
   
-    constructor(rivate $log, private tasksService) {
+    constructor(private $log, private tasksService) {
         this.tasksService.getTasks()
           .then(tasks => this.tasks = tasks);
     }

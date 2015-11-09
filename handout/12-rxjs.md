@@ -311,7 +311,7 @@ This is not very useful in our current example as we would have to subscribe to 
 
 ## Cold vs. Hot Observables
 
-Observables in RxJS can be classified into 2 main groups, Hot and Cold Observables. Let's illustrate start with a cold observables
+Observables in RxJS can be classified into 2 main groups, Hot and Cold Observables. Let's start with a cold observables
 
 ```javascript
   let source = Rx.Observable.interval(1000).take(7);

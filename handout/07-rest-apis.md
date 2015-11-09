@@ -195,7 +195,7 @@ export class TaskListComponent {
     
   static $inject = ['$log', '$http'];
   
-  constructor(rivate $log, private $http) {
+  constructor(private $log, private $http) {
 
     this.$http.get('http://ngcourse.herokuapp.com/api/v1/tasks')
       .success((data, status) => {
