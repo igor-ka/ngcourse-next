@@ -55,17 +55,17 @@ First, let's write a simple test and run it. Put this code into `app/src/simple.
 
 ```
 
-## Running Mocha Tests with Karma and Gulp
+## Running Mocha Tests with Karma
 
-We can now run this code from the command line using our gulp task (more in subsequent chapters):
+We can now run this code from the command line using karma (more in subsequent chapters):
 
 ```bash
-  gulp karma
+  karma start
 ```
 
 This will run **all** tests under client.
 
-See *gulpfile.js* on how to implement the `karma` task code for more details. Karma configuration is in `karma.conf.js`.
+Karma configuration is in `karma.conf.js`.
 
 ## The Importance of Test Documentation
 
@@ -79,9 +79,7 @@ maintenance.
 Chai is an assertion library. It makes it easy to throw errors when things are
 not as we expect them to be. Chai has two styles: "[TDD](http://en.wikipedia.org/wiki/Test-driven_development)" and "[BDD](http://en.wikipedia.org/wiki/Behavior-driven_development)". We'll be using the "[BDD](http://en.wikipedia.org/wiki/Behavior-driven_development)" style.
 
-We have already installed Chai when we ran `npm install` and we are already
-loading it when we run Karma via `gulp`. So, now we can go straight to using
-it.
+We have already installed Chai when we ran `npm install` and it has also been configured in the karma config file. So, now we can go straight to using it.
 
 ```javascript
   describe('Simple Test', () => {
@@ -161,7 +159,6 @@ There's a lot going on here, so let's break it down a bit.
 
 First let's talk about `import '../../template-cache';`. The first time a template is used within AngularJS context, it is put into the template cache for quick retrieval on subsequent requests.  
 
-In our application we are using a gulp plugin within our `template-cache` gulp task (which can be found in `gulfile.js`) to put all of our .html templates into the cache right away. Template cache is just a map, with a template URL as a key and the template as a value. Our gulp task puts our templates into the template cache map and wraps them into an angular module we named 'ngcourse.templates'.
 
 So importing our template cache, and defining a mock tasks module with a 'ngcourse.templates' as it's dependency gives us access to our component's template within the test.
 
