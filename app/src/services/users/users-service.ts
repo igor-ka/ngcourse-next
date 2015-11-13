@@ -1,30 +1,42 @@
 import {ServerService, AuthenticationService} from '../../services';
 
 export interface User {
-  _id: string,
-  username: string,
-  password: string,
-  displayName: string
+  _id: string;
+  username: string;
+  password: string;
+  displayName: string;
 }
 
 export class UsersService {
-
-  private usersPromise: Promise<any>;
-
-  static $inject = ['serverService', 'authenticationService'];
+  
+  static $inject = [
+    'serverService', 
+    'authenticationService'
+  ];
 
   constructor(
     private serverService: ServerService, 
-    private authenticationService: AuthenticationService) { }
+    private authenticationService: AuthenticationService
+  ) { }
 
-  getUsers = (): Promise<User[]> => this.serverService.get('/api/v1/users');
+  getUsers(): Promise<User[]> {
+    return this.serverService.get('/api/v1/users');
+  }
 
-  addUser = (user) => this.serverService.post('/api/v1/users', user);
+  addUser(user) { 
+    return this.serverService.post('/api/v1/users', user);
+  }
 
-  updateUser = (user) => this.serverService.put('/api/v1/users', user._id, user);
+  updateUser (user) {
+    return this.serverService.put('/api/v1/users', user._id, user);
+  }
 
-  getUser = (id) => this.serverService.get('/api/v1/users/', id);
+  getUser(id) {
+    return this.serverService.get('/api/v1/users/', id);
+  }
 
-  deleteUser = (id) => this.serverService.delete('/api/v1/users', id);
+  deleteUser(id) {
+    return this.serverService.delete('/api/v1/users', id);
+  }
 
 }

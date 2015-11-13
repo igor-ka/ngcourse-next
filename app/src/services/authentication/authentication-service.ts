@@ -10,7 +10,10 @@ export class AuthenticationService {
 
   login(credentials) {
     return this.serverService.post('/auth/login', credentials)
-      .then((response: any) => this.setToken(response.data.meta.token));
+      .then((response: any) => {
+        this.setToken(response.data.meta.token);
+        return response.data;
+      });
   }
 
   logout() {

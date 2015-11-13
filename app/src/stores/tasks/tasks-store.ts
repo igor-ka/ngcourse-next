@@ -1,5 +1,5 @@
 import {TASK_ACTIONS} from '../../actions/action-constants';
-import {Task} from '../../services'
+import {Task} from '../../services';
 import * as Rx from 'rx';
 
 export class TasksStore {
@@ -8,13 +8,10 @@ export class TasksStore {
   private _error: Rx.ReplaySubject<any>;
 
   static $inject = [
-    'koast',
     'dispatcher'
   ];
 
-  constructor(
-    private koast,
-    private dispatcher: Rx.Subject<any>) {
+  constructor(private dispatcher: Rx.Subject<any>) {
     
     this._tasks = new Rx.ReplaySubject<Task[]>(1);
     this._error = new Rx.ReplaySubject(1);
@@ -44,10 +41,7 @@ export class TasksStore {
   }
 
   getTaskById(id) {
-    return this._tasks
-      .flatMap(tasks => Rx.Observable.from(tasks)
-        .filter(task => task._id === id))
-        .map(task => angular.copy(task));
+    return this.tasks
+      .map(tasks => tasks.find(task => task._id === id));
   }
-
 }
