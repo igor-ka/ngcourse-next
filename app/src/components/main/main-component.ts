@@ -5,10 +5,9 @@ import {AuthenticationActions}
 
 export class MainComponent {
 
-  private _authenticationInfo: any;
-  private user;
-  private _displayName: String;
-  private _errorMessage: String;
+  private authenticationInfo: any;
+  private displayName: String;
+  private errorMessage: String;
 
   static selector = 'ngcMain';
 
@@ -38,7 +37,7 @@ export class MainComponent {
     private usersStore: UsersStore) {
 
     let disposable = authenticationStore.authenticationInfo
-      .subscribe(user => this._authenticationInfo = user);
+      .subscribe(user => this.authenticationInfo = user);
 
     this.$scope.$on('$destroy', () => {
       disposable.dispose();
@@ -51,17 +50,5 @@ export class MainComponent {
 
   private logout() {
     this.authenticationActions.logout();
-  }
-
-  get authenticationInfo() {
-    return this._authenticationInfo;
-  }
-
-  get displayName() {
-    return this._displayName;
-  }
-
-  get errorMessage() {
-    return this._errorMessage;
   }
 }

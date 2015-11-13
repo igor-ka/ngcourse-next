@@ -9,7 +9,7 @@ export class TaskActions {
     private dispatcher: Rx.Subject<any>,
     private tasksService: TasksService) { }
 
-  getTasks = () => {
+  getTasks() {
     this.tasksService.getTasks()
       .then(tasks => this.dispatcher.onNext({
         actionType: TASK_ACTIONS.GET_TASKS_RESPONSE,
@@ -21,7 +21,7 @@ export class TaskActions {
       }));
   }
 
-  addTask = (newTask) => {
+  addTask(newTask) {
     this.tasksService.addTask(newTask)
       .then(this.getTasks)
       .then(null, error => this.dispatcher.onNext({
@@ -30,7 +30,7 @@ export class TaskActions {
       }));
   }
 
-  updateTask = (task) => {
+  updateTask(task) {
     this.tasksService.updateTask(task)
       .then(this.getTasks)
       .then(null, error => this.dispatcher.onNext({
@@ -39,7 +39,7 @@ export class TaskActions {
       }));
   }
 
-  deleteTask = (task) => {
+  deleteTask(task) {
     this.tasksService.deleteTask(task)
       .then(this.getTasks)
       .then(null, error => this.dispatcher.onNext({

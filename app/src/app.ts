@@ -92,20 +92,25 @@ angular.module('ngcourse', [
     MainComponent.selector,
     MainComponent.directiveFactory)
   .constant('API_BASE_URL', 'http://ngcourse.herokuapp.com')
-  .run((koast, API_BASE_URL, tasksActions, usersActions, authenticationActions) => {
-    tasksActions.getTasks();
-    usersActions.getUsers();
-    //authenticationActions.getAuthInfo();
-    koast.init({
-      baseUrl: API_BASE_URL
-    });
-    koast.setApiUriPrefix('/api/v2/');
-    koast.addEndpoint('tasks', ':_id', {
-      useEnvelope: true
-    });
-    koast.addEndpoint('users', ':_id', {
-      useEnvelope: true
-    });
+  .run((
+    koast, 
+    API_BASE_URL, 
+    tasksActions, 
+    usersActions, 
+    authenticationActions) => {
+      
+      tasksActions.getTasks();
+      usersActions.getUsers();
+      koast.init({
+        baseUrl: API_BASE_URL
+      });
+      koast.setApiUriPrefix('/api/v2/');
+      koast.addEndpoint('tasks', ':_id', {
+        useEnvelope: true
+      });
+      koast.addEndpoint('users', ':_id', {
+        useEnvelope: true
+      });
   });
 
 angular.element(document).ready(function() {

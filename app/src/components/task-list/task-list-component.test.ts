@@ -37,7 +37,8 @@ let _usersMock = {
   }
 };
 
-let _userMock = {
+let _authInfoMock = {
+  isAuthenticated: true,
   data: {
     username: 'alice'
   }
@@ -56,69 +57,31 @@ describe('TaskListComponent', () => {
   it('should get data from stores', () => {
     
     let scheduler = new Rx.TestScheduler();
-      
-    let tasksObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onNext(200, _tasksMock));
-    
-    let userObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onNext(200, _userMock));  
-      
-    let usersObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onNext(200, _usersMock));    
 
     _tasksStoreMock = {
-      tasksSubject: tasksObservable
+      tasks: scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _tasksMock))
     };
     
     _authStoreMock = {
-      userSubject: userObservable
+      authenticationInfo: scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _authInfoMock))
     };
     
     _userStoreMock = {
-      usersSubject: usersObservable
+      usersByUsername: scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _usersMock)),
+      getUser: username => scheduler.createHotObservable(
+        Rx.ReactiveTest.onNext(200, _usersMock['alice']))
     };
 
     let taskListComponent = new TaskListComponent(
       _$scope, _routerMock, _authStoreMock, 
-      _tasksStoreMock, _userStoreMock);
+      _tasksStoreMock, _userStoreMock, null);
 
     scheduler.advanceTo(220);
-    
-    
+
     chai.expect(taskListComponent.tasks).to.equal(_tasksMock);
-  });
-  
-  it('should get error from stores', () => {
-    
-    let scheduler = new Rx.TestScheduler();
-      
-    let tasksObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onError(200, 'error'));
-    
-    let userObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onNext(200, _userMock));  
-      
-    let usersObservable = scheduler.createHotObservable(
-      Rx.ReactiveTest.onNext(200, _usersMock));    
-    
-    _tasksStoreMock = {
-      tasksSubject: tasksObservable
-    };
-    
-    _authStoreMock = {
-      userSubject: userObservable
-    };
-    
-    _userStoreMock = {
-      usersSubject: usersObservable
-    };
-    
-    let taskListComponent = new TaskListComponent(
-      _$scope, _routerMock, _authStoreMock, 
-      _tasksStoreMock, _userStoreMock);
-    
-    scheduler.advanceTo(220);
-    chai.expect(taskListComponent.errorMessage).to.equal('error');
   });
 
 });

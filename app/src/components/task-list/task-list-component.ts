@@ -9,14 +9,10 @@ import {User, Task} from '../../services';
 
 export class TaskListComponent {
 
-  private tasks: Task[];
-  private users: {};
-  private authenticationInfo;
-
-  private user;
-  
-  private displayName: String;
-  private errorMessage: String;
+  tasks: Task[];
+  users: {};
+  user;
+  errorMessage: String;
   
   static selector = 'ngcTasks';
 
@@ -65,9 +61,8 @@ export class TaskListComponent {
     );
       
 
-    this.$scope.$on('$destroy', () => {
-      disposables.forEach(disposable => disposable.dispose());
-    });
+    this.$scope.$on('$destroy', 
+      () => disposables.forEach(disposable => disposable.dispose()));
   }
   
   delete(task) {

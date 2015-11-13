@@ -13,7 +13,7 @@ export class UserActions {
     private dispatcher: Rx.Subject<any>,
     private usersService: UsersService) { }
 
-  getUsers = () => {
+  getUsers() {
     this.usersService.getUsers()
       .then(users => this.dispatcher.onNext({
         actionType: USER_ACTIONS.GET_USERS_RESPONSE,

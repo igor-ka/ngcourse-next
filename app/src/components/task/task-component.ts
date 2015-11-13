@@ -25,9 +25,7 @@ export class TaskComponent {
     };
   };
 
-  constructor() {
-    console.log(this.user);  
-  }
+  constructor() { }
   
   delete() {
     this.onDelete({
