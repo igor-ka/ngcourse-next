@@ -1,5 +1,5 @@
 # Summary
 
 * [test](test.md)
-* test
+* [test](stest.md)
 
